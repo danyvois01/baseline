@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Baseline - Live ATP Rankings</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#007e37",
+                        "on-secondary-fixed": "#181c22",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#6bff8f",
+                        "tertiary-fixed-dim": "#4ae176",
+                        "on-primary-fixed": "#191e00",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#d9dadb",
+                        "on-primary-fixed-variant": "#414c00",
+                        "on-tertiary-fixed": "#002109",
+                        "surface-container-low": "#f3f4f5",
+                        "primary-fixed-dim": "#b8d300",
+                        "surface-container": "#edeeef",
+                        "on-surface-variant": "#454932",
+                        "primary-container": "#dfff00",
+                        "surface": "#f8f9fa",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#c3ffc7",
+                        "surface-container-highest": "#e1e3e4",
+                        "primary": "#576500",
+                        "secondary": "#5b5e66",
+                        "on-background": "#191c1d",
+                        "background": "#f8f9fa",
+                        "surface-container-high": "#e7e8e9",
+                        "outline-variant": "#c6c9ab",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#2e3132",
+                        "on-tertiary-fixed-variant": "#005321",
+                        "secondary-container": "#dfe2eb",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-variant": "#e1e3e4",
+                        "on-secondary-container": "#61646c",
+                        "tertiary": "#006e2f",
+                        "on-secondary-fixed-variant": "#43474e",
+                        "secondary-fixed": "#dfe2eb",
+                        "on-primary-container": "#647400",
+                        "surface-bright": "#f8f9fa",
+                        "secondary-fixed-dim": "#c3c6cf",
+                        "outline": "#767960",
+                        "primary-fixed": "#d2f000",
+                        "inverse-primary": "#b8d300",
+                        "on-surface": "#191c1d",
+                        "surface-tint": "#576500"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "container-max": "1280px",
+                        "xl": "80px",
+                        "sm": "16px",
+                        "base": "4px",
+                        "lg": "48px",
+                        "xs": "8px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": [
+                            "Montserrat"
+                        ],
+                        "headline-md": [
+                            "Montserrat"
+                        ],
+                        "display-lg": [
+                            "Montserrat"
+                        ],
+                        "label-lg": [
+                            "Inter"
+                        ],
+                        "headline-lg-mobile": [
+                            "Montserrat"
+                        ],
+                        "label-md": [
+                            "Inter"
+                        ],
+                        "body-md": [
+                            "Inter"
+                        ],
+                        "body-lg": [
+                            "Inter"
+                        ],
+                        "body-sm": [
+                            "Inter"
+                        ],
+                        "headline-lg": [
+                            "Montserrat"
+                        ]
+                    },
+                    "fontSize": {
+                        "headline-sm": [
+                            "20px",
+                            {
+                                "lineHeight": "28px",
+                                "fontWeight": "600"
+                            }
+                        ],
+                        "headline-md": [
+                            "24px",
+                            {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                            }
+                        ],
+                        "display-lg": [
+                            "48px",
+                            {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                            }
+                        ],
+                        "label-lg": [
+                            "14px",
+                            {
+                                "lineHeight": "20px",
+                                "fontWeight": "600"
+                            }
+                        ],
+                        "headline-lg-mobile": [
+                            "28px",
+                            {
+                                "lineHeight": "36px",
+                                "fontWeight": "700"
+                            }
+                        ],
+                        "label-md": [
+                            "12px",
+                            {
+                                "lineHeight": "16px",
+                                "fontWeight": "500"
+                            }
+                        ],
+                        "body-md": [
+                            "16px",
+                            {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                            }
+                        ],
+                        "body-lg": [
+                            "18px",
+                            {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                            }
+                        ],
+                        "body-sm": [
+                            "14px",
+                            {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                            }
+                        ],
+                        "headline-lg": [
+                            "32px",
+                            {
+                                "lineHeight": "40px",
+                                "fontWeight": "700"
+                            }
+                        ]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .live-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.5;
+                box-shadow: 0 0 0 0 rgba(87, 101, 0, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                opacity: 1;
+                box-shadow: 0 0 0 10px rgba(87, 101, 0, 0);
+            }
+
+            100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+                box-shadow: 0 0 0 0 rgba(87, 101, 0, 0);
+            }
+        }
+
+        .table-row-hover:hover {
+            background-color: theme('colors.surface-container-highest');
+            border-radius: theme('borderRadius.lg');
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased">
+    <!-- TopNavBar -->
+    <nav class="bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline w-full top-0 z-50">
+        <div class="flex justify-between items-center h-20 px-gutter max-w-container-max mx-auto w-full">
+            <div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">
+                Baseline
+            </div>
+            <div class="hidden md:flex gap-4">
+                <a class="text-secondary dark:text-secondary-fixed-dim px-6 py-2 font-medium hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors duration-200 rounded-full font-label-lg text-label-lg"
+                    href="#">Official Ranking</a>
+                <a class="bg-primary-container text-on-primary-container dark:bg-primary-fixed dark:text-on-primary-fixed rounded-full px-6 py-2 font-bold hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors duration-200 font-label-lg text-label-lg"
+                    href="#">Live Ranking</a>
+                <a class="text-secondary dark:text-secondary-fixed-dim px-6 py-2 font-medium hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors duration-200 rounded-full font-label-lg text-label-lg"
+                    href="#">Race to Turin</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative hidden md:block">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+                        data-icon="search">search</span>
+                    <input
+                        class="pl-10 pr-4 py-2 bg-surface-container-low rounded-full border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-sm text-body-sm text-on-surface w-64 placeholder:text-on-surface-variant"
+                        placeholder="Search players..." type="text">
+                </div>
+                <button
+                    class="bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-lg text-label-lg px-6 py-2 rounded-full transition-colors font-bold">Sign
+                    In</button>
+            </div>
+        </div>
+    </nav>
+    <!-- Main Content Canvas -->
+    <main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-lg">
+        <!-- Header Area -->
+        <div class="flex flex-col md:flex-row justify-between items-end mb-md gap-4">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-3 h-3 rounded-full bg-primary live-pulse"></div>
+                    <span class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider">Live
+                        Updates Active</span>
+                </div>
+                <h1 class="font-headline-lg text-headline-lg md:font-display-lg md:text-display-lg text-on-surface">Live
+                    ATP Rankings</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-2">Real-time point projections based on
+                    ongoing tournament results.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button
+                    class="flex items-center gap-2 px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-high transition-colors text-on-surface font-label-sm text-label-sm">
+                    <span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+                    Filter
+                </button>
+                <div
+                    class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm border border-outline-variant">
+                    Updated: Just now
+                </div>
+            </div>
+        </div>
+        <!-- Reference Image Context -->
+        <div class="mb-lg rounded-xl overflow-hidden border border-outline-variant shadow-sm hidden">
+            <img alt="Reference rankings data" class="w-full h-auto object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNrGg_QJi4CQzkyRHgjb0XyCEaxlOmIKiMCLd-gSc2RKvVIJ32VnL7T0DDVJbGw_OwvuWLuUSXVg_vf34o7uIcjod_MM6Nq1stRLmMD8T0WlGwGUd-2-ArAsvg-fzgmSE5w6rIU0QuW45ZrtQAr6v45UBBQC8HHcQBeQSlLT2lnXo3vcAMh27TfotUYwXbOkmQSpsmHH4ZUvU8P9x75CNmSGqvh2xmbkb-_570n1rsIzQzQphUhprxuLEAjqxEAUAqekhzDmcX0w">
+        </div>
+        <!-- Bento Grid Data Display -->
+        <div class="bg-surface border border-outline-variant shadow-sm overflow-hidden rounded">
+            <!-- Table Header -->
+            <div
+                class="grid grid-cols-12 gap-4 px-6 py-4 bg-surface-container-low border-b border-outline-variant font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">
+                <div class="col-span-1 text-center">#</div>
+                <div class="col-span-4">Player</div>
+                <div class="col-span-3">Live Status</div>
+                <div class="col-span-2 text-right">Points</div>
+                <div class="col-span-1 text-center">+/-</div>
+                <div class="col-span-1 text-right"></div>
+            </div>
+            <!-- Table Body -->
+            <div class="flex flex-col divide-y divide-outline-variant/50">
+                <!-- Row 1 -->
+                <div class="flex flex-col table-row-hover group transition-all border-b border-outline-variant/30">
+                    <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center cursor-pointer">
+                        <div class="col-span-1 text-center font-headline-lg text-headline-lg font-bold text-on-surface">
+                            1</div>
+                        <div class="col-span-4 flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-label-lg text-label-lg text-on-surface font-bold">
+                                ND</div>
+                            <div>
+                                <div
+                                    class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">
+                                    Novak Djokovic</div>
+                                <div class="flex items-center gap-1 mt-0.5"><span aria-label="Serbia"
+                                        class="text-[14px]" role="img">🇷🇸</span><span
+                                        class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-wider bg-surface-container-high px-2 py-0.5 rounded-full">SRB</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-3 flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-on-surface-variant"></div><span
+                                class="font-body-sm text-body-sm text-on-surface">Out - Indian Wells (R32)</span>
+                        </div>
+                        <div class="col-span-2 text-right font-headline-md text-headline-md font-bold text-on-surface">
+                            9,725</div>
+                        <div class="col-span-1 flex justify-center"><span
+                                class="px-2 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md">MR</span>
+                        </div>
+                        <div class="col-span-1 text-right"><span
+                                class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">expand_less</span>
+                        </div>
+                    </div>
+                    <div
+                        class="group-hover:block bg-surface-container-low/50 px-6 py-4 border-t border-outline-variant/20">
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="col-span-1"></div>
+                            <div class="col-span-11 grid grid-cols-12 gap-4">
+                                <!-- Left side: Projections aligned with Player and Live Status columns -->
+                                <div class="col-span-7 grid grid-cols-2 gap-4">
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mb-1">Pros</span>
+                                        <div class="flex items-baseline gap-1">
+                                            <span class="text-body-md font-bold text-primary">9,725</span>
+                                            <span class="text-[10px] text-on-surface-variant">pts</span>
+                                        </div>
+                                        <span class="text-[10px] text-on-surface-variant">If wins next match</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mb-1">Max</span>
+                                        <div class="flex items-baseline gap-1">
+                                            <span class="text-body-md font-bold text-on-surface">10,725</span>
+                                            <span class="text-[10px] text-on-surface-variant">pts</span>
+                                        </div>
+                                        <span class="text-[10px] text-on-surface-variant">Potential finish</span>
+                                    </div>
+                                </div>
+                                <!-- Right side: Official Points and Diff aligned with Points and +/- columns -->
+                                <div class="col-span-2 text-right flex flex-col">
+                                    <span
+                                        class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mb-1">Official
+                                        Points</span>
+                                    <span class="text-body-md font-bold text-on-surface">9,775</span>
+                                </div>
+                                <div class="col-span-1 flex flex-col items-center">
+                                    <span
+                                        class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mb-1">Diff</span>
+                                    <span
+                                        class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container text-[10px] font-bold">-50</span>
+                                </div>
+                                <div class="col-span-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row 2 -->
+                <div class="flex flex-col table-row-hover group transition-all border-b border-outline-variant/30">
+                    <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center cursor-pointer">
+                        <div class="col-span-1 text-center font-headline-lg text-headline-lg font-bold text-on-surface">
+                            2</div>
+                        <div class="col-span-4 flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-label-lg text-label-lg text-on-surface font-bold">
+                                CA</div>
+                            <div>
+                                <div
+                                    class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">
+                                    Carlos Alcaraz</div>
+                                <div class="flex items-center gap-1 mt-0.5"><span aria-label="Spain" class="text-[14px]"
+                                        role="img">🇪🇸</span><span
+                                        class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-wider bg-surface-container-high px-2 py-0.5 rounded-full">ESP</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-3 flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-primary live-pulse"></div><span
+                                class="font-body-sm text-body-sm text-on-surface font-medium">Active - Indian Wells
+                                (SF)</span>
+                        </div>
+                        <div class="col-span-2 text-right font-headline-md text-headline-md font-bold text-on-surface">
+                            8,805</div>
+                        <div class="col-span-1 flex justify-center"><span
+                                class="px-2 py-1 rounded-full bg-tertiary-container text-on-tertiary-container font-label-md text-label-md flex items-center gap-1"><span
+                                    class="material-symbols-outlined text-[14px]"
+                                    data-icon="arrow_drop_up">arrow_drop_up</span> 1</span></div>
+                        <div class="col-span-1 text-right"><span
+                                class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">expand_more</span>
+                        </div>
+                    </div>
+                    <div
+                        class="hidden group-hover:block bg-surface-container-low/50 px-6 py-4 border-t border-outline-variant/20">
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="col-span-1"></div>
+                            <div class="col-span-11 grid grid-cols-3 gap-8">
+                                <div class="flex flex-col"><span
+                                        class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Next
+                                        Points</span><span class="text-body-md font-bold text-on-surface">9,205</span>
+                                </div>
+                                <div class="flex flex-col"><span
+                                        class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Max
+                                        Points</span><span class="text-body-md font-bold text-on-surface">9,405</span>
+                                </div>
+                                <div class="flex flex-col"><span
+                                        class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Tournament
+                                        Breakdown</span><span class="text-body-sm text-primary">+400 pts (Live
+                                        SF)</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row 3 -->
+                <div class="flex flex-col table-row-hover group transition-all border-b border-outline-variant/30">
+                    <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center cursor-pointer">
+                        <div class="col-span-1 text-center font-headline-lg text-headline-lg font-bold text-on-surface">
+                            3</div>
+                        <div class="col-span-4 flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-label-lg text-label-lg text-on-surface font-bold">
+                                JS</div>
+                            <div>
+                                <div
+                                    class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">
+                                    Jannik Sinner</div>
+                                <div class="flex items-center gap-1 mt-0.5"><span aria-label="Italy" class="text-[14px]"
+                                        role="img">🇮🇹</span><span
+                                        class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-wider bg-surface-container-high px-2 py-0.5 rounded-full">ITA</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-3 flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-primary live-pulse"></div><span
+                                class="font-body-sm text-body-sm text-on-surface font-medium">Active - Indian Wells
+                                (SF)</span>
+                        </div>
+                        <div class="col-span-2 text-right font-headline-md text-headline-md font-bold text-on-surface">
+                            8,270</div>
+                        <div class="col-span-1 flex justify-center"><span
+                                class="px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-md text-label-md flex items-center gap-1"><span
+                                    class="material-symbols-outlined text-[14px]"
+                                    data-icon="arrow_drop_down">arrow_drop_down</span> 1</span></div>
+                        <div class="col-span-1 text-right"><span
+                                class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">expand_more</span>
+                        </div>
+                    </div>
+                    <div
+                        class="hidden group-hover:block bg-surface-container-low/50 px-6 py-4 border-t border-outline-variant/20">
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="col-span-1"></div>
+                            <div class="col-span-11 grid grid-cols-3 gap-8">
+                                <div class="flex flex-col"><span
+                                        class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Next
+                                        Points</span><span class="text-body-md font-bold text-on-surface">8,470</span>
+                                </div>
+                                <div class="flex flex-col"><span
+                                        class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Max
+                                        Points</span><span class="text-body-md font-bold text-on-surface">8,670</span>
+                                </div>
+                                <div class="flex flex-col"><span
+                                        class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Tournament
+                                        Breakdown</span><span class="text-body-sm text-primary">+360 pts (Live
+                                        SF)</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row 4 -->
+                <div class="flex flex-col table-row-hover group transition-all border-b border-outline-variant/30">
+                    <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center cursor-pointer">
+                        <div class="col-span-1 text-center font-headline-lg text-headline-lg font-bold text-on-surface">
+                            4</div>
+                        <div class="col-span-4 flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-label-lg text-label-lg text-on-surface font-bold">
+                                DM</div>
+                            <div>
+                                <div
+                                    class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">
+                                    Daniil Medvedev</div>
+                                <div class="flex items-center gap-1 mt-0.5"><span aria-label="Neutral"
+                                        class="text-[14px]" role="img">🏳️</span><span
+                                        class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-wider bg-surface-container-high px-2 py-0.5 rounded-full">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-3 flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-on-surface-variant"></div><span
+                                class="font-body-sm text-body-sm text-on-surface">Out - Indian Wells (F)</span>
+                        </div>
+                        <div class="col-span-2 text-right font-headline-md text-headline-md font-bold text-on-surface">
+                            7,715</div>
+                        <div class="col-span-1 flex justify-center"><span
+                                class="px-2 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md">NMR</span>
+                        </div>
+                        <div class="col-span-1 text-right"><span
+                                class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">expand_more</span>
+                        </div>
+                    </div>
+                    <div
+                        class="hidden group-hover:block bg-surface-container-low/50 px-6 py-4 border-t border-outline-variant/20">
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="col-span-1"></div>
+                            <div class="col-span-11 grid grid-cols-3 gap-8">
+                                <div class="flex flex-col"><span
+                                        class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Next
+                                        Points</span><span class="text-body-md font-bold text-on-surface">7,715</span>
+                                </div>
+                                <div class="flex flex-col"><span
+                                        class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Max
+                                        Points</span><span class="text-body-md font-bold text-on-surface">8,015</span>
+                                </div>
+                                <div class="flex flex-col"><span
+                                        class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Tournament
+                                        Breakdown</span><span class="text-body-sm text-on-surface-variant">0 pts
+                                        (Defended Final)</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-outline-variant bg-surface-container-lowest text-center">
+                <button class="text-primary font-label-md text-label-md hover:underline font-bold">Load More
+                    Players</button>
+            </div>
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer
+        class="bg-surface-container-low dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline mt-auto w-full">
+        <div
+            class="flex flex-col md:flex-row justify-between items-center py-lg px-gutter max-w-container-max mx-auto w-full gap-4">
+            <div
+                class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim opacity-80 hover:opacity-100 transition-opacity">
+                Baseline
+            </div>
+            <div class="flex flex-wrap justify-center gap-6">
+                <a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors underline font-label-md text-label-md"
+                    href="#">Terms of Service</a>
+                <a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors underline font-label-md text-label-md"
+                    href="#">Privacy Policy</a>
+                <a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors underline font-label-md text-label-md"
+                    href="#">Contact Support</a>
+                <a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors underline font-label-md text-label-md"
+                    href="#">About Us</a>
+            </div>
+            <div class="font-body-sm text-body-sm text-on-surface-variant text-center md:text-right">
+                © 2024 Baseline Tennis. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+
+</body>
+
+</html>
