@@ -2,11 +2,16 @@
 
 /**
  * ExpandedCard — Secondary data panel for an expanded rankings row.
- * Shows 4 evenly-spaced data blocks: Next Match Win, Tournament Win,
- * Official Points, and Diff (live vs official).
+ * Layout aligns with parent grid columns:
+ * - Under Player: Best Ranking
+ * - Under Live Status: Next (if wins next match) + Max (if wins tournament)
+ * - Under Points: Official Points + Diff
  */
 
 import { cn } from "@/lib/utils";
+
+/** Shared grid column definition — must match rankings-table.tsx GRID_COLS */
+const GRID_COLS = "grid-cols-[60px_70px_1fr_45px_1.2fr_120px_50px]";
 
 interface ExpandedCardProps {
   /** Points if player wins their next match */
@@ -17,6 +22,8 @@ interface ExpandedCardProps {
   officialPoints: number;
   /** Point difference: live − official */
   pointsDiff: number;
+  /** Player's career-best rank position */
+  bestRanking: number;
 }
 
 /** Format number with comma as thousands separator */
@@ -29,20 +36,40 @@ export function ExpandedCard({
   maxPoints,
   officialPoints,
   pointsDiff,
+  bestRanking,
 }: ExpandedCardProps) {
   return (
-    <div className="bg-surface-container-low/50 border-t border-border-subtle/40 px-6 py-4 animate-expand-in">
-      {/* Use same grid as parent row: skip rank column (80px), span the rest */}
-      <div className="grid grid-cols-[80px_1fr] gap-0">
-        {/* Empty spacer aligned with rank column */}
+    <div className="bg-surface-container-low/50 border-t border-border-subtle/40 px-6 py-4">
+      {/* Same grid as parent row for alignment */}
+      <div className={cn("grid items-start", GRID_COLS)}>
+        {/* Skip Rank column */}
         <div />
 
-        {/* 4 data blocks — independent even grid */}
-        <div className="grid grid-cols-4 gap-8">
-          {/* Block 1: Next Match Win */}
+        {/* Skip +/- column */}
+        <div />
+
+        {/* Under Player: Best Ranking */}
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">
+            Best Ranking
+          </span>
+          <span className="text-body-md font-bold text-deep-navy">
+            #{bestRanking}
+          </span>
+          <span className="text-[10px] text-on-surface-variant">
+            Career high
+          </span>
+        </div>
+
+        {/* Skip Age column */}
+        <div />
+
+        {/* Under Live Status: Next + Max (grouped) */}
+        <div className="flex gap-8">
+          {/* Next: if wins next match */}
           <div className="flex flex-col gap-0.5">
             <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">
-              Next Match Win
+              Next
             </span>
             <div className="flex items-baseline gap-1">
               <span className="text-body-md font-bold text-primary-olive">
@@ -55,10 +82,10 @@ export function ExpandedCard({
             </span>
           </div>
 
-          {/* Block 2: Tournament Win */}
+          {/* Max: if wins tournament */}
           <div className="flex flex-col gap-0.5">
             <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">
-              Tournament Win
+              Max
             </span>
             <div className="flex items-baseline gap-1">
               <span className="text-body-md font-bold text-deep-navy">
@@ -70,13 +97,16 @@ export function ExpandedCard({
               If wins tournament
             </span>
           </div>
+        </div>
 
-          {/* Block 3: Official Points */}
+        {/* Under Points + Chevron: Official Points + Diff (col-span-2) */}
+        <div className="col-span-2 flex gap-5">
+          {/* Official Points */}
           <div className="flex flex-col gap-0.5">
             <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">
-              Official Points
+              Official Pts
             </span>
-            <span className="text-body-md font-bold text-deep-navy">
+            <span className="text-body-md font-bold text-deep-navy tabular-nums">
               {fmt(officialPoints)}
             </span>
             <span className="text-[10px] text-on-surface-variant">
@@ -84,7 +114,7 @@ export function ExpandedCard({
             </span>
           </div>
 
-          {/* Block 4: Diff (live vs official) */}
+          {/* Diff */}
           <div className="flex flex-col gap-0.5">
             <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">
               Diff
@@ -99,9 +129,8 @@ export function ExpandedCard({
                     : "bg-surface-container text-on-surface-variant"
               )}
             >
-              {pointsDiff > 0 ? "+" : ""}
+              {pointsDiff > 0 && "+"}
               {pointsDiff === 0 ? "—" : fmt(pointsDiff)}
-              {pointsDiff < 0 ? "" : ""}
             </span>
             <span className="text-[10px] text-on-surface-variant">
               Live vs Official

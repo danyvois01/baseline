@@ -32,7 +32,8 @@ export function TopNavBar() {
               alt="Baseline — ATP & WTA Rankings"
               width={140}
               height={36}
-              className="h-9 w-auto object-contain"
+              style={{ width: "auto", height: "36px" }}
+              className="object-contain"
               priority
             />
           </a>

@@ -2,8 +2,8 @@
 
 /**
  * RankingsTable — Live ATP Rankings data table with expandable rows.
- * Displays ranking data in a borderless layout with smooth expand/collapse
- * interaction revealing secondary data (Pros, Max, Official, Diff).
+ * Grid order: # | +/- | Player | Age | Live Status | Points | Chevron
+ * Smooth expand/collapse via CSS grid-template-rows transition.
  */
 
 import { useState, useCallback } from "react";
@@ -21,8 +21,8 @@ function formatPoints(n: number): string {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-/** Grid column definition shared between header and rows */
-const GRID_COLS = "grid-cols-[80px_1fr_60px_1fr_140px_80px_50px]";
+/** Grid column definition shared between header, rows, and expanded card */
+const GRID_COLS = "grid-cols-[60px_70px_1fr_45px_1.2fr_120px_50px]";
 
 interface RankingsTableProps {
   entries: LiveRankingEntry[];
@@ -63,6 +63,9 @@ export function RankingsTable({
         <span className="text-label-md text-text-muted uppercase tracking-wider">
           #
         </span>
+        <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          +/-
+        </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider">
           Player
         </span>
@@ -74,9 +77,6 @@ export function RankingsTable({
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider text-right">
           Points
-        </span>
-        <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
-          +/-
         </span>
         {/* Empty header for chevron column */}
         <span />
@@ -107,6 +107,14 @@ export function RankingsTable({
                 {entry.rank}
               </span>
 
+              {/* Movement (rank change) — now next to rank */}
+              <div className="flex justify-center">
+                <MovementBadge
+                  type={entry.movement.type}
+                  value={entry.movement.value}
+                />
+              </div>
+
               {/* Player — Flag + Name + Nationality pill */}
               <div className="flex items-center gap-3">
                 <PlayerAvatar initials={entry.player.initials} />
@@ -129,7 +137,7 @@ export function RankingsTable({
                 </div>
               </div>
 
-              {/* Age */}
+              {/* Age — close to Player */}
               <span className="text-body-sm text-deep-navy text-center">
                 {entry.player.age}
               </span>
@@ -146,14 +154,6 @@ export function RankingsTable({
                 {formatPoints(entry.points)}
               </span>
 
-              {/* Movement (rank change) */}
-              <div className="flex justify-center">
-                <MovementBadge
-                  type={entry.movement.type}
-                  value={entry.movement.value}
-                />
-              </div>
-
               {/* Expand chevron */}
               <div className="flex justify-end">
                 <ChevronDown
@@ -165,15 +165,23 @@ export function RankingsTable({
               </div>
             </div>
 
-            {/* Expanded Card — secondary data */}
-            {isExpanded && (
-              <ExpandedCard
-                nextMatchPoints={entry.nextMatchPoints}
-                maxPoints={entry.maxPoints}
-                officialPoints={entry.officialPoints}
-                pointsDiff={entry.pointsDiff}
-              />
-            )}
+            {/* Expanded Card — smooth transition via grid-template-rows */}
+            <div
+              className="grid transition-[grid-template-rows] duration-200 ease-out"
+              style={{
+                gridTemplateRows: isExpanded ? "1fr" : "0fr",
+              }}
+            >
+              <div className="overflow-hidden">
+                <ExpandedCard
+                  nextMatchPoints={entry.nextMatchPoints}
+                  maxPoints={entry.maxPoints}
+                  officialPoints={entry.officialPoints}
+                  pointsDiff={entry.pointsDiff}
+                  bestRanking={entry.bestRanking}
+                />
+              </div>
+            </div>
           </div>
         );
       })}

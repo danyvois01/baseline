@@ -45,6 +45,8 @@ export interface LiveRankingEntry {
   nextMatchPoints: number;
   /** Points if player wins the tournament */
   maxPoints: number;
+  /** Player's career-best rank position */
+  bestRanking: number;
 }
 
 export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
@@ -58,6 +60,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: -1250,
     nextMatchPoints: 13500,
     maxPoints: 13500,
+    bestRanking: 1,
   },
   {
     rank: 2,
@@ -69,6 +72,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: -2000,
     nextMatchPoints: 9960,
     maxPoints: 9960,
+    bestRanking: 1,
   },
   {
     rank: 3,
@@ -80,6 +84,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 400,
     nextMatchPoints: 6605,
     maxPoints: 7305,
+    bestRanking: 2,
   },
   {
     rank: 4,
@@ -91,6 +96,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 390,
     nextMatchPoints: 4840,
     maxPoints: 6040,
+    bestRanking: 6,
   },
   {
     rank: 5,
@@ -102,6 +108,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: -150,
     nextMatchPoints: 3920,
     maxPoints: 3920,
+    bestRanking: 5,
   },
   {
     rank: 6,
@@ -113,6 +120,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 50,
     nextMatchPoints: 3905,
     maxPoints: 3905,
+    bestRanking: 6,
   },
   {
     rank: 7,
@@ -124,6 +132,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: -700,
     nextMatchPoints: 3760,
     maxPoints: 3760,
+    bestRanking: 1,
   },
   {
     rank: 8,
@@ -135,6 +144,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 0,
     nextMatchPoints: 3760,
     maxPoints: 3760,
+    bestRanking: 1,
   },
   {
     rank: 9,
@@ -146,6 +156,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 0,
     nextMatchPoints: 3605,
     maxPoints: 3605,
+    bestRanking: 4,
   },
   {
     rank: 10,
@@ -157,6 +168,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 0,
     nextMatchPoints: 3845,
     maxPoints: 4545,
+    bestRanking: 2,
   },
   {
     rank: 11,
@@ -168,6 +180,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 0,
     nextMatchPoints: 3375,
     maxPoints: 3375,
+    bestRanking: 11,
   },
   {
     rank: 12,
@@ -179,6 +192,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 400,
     nextMatchPoints: 3540,
     maxPoints: 4240,
+    bestRanking: 4,
   },
   {
     rank: 13,
@@ -190,6 +204,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 0,
     nextMatchPoints: 3120,
     maxPoints: 3120,
+    bestRanking: 3,
   },
   {
     rank: 14,
@@ -201,6 +216,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 0,
     nextMatchPoints: 2950,
     maxPoints: 2950,
+    bestRanking: 10,
   },
   {
     rank: 15,
@@ -212,6 +228,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 0,
     nextMatchPoints: 2840,
     maxPoints: 2840,
+    bestRanking: 3,
   },
   {
     rank: 16,
@@ -223,6 +240,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 400,
     nextMatchPoints: 3120,
     maxPoints: 3820,
+    bestRanking: 15,
   },
   {
     rank: 17,
@@ -234,6 +252,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 0,
     nextMatchPoints: 2650,
     maxPoints: 2650,
+    bestRanking: 6,
   },
   {
     rank: 18,
@@ -245,6 +264,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 0,
     nextMatchPoints: 2490,
     maxPoints: 2490,
+    bestRanking: 5,
   },
   {
     rank: 19,
@@ -256,6 +276,7 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 0,
     nextMatchPoints: 2340,
     maxPoints: 2340,
+    bestRanking: 10,
   },
   {
     rank: 20,
@@ -267,5 +288,6 @@ export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
     pointsDiff: 500,
     nextMatchPoints: 2050,
     maxPoints: 2050,
+    bestRanking: 6,
   },
 ];
