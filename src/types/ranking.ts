@@ -42,3 +42,26 @@ export interface RankingData {
   /** List of ranking entries */
   entries: RankingEntry[];
 }
+
+/* ============================
+   Race to Turin Types
+   ============================ */
+
+/** Qualification status for Race to Turin */
+export type RaceStatus = "qualified" | "in-contention";
+
+/** Summary data for the Race to Turin overview cards */
+export interface RaceSummary {
+  /** Number of players already qualified */
+  qualifiedCount: number;
+  /** Total qualification slots available */
+  totalSlots: number;
+  /** Names of qualified players */
+  qualifiedNames: string[];
+  /** Number of remaining ATP 1000 tournaments */
+  remainingTournaments: number;
+  /** Name and timing of next major tournament */
+  nextTournament: string;
+  /** Estimated points threshold for qualification */
+  cutoffPoints: string;
+}

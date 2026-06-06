@@ -8,3 +8,6 @@ export { PlayerAvatar } from "./player-avatar";
 export { MovementBadge } from "./movement-badge";
 export { LiveStatusCell } from "./live-status-cell";
 export { ExpandedCard } from "./expanded-card";
+export { RaceSummaryCards } from "./race-summary-cards";
+export { RaceTable } from "./race-table";
+

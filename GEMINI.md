@@ -1,8 +1,9 @@
 # ATP Rankings — Project Rules
 
 ## Project Overview
-Modern, responsive website for ATP tennis rankings (Singles, Doubles, Race to Turin, Live, Historical).
-Data is fetched via web scraping from an external source.
+**Baseline** is a modern, high-fidelity web platform for real-time ATP tennis rankings.
+- **Design System & PRD**: Always refer to `/docs/project-brief.md` for UI/UX specifications, feature logic, naming conventions, and visual identity.
+- **Core Theme**: Light mode foundation (Deep Charcoal) + Signature "Tennis Green" accent (`#DFFF00`). Full Dark Mode support required.
 
 ## Tech Stack
 - **Framework**: Next.js 14+ (App Router) with TypeScript
@@ -15,13 +16,18 @@ Data is fetched via web scraping from an external source.
 - **Data Fetching**: Server Components (fetch) + React Query (client-side when needed)
 - **Dark Mode**: next-themes
 
+## Next.js Rules
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+
 ## Code Guidelines (STRICT)
 1. Write clean, modular, documented TypeScript code.
 2. All comments, variable names, and documentation MUST be in **English**.
 3. Implement ONLY what is explicitly requested. Do NOT add arbitrary exceptions, extra business logic, or unrequested features. Suggest improvements in chat first.
-4. Mobile-first responsive design.
+4. Mobile-first responsive design (Desktop optimized for high-density data as per brief).
 5. Dark mode must always be supported.
-6. Before developing any new feature or implementation, you MUST create a design document under `/docs` named `YYYY-MM-DD-nome-funzione.md` (check the current local date first). Describe in detail the implementation plan, what will be done, and what will be developed. You MUST wait for explicit user confirmation/approval before proceeding.
+6. Extensive use of `ROUND_FULL` (Tailwind `rounded-full`) and `rounded-xl` for components, buttons, and badges to match the pill-shaped aesthetic.
+7. Before developing any new feature or implementation, you MUST create a design document under `/docs` named `YYYY-MM-DD-nome-funzione.md` (check the current local date first). Describe in detail the implementation plan, what will be done, and what will be developed. You MUST wait for explicit user confirmation/approval before proceeding.
+
 ## Project Structure
 - `src/app/` — App Router routes and layouts
 - `src/components/ui/` — Shadcn/ui components (auto-generated)

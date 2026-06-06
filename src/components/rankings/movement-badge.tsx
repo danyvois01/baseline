@@ -31,7 +31,7 @@ export function MovementBadge({ type, value }: MovementBadgeProps) {
 
   if (type === "none") {
     return (
-      <span className="inline-flex items-center justify-center text-sm text-text-muted">
+      <span className="inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-surface-container text-on-surface-variant">
         —
       </span>
     );

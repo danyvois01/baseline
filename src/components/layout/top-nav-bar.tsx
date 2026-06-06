@@ -2,23 +2,27 @@
 
 /**
  * TopNavBar — Persistent top navigation bar for the Baseline platform.
- * Features: Brand logo, nav links with active pill state, search input, sign-in button.
+ * Features: Brand logo, nav links with dynamic active pill state, search input, sign-in button.
+ * Active state is determined by current route via usePathname().
  */
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /** Navigation items configuration */
 const NAV_ITEMS = [
-  { label: "Official Ranking", href: "/official", active: false },
-  { label: "Live Ranking", href: "/live", active: true },
-  { label: "Race to Turin", href: "/race", active: false },
+  { label: "Official Ranking", href: "/official" },
+  { label: "Live Ranking", href: "/" },
+  { label: "Race to Turin", href: "/race" },
 ] as const;
 
 export function TopNavBar() {
   const [searchValue, setSearchValue] = useState("");
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-border-subtle">
@@ -26,7 +30,7 @@ export function TopNavBar() {
         {/* Left: Logo + Nav */}
         <div className="flex items-center gap-8">
           {/* Brand Logo */}
-          <a href="/" className="flex items-center gap-2 shrink-0">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
             <Image
               src="/logo.png"
               alt="Baseline — ATP & WTA Rankings"
@@ -36,24 +40,28 @@ export function TopNavBar() {
               className="object-contain"
               priority
             />
-          </a>
+          </Link>
 
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-1">
-            {NAV_ITEMS.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
-                  item.active
-                    ? "bg-baseline-lime text-deep-navy"
-                    : "text-deep-navy hover:bg-surface-gray"
-                )}
-              >
-                {item.label}
-              </a>
-            ))}
+            {NAV_ITEMS.map((item) => {
+              const isActive = pathname === item.href;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
+                    isActive
+                      ? "bg-baseline-lime text-deep-navy"
+                      : "text-deep-navy hover:bg-surface-gray"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
@@ -80,3 +88,4 @@ export function TopNavBar() {
     </header>
   );
 }
+
