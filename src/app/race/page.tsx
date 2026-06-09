@@ -22,12 +22,12 @@ export default function RacePage() {
 
       {/* Main Content */}
       <main className="flex-1">
-        <div className="mx-auto max-w-[1280px] px-6 py-10">
+        <div className="mx-auto max-w-[1280px] px-6 py-8">
           {/* Page Title */}
           <h1 className="text-headline-lg text-deep-navy mb-1">
             Race to Turin
           </h1>
-          <p className="text-body-lg text-text-muted mb-8">
+          <p className="text-body-lg text-text-muted mb-6">
             The top 8 singles players and doubles teams of the 2024 calendar
             year qualify for the prestigious season finale in Turin, Italy.
           </p>

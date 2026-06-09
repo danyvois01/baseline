@@ -32,14 +32,15 @@ function formatDiff(n: number): string {
 
 /**
  * Grid column definition shared between header, rows, and expanded card.
- * Col 1 (130px): # and MOVE merged — rank number + movement badge as one unit.
- * Col 2 (1fr):   Player name + flag + nationality + age.
- * Col 3 (1.2fr): Live Status.
- * Col 4 (120px): Points (right-aligned).
- * Col 5 (100px): +/- point diff badge (centered).
- * Col 6 (50px):  Expand chevron.
+ * Col 1 (50px):  # rank number (centered).
+ * Col 2 (80px):  MOVE badge (centered).
+ * Col 3 (1fr):   Player name + flag + nationality + age.
+ * Col 4 (1.2fr): Live Status.
+ * Col 5 (120px): Points (right-aligned).
+ * Col 6 (100px): +/- point diff badge (centered).
+ * Col 7 (50px):  Expand chevron.
  */
-const GRID_COLS = "grid-cols-[130px_1fr_1.2fr_120px_100px_50px]";
+const GRID_COLS = "grid-cols-[50px_80px_1fr_1.2fr_120px_100px_50px]";
 
 interface RankingsTableProps {
   entries: LiveRankingEntry[];
@@ -77,11 +78,14 @@ export function RankingsTable({
           GRID_COLS
         )}
       >
-        {/* # and MOVE share one header cell */}
-        <div className="flex items-center gap-4">
-          <span className="text-label-md text-text-muted uppercase tracking-wider">#</span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider">Move</span>
-        </div>
+        {/* # header */}
+        <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          #
+        </span>
+        {/* MOVE header */}
+        <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          Move
+        </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider">
           Player
         </span>
@@ -118,11 +122,13 @@ export function RankingsTable({
                   : "hover:bg-surface-hover"
               )}
             >
-              {/* Rank + Movement — merged into one cell, visually paired */}
-              <div className="flex items-center gap-3">
-                <span className="text-headline-md text-deep-navy font-bold">
-                  {entry.rank}
-                </span>
+              {/* # — Rank number */}
+              <span className="text-headline-md text-deep-navy font-bold text-center">
+                {entry.rank}
+              </span>
+
+              {/* MOVE — Movement badge (centered in its own column) */}
+              <div className="flex justify-center">
                 <MovementBadge
                   type={entry.movement.type}
                   value={entry.movement.value}

@@ -31,14 +31,15 @@ function formatDiff(n: number): string {
 
 /**
  * Grid column definition.
- * Col 1 (130px): # and MOVE merged.
- * Col 2 (1fr):   Player name + flag + nationality + age.
- * Col 3 (1.2fr): Live Status.
- * Col 4 (120px): Points (right-aligned).
- * Col 5 (100px): +/- point diff badge (centered).
- * Col 6 (160px): Status (Qualified / In Contention).
+ * Col 1 (50px):  # rank number (centered).
+ * Col 2 (80px):  MOVE badge (centered).
+ * Col 3 (1fr):   Player name + flag + nationality + age.
+ * Col 4 (1.2fr): Live Status.
+ * Col 5 (120px): Points (right-aligned).
+ * Col 6 (100px): +/- point diff badge (centered).
+ * Col 7 (160px): Status (Qualified / In Contention).
  */
-const GRID_COLS = "grid-cols-[130px_1fr_1.2fr_120px_100px_160px]";
+const GRID_COLS = "grid-cols-[50px_80px_1fr_1.2fr_120px_100px_160px]";
 
 /** Number of qualification slots for Turin Finals */
 const QUALIFICATION_CUTOFF = 8;
@@ -63,15 +64,14 @@ export function RaceTable({ entries, initialCount = 10 }: RaceTableProps) {
           GRID_COLS
         )}
       >
-        {/* # and MOVE share one header cell */}
-        <div className="flex items-center gap-4">
-          <span className="text-label-md text-text-muted uppercase tracking-wider">
-            #
-          </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider">
-            Move
-          </span>
-        </div>
+        {/* # header */}
+        <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          #
+        </span>
+        {/* MOVE header */}
+        <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          Move
+        </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider">
           Player
         </span>
@@ -116,13 +116,15 @@ export function RaceTable({ entries, initialCount = 10 }: RaceTableProps) {
                 "group grid items-center px-6 py-4 transition-all duration-150 border-b border-border-subtle/60 last:border-b-0",
                 "hover:bg-surface-hover"
               )}
-              style={{ gridTemplateColumns: "130px 1fr 1.2fr 120px 100px 160px" }}
+              style={{ gridTemplateColumns: "50px 80px 1fr 1.2fr 120px 100px 160px" }}
             >
-              {/* Rank + Movement */}
-              <div className="flex items-center gap-3">
-                <span className="text-headline-md text-deep-navy font-bold">
-                  {entry.rank}
-                </span>
+              {/* # — Rank number */}
+              <span className="text-headline-md text-deep-navy font-bold text-center">
+                {entry.rank}
+              </span>
+
+              {/* MOVE — Movement badge (centered in its own column) */}
+              <div className="flex justify-center">
                 <MovementBadge
                   type={entry.movement.type}
                   value={entry.movement.value}

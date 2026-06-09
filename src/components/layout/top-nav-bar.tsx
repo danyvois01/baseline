@@ -2,7 +2,7 @@
 
 /**
  * TopNavBar — Persistent top navigation bar for the Baseline platform.
- * Features: Brand logo, nav links with dynamic active pill state, search input, sign-in button.
+ * Features: Brand logo (left), nav links centered (absolute), search + sign-in (right).
  * Active state is determined by current route via usePathname().
  */
 
@@ -15,8 +15,9 @@ import { cn } from "@/lib/utils";
 
 /** Navigation items configuration */
 const NAV_ITEMS = [
+  { label: "Home", href: "/" },
   { label: "Official Ranking", href: "/official" },
-  { label: "Live Ranking", href: "/" },
+  { label: "Live Ranking", href: "/live" },
   { label: "Race to Turin", href: "/race" },
 ] as const;
 
@@ -26,44 +27,41 @@ export function TopNavBar() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-border-subtle">
-      <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-6">
-        {/* Left: Logo + Nav */}
-        <div className="flex items-center gap-8">
-          {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Image
-              src="/logo.png"
-              alt="Baseline — ATP & WTA Rankings"
-              width={140}
-              height={36}
-              style={{ width: "auto", height: "36px" }}
-              className="object-contain"
-              priority
-            />
-          </Link>
+      <div className="relative mx-auto flex h-20 max-w-[1280px] items-center justify-between px-6">
+        {/* Left: Logo */}
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <Image
+            src="/logo_new_crop.png"
+            alt="Baseline — ATP & WTA Rankings"
+            width={200}
+            height={48}
+            style={{ width: "auto", height: "48px" }}
+            className="object-contain"
+            priority
+          />
+        </Link>
 
-          {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1">
-            {NAV_ITEMS.map((item) => {
-              const isActive = pathname === item.href;
+        {/* Center: Navigation Links (absolute center) */}
+        <nav className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+          {NAV_ITEMS.map((item) => {
+            const isActive = pathname === item.href;
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
-                    isActive
-                      ? "bg-baseline-lime text-deep-navy"
-                      : "text-deep-navy hover:bg-surface-gray"
-                  )}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
+                  isActive
+                    ? "bg-baseline-lime text-deep-navy"
+                    : "text-deep-navy hover:bg-surface-gray"
+                )}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
 
         {/* Right: Search + Sign In */}
         <div className="flex items-center gap-3">
@@ -88,4 +86,3 @@ export function TopNavBar() {
     </header>
   );
 }
-

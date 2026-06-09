@@ -11,8 +11,8 @@
 
 import { cn } from "@/lib/utils";
 
-/** Grid cols must match rankings-table.tsx GRID_COLS (6 columns) */
-const GRID_COLS = "grid-cols-[130px_1fr_1.2fr_120px_100px_50px]";
+/** Grid cols must match rankings-table.tsx GRID_COLS (7 columns) */
+const GRID_COLS = "grid-cols-[50px_80px_1fr_1.2fr_120px_100px_50px]";
 
 interface ExpandedCardProps {
   /** Points if player wins their next match */
@@ -39,7 +39,9 @@ export function ExpandedCard({
   return (
     <div className="bg-surface-container-low/50 border-t border-border-subtle/40 px-6 py-3">
       <div className={cn("grid items-start", GRID_COLS)}>
-        {/* Skip [# MOVE] merged column */}
+        {/* Skip [#] column */}
+        <div />
+        {/* Skip [MOVE] column */}
         <div />
 
         {/* Under Player: Best Ranking — 2 lines */}
