@@ -27,6 +27,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 5. Dark mode must always be supported.
 6. Extensive use of `ROUND_FULL` (Tailwind `rounded-full`) and `rounded-xl` for components, buttons, and badges to match the pill-shaped aesthetic.
 7. Before developing any new feature or implementation, you MUST create a design document under `/docs` named `YYYY-MM-DD-nome-funzione.md` (check the current local date first). Describe in detail the implementation plan, what will be done, and what will be developed. You MUST wait for explicit user confirmation/approval before proceeding.
+8. **DO NOT use the browser subagent, DOM inspection, or automated screenshot tools to verify UI changes.** Implement the requested code and stop. The user will manually test the application and report any errors.
 
 ## Project Structure
 - `src/app/` — App Router routes and layouts
