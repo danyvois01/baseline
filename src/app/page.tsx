@@ -17,12 +17,11 @@ import { PyramidSection } from "@/components/homepage/pyramid-section";
 import { TimelineSection } from "@/components/homepage/timeline-section";
 import { ScoringSection } from "@/components/homepage/scoring-section";
 import { GlossarySection } from "@/components/homepage/glossary-section";
-import { SectionNavigator } from "@/components/homepage/section-navigator";
+import { SectionTabBar } from "@/components/homepage/section-tab-bar";
 import { Zap } from "lucide-react";
 
-/** Section metadata used by the floating navigator */
+/** Section metadata used by the sticky tab bar */
 const SECTIONS = [
-  { id: "hero", label: "Intro" },
   { id: "ranking", label: "Ranking" },
   { id: "pyramid", label: "Tornei" },
   { id: "timeline", label: "Stagione" },
@@ -37,12 +36,12 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-surface-white">
       <TopNavBar />
 
-      {/* Floating section navigator (hidden on mobile) */}
-      <SectionNavigator sections={SECTIONS} />
-
       <main ref={mainRef} className="flex-1">
         {/* 1 — Hero */}
         <HeroSection />
+
+        {/* Sticky section tab bar — pins to top after scrolling past hero */}
+        <SectionTabBar sections={SECTIONS} />
 
         {/* 2 — How rankings work */}
         <RankingSection />

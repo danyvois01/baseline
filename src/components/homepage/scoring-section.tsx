@@ -8,7 +8,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gauge, Info } from "lucide-react";
+import { Clock, Gauge, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedSection } from "./animated-section";
 
@@ -39,7 +39,7 @@ const SCORING_TABS = [
     label: "Il Set",
     title: "Come si vince un Set?",
     content:
-      "Per vincere un Set bisogna conquistare 6 Game, mantenendo almeno due game di scarto (es. 6-4 o 6-3). Sul punteggio di 5-5, si prosegue fino a 7 (es. 7-5).",
+      "Per vincere un Set bisogna conquistare 6 Game, mantenendo almeno due game di scarto (es. 6-4 o 6-3). Sul punteggio di 5-5, si prosegue fino a 7 (es. 7-5). Nei tornei normali vince la partita chi fa per primo 2 Set (\"Al meglio dei 3\"). Negli Slam maschili vince chi ne fa 3 (\"Al meglio dei 5\").",
   },
   {
     id: "tiebreak",
@@ -72,6 +72,20 @@ export function ScoringSection() {
               campo. Il tennis ha un sistema di punteggio storico. Una partita è
               divisa in Set, che a loro volta sono divisi in Game.
             </p>
+
+            {/* Curiosità box */}
+            <div className="rounded-xl bg-baseline-lime/10 border border-baseline-lime/20 p-4 max-w-2xl mx-auto mt-6 flex items-start gap-3">
+              <motion.div
+                className="flex-shrink-0 mt-0.5"
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+              >
+                <Clock className="h-5 w-5 text-primary-olive" />
+              </motion.div>
+              <p className="text-body-sm text-primary-olive font-medium">
+                💡 <strong>Curiosità:</strong> Il sistema di punteggio all&apos;interno del game è nato probabilmente guardando i quadranti dell&apos;orologio, ed è per questo che incrementa in questo modo bizzarro (15, 30, 40).
+              </p>
+            </div>
           </div>
         </AnimatedSection>
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { TopNavBar, Footer } from "@/components/layout";
-import { RaceSummaryCards, RaceTable } from "@/components/rankings";
+import { RaceSummaryCards, RaceTable, PageHeroSection } from "@/components/rankings";
 import { MOCK_RACE_SUMMARY, MOCK_RACE_RANKINGS } from "@/lib/mock-data-race";
 
 /**
@@ -9,7 +9,7 @@ import { MOCK_RACE_SUMMARY, MOCK_RACE_RANKINGS } from "@/lib/mock-data-race";
  */
 
 export const metadata: Metadata = {
-  title: "Race to Turin — Baseline",
+  title: "Race to Turin - Baseline",
   description:
     "Track the Race to Turin — ATP Finals qualification standings, cut-off projections, and qualified players.",
 };
@@ -23,14 +23,12 @@ export default function RacePage() {
       {/* Main Content */}
       <main className="flex-1">
         <div className="mx-auto max-w-[1280px] px-6 py-8">
-          {/* Page Title */}
-          <h1 className="text-headline-lg text-deep-navy mb-1">
-            Race to Turin
-          </h1>
-          <p className="text-body-lg text-text-muted mb-6">
-            The top 8 singles players and doubles teams of the 2024 calendar
-            year qualify for the prestigious season finale in Turin, Italy.
-          </p>
+          {/* Hero: Title + Controls */}
+          <PageHeroSection
+            title="Race to Turin"
+            description="The top 8 singles players and doubles teams of the 2024 calendar year qualify for the prestigious season finale in Turin, Italy."
+            updatedAt="Mon, Jun 2"
+          />
 
           {/* Summary Cards */}
           <RaceSummaryCards summary={MOCK_RACE_SUMMARY} />
@@ -45,3 +43,4 @@ export default function RacePage() {
     </div>
   );
 }
+
