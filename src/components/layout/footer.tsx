@@ -15,7 +15,7 @@ const FOOTER_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="w-full border-t border-border-subtle bg-surface-container-low mt-auto">
+    <footer className="w-full border-t border-border-subtle/40 bg-surface-white mt-auto">
       <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-4 px-6 py-12 md:flex-row">
         {/* Brand Logo */}
         <Link href="/" className="shrink-0">
@@ -35,7 +35,7 @@ export function Footer() {
             <a
               key={link.href}
               href={link.href}
-              className="text-label-md text-on-surface-variant underline hover:text-primary-olive transition-colors duration-200"
+              className="text-label-md text-text-muted font-medium no-underline hover:text-deep-navy transition-colors duration-200"
             >
               {link.label}
             </a>
@@ -43,7 +43,7 @@ export function Footer() {
         </nav>
 
         {/* Copyright */}
-        <p className="text-body-sm text-on-surface-variant text-center md:text-right">
+        <p className="text-body-sm text-text-muted text-center md:text-right">
           © 2026 Baseline Tennis. All rights reserved.
         </p>
       </div>

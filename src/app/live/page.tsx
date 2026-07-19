@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { TopNavBar, Footer } from "@/components/layout";
-import { RankingsTable } from "@/components/rankings";
-import { MOCK_LIVE_RANKINGS } from "@/lib/mock-data";
-import { SlidersHorizontal } from "lucide-react";
+import { LiveRankingEntry, MOCK_LIVE_RANKINGS } from "@/lib/mock-data";
+import { LiveClient } from "./live-client";
+import { fetchLiveRankings } from "@/services/scraper/live-rankings";
 
 /**
  * Live ATP Rankings — /live page.
@@ -15,53 +15,78 @@ export const metadata: Metadata = {
     "Live ATP Tennis Rankings — Real-time point projections based on ongoing tournament results.",
 };
 
-export default function LivePage() {
+const countryCodeMap: Record<string, string> = {
+  "ITA": "it", "ESP": "es", "SRB": "rs", "GER": "de", "RUS": "ru",
+  "USA": "us", "AUS": "au", "CAN": "ca", "NOR": "no", "BUL": "bg",
+  "GRE": "gr", "POL": "pl", "FRA": "fr", "ARG": "ar", "GBR": "gb",
+  "CHI": "cl", "KAZ": "kz", "CZE": "cz", "NED": "nl", "DEN": "dk",
+  "SUI": "ch", "AUT": "at", "CRO": "hr", "BRA": "br", "JPN": "jp",
+  "CHN": "cn", "POR": "pt", "SVK": "sk", "HUN": "hu", "SWE": "se",
+  "FIN": "fi", "ROU": "ro", "BEL": "be", "RSA": "za", "KOR": "kr",
+  "COL": "co", "ECU": "ec", "PER": "pe", "URU": "uy", "PAR": "py",
+  "MEX": "mx", "DOM": "do", "NZL": "nz", "IND": "in", "EGY": "eg",
+  "TUN": "tn", "ALG": "dz", "MAR": "ma", "TUR": "tr", "CYP": "cy",
+  "GEO": "ge", "ARM": "am", "AZE": "az", "UKR": "ua", "BLR": "by",
+  "MDA": "md", "LTU": "lt", "LAT": "lv", "EST": "ee", "IRL": "ie",
+  "LUX": "lu", "MON": "mc", "TPE": "tw", "BIH": "ba", "ISR": "il"
+};
+
+export default async function LivePage() {
+  let rankings: LiveRankingEntry[] = [];
+  let lastUpdated = "N/A";
+
+  if (process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true') {
+    rankings = MOCK_LIVE_RANKINGS;
+    lastUpdated = "Mock Data";
+  } else {
+    try {
+      const data = await fetchLiveRankings();
+    
+    rankings = data.entries.map((entry) => ({
+      rank: entry.rank,
+      points: entry.points,
+      player: {
+        id: entry.player.id,
+        name: entry.player.name,
+        nationality: entry.player.nationality,
+        countryCode: countryCodeMap[entry.player.nationality] || "un",
+        age: entry.player.age,
+        initials: entry.player.name.split(' ').map(n => n[0]).join('').substring(0, 2)
+      },
+      liveStatus: {
+        isActive: entry.liveStatus?.isActive || false,
+        tournament: entry.liveStatus?.tournament || "",
+        stage: entry.liveStatus?.stage || ""
+      },
+      movement: {
+        type: entry.rankChangeDirection === "new" ? "nmr" : entry.rankChangeDirection as any,
+        value: entry.rankChange || 0 // Correctly use rank change (positions moved)
+      },
+      // officialPoints = livePoints - pointsDiff
+      officialPoints: entry.points - (entry.pointsDiff || 0),
+      pointsDiff: entry.pointsDiff || 0,
+      nextMatchPoints: entry.nextMatchPoints || entry.points,
+      maxPoints: entry.maxPoints || entry.points,
+      bestRanking: entry.bestRanking || entry.rank
+    }));
+
+    const date = new Date(data.lastUpdated);
+    lastUpdated = date.toLocaleString('en-US', { timeZone: 'Europe/Rome', weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    } catch (error) {
+      console.error("Failed to fetch live rankings, falling back to empty", error);
+      rankings = [];
+    }
+  }
+
   return (
-    <div className="flex flex-col min-h-screen bg-surface-gray">
+    <div className="flex flex-col min-h-screen bg-surface-white">
       {/* Navigation */}
       <TopNavBar />
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 pt-28">
         <div className="mx-auto max-w-[1280px] px-6 py-8">
-          {/* Hero: Title + Controls inline */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
-            {/* Left: Live indicator + Title + Subtitle */}
-            <div>
-              {/* Live Indicator */}
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-3 h-3 rounded-full bg-primary-olive live-pulse" />
-                <span className="text-label-md text-primary-olive font-bold uppercase tracking-wider">
-                  Live Updates Active
-                </span>
-              </div>
-
-              {/* Page Title */}
-              <h1 className="text-headline-lg text-deep-navy mb-1">
-                Live ATP Rankings
-              </h1>
-              <p className="text-body-lg text-text-muted">
-                Real-time point projections based on ongoing tournament results.
-              </p>
-            </div>
-
-            {/* Right: Filter + Updated badge */}
-            <div className="flex items-center gap-3 shrink-0">
-              {/* Filter Button */}
-              <button className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-white px-5 py-2.5 text-sm font-medium text-deep-navy transition-all duration-200 hover:bg-surface-hover cursor-pointer">
-                <SlidersHorizontal className="h-4 w-4" />
-                Filter
-              </button>
-
-              {/* Updated Badge */}
-              <div className="rounded-full border border-border-subtle bg-white px-5 py-2.5 text-sm text-text-muted">
-                Updated: <span className="font-medium text-deep-navy">Just now</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Rankings Table */}
-          <RankingsTable entries={MOCK_LIVE_RANKINGS} initialCount={10} />
+          <LiveClient initialRankings={rankings} lastUpdated={lastUpdated} />
         </div>
       </main>
 

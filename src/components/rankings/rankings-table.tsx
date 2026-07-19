@@ -50,12 +50,21 @@ interface RankingsTableProps {
 
 export function RankingsTable({
   entries,
-  initialCount = 10,
+  initialCount = 20,
 }: RankingsTableProps) {
   const [visibleCount, setVisibleCount] = useState(initialCount);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const visibleEntries = entries.slice(0, visibleCount);
   const hasMore = visibleCount < entries.length;
+
+  const getNextIncrement = () => {
+    if (visibleCount <= 20) return 50;
+    if (visibleCount <= 50) return 100;
+    return visibleCount + 100;
+  };
+
+  const nextLimit = Math.min(getNextIncrement(), entries.length);
+  const buttonLabel = nextLimit >= entries.length ? "Show All Players" : `Show Top ${nextLimit}`;
 
   const toggleExpand = useCallback((id: string) => {
     setExpandedIds((prev) => {
@@ -70,11 +79,11 @@ export function RankingsTable({
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
       {/* Table Header */}
       <div
         className={cn(
-          "grid items-center px-6 py-3 border-b border-border-subtle",
+          "grid items-center px-6 py-4 border-b border-border-subtle bg-surface-gray/30",
           GRID_COLS
         )}
       >
@@ -115,15 +124,15 @@ export function RankingsTable({
             <div
               onClick={() => toggleExpand(entry.player.id)}
               className={cn(
-                "group grid items-center px-6 py-4 transition-all duration-150 cursor-pointer",
+                "group grid items-center px-6 py-4 transition-all duration-300 cursor-pointer",
                 GRID_COLS,
                 isExpanded
-                  ? "bg-surface-hover"
-                  : "hover:bg-surface-hover"
+                  ? "bg-baseline-lime/5"
+                  : "hover:bg-baseline-lime/5"
               )}
             >
               {/* # — Rank number */}
-              <span className="text-headline-md text-deep-navy font-bold text-center">
+              <span className="text-headline-md text-deep-navy font-heading font-extrabold text-center">
                 {entry.rank}
               </span>
 
@@ -166,7 +175,7 @@ export function RankingsTable({
               />
 
               {/* Points */}
-              <span className="text-headline-md text-deep-navy font-bold text-right tabular-nums">
+              <span className="text-[20px] font-heading text-deep-navy font-extrabold text-right tabular-nums">
                 {formatPoints(entry.points)}
               </span>
 
@@ -210,6 +219,7 @@ export function RankingsTable({
                   maxPoints={entry.maxPoints}
                   officialPoints={entry.officialPoints}
                   bestRanking={entry.bestRanking}
+                  isActive={entry.liveStatus.isActive}
                 />
               </div>
             </div>
@@ -221,10 +231,10 @@ export function RankingsTable({
       {hasMore && (
         <div className="flex justify-center py-4 border-t border-border-subtle">
           <button
-            onClick={() => setVisibleCount((prev) => prev + 10)}
-            className="text-label-md text-primary-olive font-bold hover:underline transition-all cursor-pointer"
+            onClick={() => setVisibleCount(nextLimit)}
+            className="rounded-full border border-border-subtle bg-white px-6 py-2.5 text-label-md text-deep-navy font-medium hover:bg-surface-hover transition-all cursor-pointer"
           >
-            Load More Players
+            {buttonLabel}
           </button>
         </div>
       )}

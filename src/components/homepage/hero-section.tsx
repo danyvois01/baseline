@@ -1,14 +1,42 @@
 "use client";
 
-/**
- * HeroSection — Full-width dark hero with animated title and subtitle
- * introducing the "Baseline: Partiamo dalle Basi" concept.
- */
-
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { ChevronDown } from "lucide-react";
 
+/* ------------------------------------------------------------------ */
+/*  Court line definitions for draw-on animation                       */
+/* ------------------------------------------------------------------ */
+const COURT_LINES: { d: string; delay: number; duration: number }[] = [
+  { d: "M10,10 L510,10 L510,290 L10,290 Z", delay: 0, duration: 1.5 },
+  { d: "M10,45 L510,45", delay: 0.4, duration: 0.8 },
+  { d: "M10,255 L510,255", delay: 0.4, duration: 0.8 },
+  { d: "M155,45 L155,255", delay: 0.9, duration: 0.5 },
+  { d: "M365,45 L365,255", delay: 0.9, duration: 0.5 },
+  { d: "M155,150 L365,150", delay: 1.2, duration: 0.5 },
+  { d: "M10,150 L25,150", delay: 1.4, duration: 0.3 },
+  { d: "M495,150 L510,150", delay: 1.4, duration: 0.3 },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Ball rally trajectory (keyframes for cx, cy)                       */
+/* ------------------------------------------------------------------ */
+const BALL_CX = [60, 440, 120, 400, 260, 60];
+const BALL_CY = [240, 60, 120, 230, 50, 240];
+
 export function HeroSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const courtY = useTransform(scrollYProgress, [0, 1], ["0%", "80%"]);
+  const courtScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+
   const scrollToNext = () => {
     const el = document.getElementById("ranking");
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -17,82 +45,179 @@ export function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative overflow-hidden bg-deep-navy min-h-[85vh] flex items-center"
+      ref={containerRef}
+      className="relative w-full min-h-[100dvh] flex flex-col justify-center overflow-hidden bg-surface-white pt-20"
     >
-      {/* Ambient glow blobs */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-baseline-lime blur-[120px]" />
-        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 rounded-full bg-baseline-lime blur-[100px]" />
+      {/* Background ambient light */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-baseline-lime/20 rounded-full blur-[120px] mix-blend-multiply" />
       </div>
 
-      {/* Decorative tennis court lines */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.04]">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-full bg-white" />
-        <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white" />
-      </div>
-
-      <div className="relative mx-auto max-w-[1280px] px-6 py-24 md:py-32 w-full">
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
-          {/* Badge */}
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center gap-12 lg:gap-24">
+        
+        {/* Left Column: Text */}
+        <motion.div 
+          style={{ y: textY, opacity }}
+          className="flex-1 text-left"
+        >
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-1.5 mb-8"
-          >
-            <div className="w-2 h-2 rounded-full bg-baseline-lime live-pulse" />
-            <span className="text-label-md text-baseline-lime font-medium tracking-wide uppercase">
-              La Casa del Tennis
-            </span>
-          </motion.div>
-
-          {/* Title */}
-          <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.35 }}
-            className="text-display text-white mb-6"
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
-            Baseline:{" "}
-            <span className="text-baseline-lime">
-              Partiamo dalle Basi
-            </span>
-          </motion.h1>
+            {/* Badge removed */}
+            <h1 className="text-[12vw] sm:text-[70px] lg:text-[90px] xl:text-[110px] leading-[0.85] font-heading font-extrabold text-deep-navy tracking-tighter uppercase interactive cursor-none">
+              Baseline
+              <br />
+              <span className="inline-block pb-4 pr-4 text-transparent bg-clip-text bg-gradient-to-r from-deep-navy to-primary-olive text-[8vw] sm:text-[50px] lg:text-[60px] xl:text-[70px]">
+                La Linea Di Fondo
+              </span>
+            </h1>
+          </motion.div>
 
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="text-body-lg text-white/70 mb-12 max-w-2xl"
-          >
-            La linea di fondo campo è il punto di partenza di ogni scambio. Qui
-            su Baseline, è anche il fondamento della tua conoscenza del tennis
-            professionistico. Scopri le regole, i tornei e i segreti del
-            circuito ATP per seguire la stagione come un vero esperto.
-          </motion.p>
-
-          {/* Scroll indicator */}
-          <motion.button
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-            onClick={scrollToNext}
-            className="flex flex-col items-center gap-2 text-white/40 hover:text-baseline-lime transition-colors duration-300 cursor-pointer"
-            aria-label="Scroll to content"
+            transition={{ duration: 1, delay: 0.5 }}
+            className="mt-8 max-w-xl"
           >
-            <span className="text-label-md uppercase tracking-widest">
-              Scopri
-            </span>
-            <motion.div
-              animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            <p className="text-[20px] md:text-[22px] text-text-muted font-medium leading-relaxed">
+              La linea di fondo campo è il punto di partenza di ogni scambio. 
+              Qui su Baseline, è anche il fondamento della tua conoscenza del tennis professionistico.
+            </p>
+          </motion.div>
+        </motion.div>
+
+        {/* Right Column: Animated Court */}
+        <motion.div 
+          style={{ y: courtY, scale: courtScale, opacity }}
+          className="flex-1 w-full max-w-[500px] relative hidden md:block"
+        >
+          {/* Straight isometric container */}
+          <div className="relative w-full">
+            <svg
+              viewBox="0 0 520 300"
+              className="relative w-full h-auto drop-shadow-2xl"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <ChevronDown className="h-5 w-5" />
-            </motion.div>
-          </motion.button>
-        </div>
+              {/* Court surface — solid color for contrast against white background */}
+              <motion.rect
+                x={10}
+                y={10}
+                width={500}
+                height={280}
+                rx={4}
+                fill="#1C2127"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, delay: 0.5 }}
+              />
+
+              {/* Court lines */}
+              {COURT_LINES.map((line, i) => (
+                <motion.path
+                  key={i}
+                  d={line.d}
+                  stroke="#DFFF00"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{
+                    pathLength: { duration: line.duration, delay: line.delay, ease: "easeInOut" },
+                    opacity: { duration: 0.4, delay: line.delay },
+                  }}
+                />
+              ))}
+
+              {/* Net */}
+              <motion.line
+                x1={260}
+                y1={10}
+                x2={260}
+                y2={290}
+                stroke="#DFFF00"
+                strokeWidth={3}
+                strokeDasharray="8 6"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 0.7 }}
+                transition={{
+                  pathLength: { duration: 0.8, delay: 0.7, ease: "easeInOut" },
+                  opacity: { duration: 0.3, delay: 0.7 },
+                }}
+              />
+
+              <defs>
+                <filter id="ball-glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="4" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* Ball trail */}
+              <motion.circle
+                r={5}
+                fill="#DFFF00"
+                initial={{ opacity: 0 }}
+                animate={{
+                  cx: BALL_CX,
+                  cy: BALL_CY,
+                  opacity: [0, 0.2, 0.2, 0.2, 0.2, 0.2],
+                }}
+                transition={{
+                  duration: 8,
+                  delay: 2.2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+
+              {/* Main tennis ball */}
+              <motion.circle
+                r={7}
+                fill="#DFFF00"
+                filter="url(#ball-glow)"
+                initial={{ opacity: 0 }}
+                animate={{
+                  cx: BALL_CX,
+                  cy: BALL_CY,
+                  opacity: [0, 1, 1, 1, 1, 1],
+                }}
+                transition={{
+                  duration: 8,
+                  delay: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+            </svg>
+          </div>
+        </motion.div>
       </div>
+
+      {/* Scroll indicator */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1 }}
+        onClick={scrollToNext}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-text-muted/60 hover:text-primary-olive transition-colors cursor-pointer"
+        aria-label="Scroll down"
+      >
+        <span className="text-[10px] font-bold uppercase tracking-widest">Scopri</span>
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <ChevronDown className="w-4 h-4" />
+        </motion.div>
+      </motion.button>
     </section>
   );
 }

@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
 import { TopNavBar, Footer } from "@/components/layout";
-import { OfficialTable } from "@/components/rankings";
-import { MOCK_OFFICIAL_RANKINGS } from "@/lib/mock-data-official";
-import { SlidersHorizontal } from "lucide-react";
-
-/**
- * Official ATP Rankings — Page.
- * Displays the verified weekly ATP Tour singles standings.
- * No Live Indicator — this is a static weekly snapshot.
- */
+import { MOCK_OFFICIAL_RANKINGS, OfficialRankingEntry } from "@/lib/mock-data-official";
+import { OfficialClient } from "./official-client";
+import { fetchOfficialRankings } from "@/services/scraper/rankings";
 
 export const metadata: Metadata = {
   title: "Official ATP Rankings — Baseline",
@@ -16,45 +10,80 @@ export const metadata: Metadata = {
     "The official weekly ATP Tour singles rankings — verified standings, points, and next-week projections.",
 };
 
-export default function OfficialPage() {
+const countryCodeMap: Record<string, string> = {
+  "ITA": "it", "ESP": "es", "SRB": "rs", "GER": "de", "RUS": "ru",
+  "USA": "us", "AUS": "au", "CAN": "ca", "NOR": "no", "BUL": "bg",
+  "GRE": "gr", "POL": "pl", "FRA": "fr", "ARG": "ar", "GBR": "gb",
+  "CHI": "cl", "KAZ": "kz", "CZE": "cz", "NED": "nl", "DEN": "dk",
+  "SUI": "ch", "AUT": "at", "CRO": "hr", "BRA": "br", "JPN": "jp",
+  "CHN": "cn", "POR": "pt", "SVK": "sk", "HUN": "hu", "SWE": "se",
+  "FIN": "fi", "ROU": "ro", "BEL": "be", "RSA": "za", "KOR": "kr",
+  "COL": "co", "ECU": "ec", "PER": "pe", "URU": "uy", "PAR": "py",
+  "MEX": "mx", "DOM": "do", "NZL": "nz", "IND": "in", "EGY": "eg",
+  "TUN": "tn", "ALG": "dz", "MAR": "ma", "TUR": "tr", "CYP": "cy",
+  "GEO": "ge", "ARM": "am", "AZE": "az", "UKR": "ua", "BLR": "by",
+  "MDA": "md", "LTU": "lt", "LAT": "lv", "EST": "ee", "IRL": "ie",
+  "LUX": "lu", "MON": "mc", "TPE": "tw", "BIH": "ba", "ISR": "il"
+};
+
+export default async function OfficialPage() {
+  let rankings: OfficialRankingEntry[] = [];
+  let lastUpdated = "N/A";
+
+  if (process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true') {
+    rankings = MOCK_OFFICIAL_RANKINGS;
+    lastUpdated = "Mock Data";
+  } else {
+    try {
+      const data = await fetchOfficialRankings();
+      
+      // Calculate projected rank changes
+      const projectedRankings = [...data.entries].sort((a, b) => (b.nextWeekPoints || b.points) - (a.nextWeekPoints || a.points));
+      const projectedRankMap = new Map<number, number>();
+      projectedRankings.forEach((entry, index) => {
+        projectedRankMap.set(entry.rank, index + 1); 
+      });
+    
+    // Map scraper data to OfficialRankingEntry
+    rankings = data.entries.map((entry) => ({
+      rank: entry.rank,
+      movement: {
+        type: entry.rankChangeDirection === "new" ? "up" : entry.rankChangeDirection,
+        value: entry.rankChange || 0,
+      },
+      player: {
+        id: entry.player.id,
+        name: entry.player.name,
+        nationality: entry.player.nationality,
+        countryCode: countryCodeMap[entry.player.nationality] || "un",
+        age: entry.player.age,
+      },
+      points: entry.points,
+      nextWeek: {
+        points: entry.nextWeekPoints || entry.points,
+        rankChange: entry.rank - (projectedRankMap.get(entry.rank) || entry.rank),
+      },
+    }));
+
+    // Format date string nicely
+    const date = new Date(data.lastUpdated);
+    lastUpdated = date.toLocaleString('en-US', { timeZone: 'Europe/Rome', weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    } catch (error) {
+      console.error("Failed to fetch rankings, falling back to mock", error);
+      rankings = MOCK_OFFICIAL_RANKINGS;
+      lastUpdated = "Mock Data";
+    }
+  }
+
   return (
-    <div className="flex flex-col min-h-screen bg-surface-gray">
+    <div className="flex flex-col min-h-screen bg-surface-white">
       {/* Navigation */}
       <TopNavBar />
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 pt-28">
         <div className="mx-auto max-w-[1280px] px-6 py-8">
-          {/* Hero: Title + Controls inline */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
-            {/* Left: Title + Subtitle (no Live Indicator) */}
-            <div>
-              <h1 className="text-headline-lg text-deep-navy mb-1">
-                Official ATP Rankings
-              </h1>
-              <p className="text-body-lg text-text-muted">
-                The official weekly ATP Tour singles rankings.
-              </p>
-            </div>
-
-            {/* Right: Filter + Updated badge */}
-            <div className="flex items-center gap-3 shrink-0">
-              {/* Filter Button */}
-              <button className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-white px-5 py-2.5 text-sm font-medium text-deep-navy transition-all duration-200 hover:bg-surface-hover cursor-pointer">
-                <SlidersHorizontal className="h-4 w-4" />
-                Filter
-              </button>
-
-              {/* Updated Badge */}
-              <div className="rounded-full border border-border-subtle bg-white px-5 py-2.5 text-sm text-text-muted">
-                Updated:{" "}
-                <span className="font-medium text-deep-navy">Mon, Jun 2</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Official Rankings Table */}
-          <OfficialTable entries={MOCK_OFFICIAL_RANKINGS} initialCount={10} />
+          <OfficialClient initialRankings={rankings} lastUpdated={lastUpdated} />
         </div>
       </main>
 

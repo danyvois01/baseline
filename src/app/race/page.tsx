@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { TopNavBar, Footer } from "@/components/layout";
-import { RaceSummaryCards, RaceTable } from "@/components/rankings";
-import { MOCK_RACE_SUMMARY, MOCK_RACE_RANKINGS } from "@/lib/mock-data-race";
+import { RaceClient } from "./race-client";
+import { fetchRaceRankings } from "@/services/scraper/race-rankings";
+import { MOCK_RACE_RANKINGS, MOCK_RACE_SUMMARY } from "@/lib/mock-data-race";
 
 /**
  * Race to Turin — Rankings page.
@@ -14,29 +15,63 @@ export const metadata: Metadata = {
     "Track the Race to Turin — ATP Finals qualification standings, cut-off projections, and qualified players.",
 };
 
-export default function RacePage() {
+const countryCodeMap: Record<string, string> = {
+  "ITA": "it", "ESP": "es", "SRB": "rs", "GER": "de", "RUS": "ru",
+  "USA": "us", "AUS": "au", "CAN": "ca", "NOR": "no", "BUL": "bg",
+  "GRE": "gr", "POL": "pl", "FRA": "fr", "ARG": "ar", "GBR": "gb",
+  "CHI": "cl", "KAZ": "kz", "CZE": "cz", "NED": "nl", "DEN": "dk",
+  "SUI": "ch", "AUT": "at", "CRO": "hr", "BRA": "br", "JPN": "jp",
+  "CHN": "cn", "POR": "pt", "SVK": "sk", "HUN": "hu", "SWE": "se",
+  "FIN": "fi", "ROU": "ro", "BEL": "be", "RSA": "za", "KOR": "kr",
+  "COL": "co", "ECU": "ec", "PER": "pe", "URU": "uy", "PAR": "py",
+  "MEX": "mx", "DOM": "do", "NZL": "nz", "IND": "in", "EGY": "eg",
+  "TUN": "tn", "ALG": "dz", "MAR": "ma", "TUR": "tr", "CYP": "cy",
+  "GEO": "ge", "ARM": "am", "AZE": "az", "UKR": "ua", "BLR": "by",
+  "MDA": "md", "LTU": "lt", "LAT": "lv", "EST": "ee", "IRL": "ie",
+  "LUX": "lu", "MON": "mc", "TPE": "tw", "BIH": "ba", "ISR": "il"
+};
+
+export default async function RacePage() {
+  let summary: any;
+  let mappedEntries: any[] = [];
+  let displayUpdated = "N/A";
+
+  if (process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true') {
+    summary = MOCK_RACE_SUMMARY;
+    mappedEntries = MOCK_RACE_RANKINGS;
+    displayUpdated = "Mock Data";
+  } else {
+    try {
+      const data = await fetchRaceRankings();
+
+      mappedEntries = data.entries.map((entry) => ({
+        ...entry,
+        player: {
+          ...entry.player,
+          countryCode: countryCodeMap[entry.player.nationality] || "un",
+        }
+      }));
+
+      summary = data.summary;
+      const date = new Date(data.lastUpdated);
+      displayUpdated = date.toLocaleString('en-US', { timeZone: 'Europe/Rome', weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    } catch (error) {
+      console.error("Failed to fetch race rankings, falling back to mock", error);
+      summary = MOCK_RACE_SUMMARY;
+      mappedEntries = MOCK_RACE_RANKINGS;
+      displayUpdated = "Mock Data";
+    }
+  }
+
   return (
-    <div className="flex flex-col min-h-screen bg-surface-gray">
+    <div className="flex flex-col min-h-screen bg-surface-white">
       {/* Navigation */}
       <TopNavBar />
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 pt-28">
         <div className="mx-auto max-w-[1280px] px-6 py-8">
-          {/* Page Title */}
-          <h1 className="text-headline-lg text-deep-navy mb-1">
-            Race to Turin
-          </h1>
-          <p className="text-body-lg text-text-muted mb-6">
-            The top 8 singles players and doubles teams of the 2024 calendar
-            year qualify for the prestigious season finale in Turin, Italy.
-          </p>
-
-          {/* Summary Cards */}
-          <RaceSummaryCards summary={MOCK_RACE_SUMMARY} />
-
-          {/* Race Rankings Table */}
-          <RaceTable entries={MOCK_RACE_RANKINGS} initialCount={10} />
+          <RaceClient summary={summary} initialRankings={mappedEntries as any} lastUpdated={displayUpdated} />
         </div>
       </main>
 

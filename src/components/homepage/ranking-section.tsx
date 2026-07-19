@@ -1,118 +1,210 @@
 "use client";
 
-/**
- * RankingSection — Explains how the ATP ranking system works:
- * 52 weeks, best-19 results, point accumulation and defence.
- */
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+import { Award, Clock, Infinity, Hourglass } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-import { Trophy, BarChart3, CalendarDays, ShieldAlert } from "lucide-react";
-import { AnimatedSection } from "./animated-section";
-
-/** Quick stat cards displayed beside the explanatory text */
+/* ------------------------------------------------------------------ */
+/*  Stat highlight cards from original version                        */
+/* ------------------------------------------------------------------ */
 const HIGHLIGHTS = [
   {
-    icon: Trophy,
+    icon: Award,
     value: "19",
-    label: "Migliori Risultati",
-    desc: "contano per il ranking",
+    label: "I Migliori Risultati",
+    desc: "Vengono sommati solo i tuoi migliori piazzamenti stagionali.",
+    position: "top-[5%] md:top-[8%] left-[2%] md:left-[10%] xl:left-[15%]",
+    align: "text-left",
+    scrollRange: [0.1, 0.3]
   },
   {
-    icon: CalendarDays,
+    icon: Clock,
     value: "52",
     label: "Settimane",
-    desc: "finestra temporale",
+    desc: "La “finestra” mobile del ranking. Calcolata sull’ultimo anno.",
+    position: "top-[5%] md:top-[8%] right-[2%] md:right-[10%] xl:right-[15%]",
+    align: "text-right",
+    scrollRange: [0.2, 0.4]
   },
   {
-    icon: BarChart3,
-    value: "2000",
-    label: "Punti Max",
-    desc: "per un singolo torneo",
+    icon: Infinity,
+    value: "Zero",
+    label: "Nessun Azzeramento",
+    desc: "La classifica non si azzera mai a gennaio: è una corsa continua.",
+    position: "bottom-[5%] md:bottom-[8%] left-[2%] md:left-[10%] xl:left-[15%]",
+    align: "text-left",
+    scrollRange: [0.3, 0.5]
   },
   {
-    icon: ShieldAlert,
-    value: "Difesa",
-    label: "Punti in Scadenza",
-    desc: "da riconquistare ogni anno",
+    icon: Hourglass,
+    value: "Scadenza",
+    label: "Difesa dei punti",
+    desc: "Ogni risultato “scade” dopo un anno. Devi tornare a vincere.",
+    position: "bottom-[5%] md:bottom-[8%] right-[2%] md:right-[10%] xl:right-[15%]",
+    align: "text-right",
+    scrollRange: [0.4, 0.6]
   },
-] as const;
+];
 
 export function RankingSection() {
+  const containerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start center", "end center"],
+  });
+
+  // Calculate the circumference of the circle
+  const radius = 200;
+  const circumference = 2 * Math.PI * radius;
+  
+  // Finish drawing the circle earlier (at 70% of scroll progress) so the user can see it complete
+  const strokeDashoffset = useTransform(scrollYProgress, [0, 0.7], [circumference, 0]);
+  
+  // Opacity fade in for central text
+  const textOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+  const textY = useTransform(scrollYProgress, [0, 0.2], [40, 0]);
+
   return (
-    <section id="ranking" className="bg-surface-gray scroll-mt-20">
-      <div className="mx-auto max-w-[1280px] px-6 py-24">
-        <AnimatedSection>
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 rounded-full bg-baseline-lime/15 px-4 py-1.5 mb-6">
-              <BarChart3 className="h-3.5 w-3.5 text-primary-olive" />
-              <span className="text-label-md text-primary-olive font-bold uppercase tracking-wider">
-                Il Ranking
-              </span>
+    <section 
+      id="ranking" 
+      ref={containerRef}
+      className="relative w-full md:h-[300vh] bg-surface-white"
+    >
+      {/* --- DESKTOP STICKY LAYOUT --- */}
+      <div className="hidden md:flex sticky top-0 h-screen w-full items-center justify-center overflow-hidden pt-20">
+        
+        {/* Background Decorative Rings */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
+            <div className="w-[800px] h-[800px] rounded-full border-[1px] border-deep-navy" />
+            <div className="absolute w-[1200px] h-[1200px] rounded-full border-[1px] border-deep-navy" />
+        </div>
+
+        <div className="relative flex items-center justify-center w-full max-w-[1400px] mx-auto h-full">
+          {/* Animated SVG Circle */}
+          <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] -rotate-90 pointer-events-none">
+            {/* Background track */}
+            <circle 
+              cx="250" cy="250" r={radius} 
+              stroke="currentColor" 
+              className="text-surface-gray"
+              strokeWidth="4" 
+              fill="none" 
+            />
+            {/* Foreground animated progress */}
+            <motion.circle 
+              cx="250" cy="250" r={radius} 
+              stroke="currentColor" 
+              className="text-baseline-lime"
+              strokeWidth="12" 
+              fill="none" 
+              strokeLinecap="round"
+              style={{
+                strokeDasharray: circumference,
+                strokeDashoffset: strokeDashoffset
+              }}
+            />
+          </svg>
+
+          {/* Central Text Content */}
+          <motion.div 
+            style={{ opacity: textOpacity, y: textY }}
+            className="text-center max-w-xs z-10 p-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
+            <div className="text-[90px] font-heading font-extrabold text-deep-navy leading-none mb-2">
+              ATP
             </div>
-            <h2 className="text-headline-lg text-deep-navy mb-4">
-              Come funziona il Tennis?
+            <h2 className="text-title-lg text-deep-navy mb-4 uppercase tracking-widest">
+              Il Ranking
             </h2>
-            <p className="text-body-lg text-text-muted max-w-3xl mx-auto">
-              Il tennis è uno sport globale in cui i giocatori professionisti si
-              sfidano in decine di tornei durante l&apos;anno, viaggiando in
-              tutto il mondo. L&apos;obiettivo? Vincere partite, sollevare trofei
-              e, soprattutto,{" "}
-              <strong className="text-deep-navy">accumulare punti</strong> per
-              scalare il &quot;Ranking Mondiale&quot; (la classifica).
+            <p className="text-body-md text-text-muted">
+              Il tennis è l'unico sport globale che dura 11 mesi l'anno. Non esiste una "stagione regolare": esiste solo il ranking mondiale, una classifica viva che cambia ogni lunedì.
             </p>
-          </div>
-        </AnimatedSection>
+          </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-start">
-          {/* Explanatory text */}
-          <AnimatedSection delay={0.1}>
-            <div className="rounded-2xl bg-white border border-border-subtle p-8 shadow-ambient">
-              <h3 className="text-headline-sm text-deep-navy mb-4">
-                I Punti e il Ranking
-              </h3>
-              <p className="text-body-md text-text-muted leading-relaxed">
-                Il sistema di classifica ufficiale tiene conto delle{" "}
-                <strong className="text-deep-navy">
-                  migliori 19 prestazioni
-                </strong>{" "}
-                di un giocatore nelle ultime{" "}
-                <strong className="text-deep-navy">52 settimane</strong>. I punti
-                guadagnati in un torneo variano in base a due fattori:
-                l&apos;importanza del torneo e fino a che punto del tabellone
-                riesci ad arrivare (es. vincere il torneo dà il massimo dei
-                punti, arrivare in finale ne dà circa la metà, e così via a
-                scendere per semifinali, quarti, ecc.).
-              </p>
-              <div className="mt-6 rounded-xl bg-baseline-lime/10 border border-baseline-lime/20 p-4">
-                <p className="text-body-sm text-primary-olive font-medium">
-                  ⚠️ Attenzione: chi l&apos;anno precedente ha guadagnato molti
-                  punti in un torneo, dovrà difendere quell&apos;ottimo risultato
-                  l&apos;anno successivo, altrimenti perderà i punti in
-                  scadenza!
-                </p>
-              </div>
-            </div>
-          </AnimatedSection>
+          {/* Floating Highlight Cards */}
+          {HIGHLIGHTS.map((item, idx) => {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const cardOpacity = useTransform(scrollYProgress, item.scrollRange, [0, 1]);
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const cardY = useTransform(scrollYProgress, item.scrollRange, [40, 0]);
 
-          {/* Stat cards grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {HIGHLIGHTS.map((item, idx) => (
-              <AnimatedSection key={item.label} delay={0.15 + idx * 0.1}>
-                <div className="rounded-2xl bg-white border border-border-subtle p-6 shadow-ambient transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 h-full">
-                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-baseline-lime/15 mb-4">
-                    <item.icon className="h-4.5 w-4.5 text-primary-olive" />
+            return (
+              <motion.div
+                key={idx}
+                style={{ opacity: cardOpacity, y: cardY }}
+                className={cn(
+                  "absolute z-20 w-[240px] md:w-[280px] rounded-3xl bg-white/60 backdrop-blur-xl border border-border-subtle p-5 shadow-ambient",
+                  item.position
+                )}
+              >
+                <div className={cn("flex flex-col", item.align === "text-right" ? "items-end text-right" : "items-start text-left")}>
+                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-baseline-lime/20 mb-3">
+                    <item.icon className="h-5 w-5 text-primary-olive" />
                   </div>
-                  <p className="text-headline-md text-deep-navy">{item.value}</p>
-                  <p className="text-label-lg text-deep-navy mt-1">
+                  <h3 className="text-[32px] font-heading font-extrabold text-deep-navy leading-none mb-1">
+                    {item.value}
+                  </h3>
+                  <p className="text-title-sm text-deep-navy font-bold mb-2">
                     {item.label}
                   </p>
-                  <p className="text-body-sm text-text-muted mt-0.5">
+                  <p className="text-label-md text-text-muted">
                     {item.desc}
                   </p>
                 </div>
-              </AnimatedSection>
-            ))}
-          </div>
+              </motion.div>
+            );
+          })}
         </div>
+      </div>
+
+      {/* --- MOBILE VERTICAL REEL LAYOUT --- */}
+      <div className="md:hidden flex flex-col w-full py-20 px-6 gap-8 relative z-10">
+        
+        {/* Intro Text */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          className="text-center mb-6"
+        >
+          <div className="text-[70px] font-heading font-extrabold text-deep-navy leading-none mb-2">
+            ATP
+          </div>
+          <h2 className="text-title-lg text-deep-navy mb-4 uppercase tracking-widest">
+            Il Ranking
+          </h2>
+          <p className="text-body-md text-text-muted">
+            Il tennis è l'unico sport globale che dura 11 mesi l'anno. Non esiste una "stagione regolare": esiste solo il ranking mondiale, una classifica viva che cambia ogni lunedì.
+          </p>
+        </motion.div>
+
+        {/* Vertical Cards */}
+        {HIGHLIGHTS.map((item, idx) => (
+          <motion.div
+            key={`mobile-${idx}`}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-15%" }}
+            className="w-full rounded-3xl bg-white/80 backdrop-blur-xl border border-border-subtle p-6 shadow-ambient flex flex-col items-center text-center relative overflow-hidden"
+          >
+            {/* Sottile background glow nell'angolo in base alla card */}
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-baseline-lime/10 rounded-full blur-2xl pointer-events-none" />
+            
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-baseline-lime/20 mb-4 text-primary-olive shadow-sm">
+              <item.icon className="h-7 w-7" />
+            </div>
+            <h3 className="text-[48px] font-heading font-extrabold text-deep-navy leading-none mb-2">
+              {item.value}
+            </h3>
+            <p className="text-title-md text-deep-navy font-bold mb-3">
+              {item.label}
+            </p>
+            <p className="text-body-md text-text-muted">
+              {item.desc}
+            </p>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
