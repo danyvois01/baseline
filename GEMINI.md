@@ -35,12 +35,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `src/components/layout/` — Header, Footer, Navigation
 - `src/components/rankings/` — Rankings-specific components
 - `src/components/players/` — Player-specific components
-- `src/services/scraper/` — Web scraping logic (rankings, tournaments, players)
-- `src/services/cache/` — Scraped data caching
+- `src/services/scraper/` — Web scraping logic (rankings)
 - `src/types/` — TypeScript interfaces and types
-- `src/hooks/` — Custom React hooks
-- `src/providers/` — Context providers (theme, React Query)
+- `src/providers/` — Context providers (theme)
 - `src/lib/` — Utilities and constants
+
+> Note: `services/cache/`, `hooks/`, and `components/players/` are not yet
+> created — add them when their features are actually built. Data fetching is
+> currently server-side only (no React Query).
 
 ---
 

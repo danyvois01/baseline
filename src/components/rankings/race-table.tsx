@@ -8,25 +8,14 @@
  * No expandable rows.
  */
 
-import { useState } from "react";
 import { MovementBadge } from "./movement-badge";
 import { LiveStatusCell } from "./live-status-cell";
+import { PlayerCell } from "./player-cell";
 import { cn } from "@/lib/utils";
+import { formatPoints, formatDiff } from "@/lib/format";
+import { usePagination } from "./primitives/use-pagination";
 import { CircleCheckBig, Trophy } from "lucide-react";
-import "flag-icons/css/flag-icons.min.css";
-
-/** Format number with comma as thousands separator */
-function formatPoints(n: number): string {
-  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-/** Format diff with sign */
-function formatDiff(n: number): string {
-  const abs = Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  if (n > 0) return `+${abs}`;
-  if (n < 0) return `-${abs}`;
-  return "—";
-}
+import type { RaceRankingEntry } from "@/types";
 
 /**
  * Grid column definition.
@@ -40,28 +29,20 @@ function formatDiff(n: number): string {
  */
 const GRID_COLS = "grid-cols-[50px_80px_1fr_1.2fr_120px_100px_160px]";
 
-/** Number of qualification slots for Turin Finals */
 const QUALIFICATION_CUTOFF = 8;
 
 interface RaceTableProps {
-  entries: any[];
-  /** Number of entries to show initially */
+  entries: RaceRankingEntry[];
   initialCount?: number;
 }
 
 export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
-  const [visibleCount, setVisibleCount] = useState(initialCount);
+  const { visibleCount, hasMore, buttonLabel, showMore } = usePagination(
+    entries.length,
+    initialCount,
+    "Show Full Race",
+  );
   const visibleEntries = entries.slice(0, visibleCount);
-  const hasMore = visibleCount < entries.length;
-
-  const getNextIncrement = () => {
-    if (visibleCount <= 20) return 50;
-    if (visibleCount <= 50) return 100;
-    return visibleCount + 100;
-  };
-
-  const nextLimit = Math.min(getNextIncrement(), entries.length);
-  const buttonLabel = nextLimit >= entries.length ? "Show Full Race" : `Show Top ${nextLimit}`;
 
   return (
     <div className="w-full">
@@ -72,11 +53,9 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
           GRID_COLS
         )}
       >
-        {/* # header */}
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
           #
         </span>
-        {/* MOVE header */}
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
           Move
         </span>
@@ -99,7 +78,6 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
 
       {/* Table Rows */}
       {visibleEntries.map((entry, index) => {
-        /** Show qualification cut separator after position = QUALIFICATION_CUTOFF */
         const showCut =
           entry.rank === QUALIFICATION_CUTOFF + 1 &&
           index > 0 &&
@@ -110,16 +88,13 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
             {/* TURIN QUALIFICATION CUT separator */}
             {showCut && (
               <div className={cn("grid items-center px-6 py-3 bg-surface-gray/10 border-y border-border-subtle/50 my-1", GRID_COLS)}>
-                {/* Columns 1-3 (Rank, Move, Player): line */}
                 <div className="col-span-3 border-t border-border-subtle" />
-                {/* Column 4 (Live Status): Badge */}
                 <div className="flex justify-center">
                   <span className="inline-flex items-center gap-1.5 bg-deep-navy text-white font-bold text-[10px] tracking-wider px-3.5 py-1.5 rounded-full uppercase shadow-sm border border-white/10 whitespace-nowrap">
                     <Trophy className="h-3.5 w-3.5 shrink-0 text-baseline-lime" />
                     Turin Cut
                   </span>
                 </div>
-                {/* Columns 5-7 (Points, +/-, Status): line */}
                 <div className="col-span-3 border-t border-border-subtle" />
               </div>
             )}
@@ -132,55 +107,29 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                 "hover:bg-baseline-lime/5"
               )}
             >
-              {/* # — Rank number */}
               <span className="text-headline-md text-deep-navy font-heading font-extrabold text-center">
                 {entry.rank}
               </span>
 
-              {/* MOVE — Movement badge (centered in its own column) */}
               <div className="flex justify-center">
                 <MovementBadge
-                  type={entry.movement?.type || entry.rankChangeDirection}
-                  value={entry.movement?.value ?? entry.rankChange}
+                  type={entry.movement.type}
+                  value={entry.movement.value}
                 />
               </div>
 
-              {/* Player — Flag + Name + Nationality · Age (no avatar) */}
-              <div className="flex flex-col">
-                <span className="text-body-md font-semibold text-deep-navy group-hover:text-primary-olive transition-colors">
-                  {entry.player.name}
-                </span>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span
-                    className={cn(
-                      "fi rounded-sm",
-                      `fi-${entry.player.countryCode}`
-                    )}
-                    style={{ fontSize: "14px" }}
-                  />
-                  <span className="inline-flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-medium px-2 py-0.5 uppercase tracking-wider">
-                    {entry.player.nationality}
-                  </span>
-                  <span className="text-[10px] text-on-surface-variant">·</span>
-                  <span className="text-[10px] text-on-surface-variant">
-                    {entry.player.age}
-                  </span>
-                </div>
-              </div>
+              <PlayerCell player={entry.player} />
 
-              {/* Live Status */}
               <LiveStatusCell
                 isActive={entry.liveStatus.isActive}
                 tournament={entry.liveStatus.tournament}
                 stage={entry.liveStatus.stage}
               />
 
-              {/* Points */}
               <span className="text-[20px] font-heading text-deep-navy font-extrabold text-right tabular-nums">
                 {formatPoints(entry.points)}
               </span>
 
-              {/* Diff (point change) */}
               <div className="flex justify-center">
                 <span
                   className={cn(
@@ -196,9 +145,8 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                 </span>
               </div>
 
-              {/* Status (Qualified / In Contention) */}
               <div className="flex justify-center">
-                {entry.isQualified ? (
+                {entry.raceStatus === "qualified" ? (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-success-green-bg text-success-green-text px-3 py-1 text-xs font-medium">
                     <CircleCheckBig className="h-3.5 w-3.5" />
                     Qualified
@@ -218,7 +166,7 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
       {hasMore && (
         <div className="flex justify-center py-4 border-t border-border-subtle">
           <button
-            onClick={() => setVisibleCount(nextLimit)}
+            onClick={showMore}
             className="rounded-full border border-border-subtle bg-white px-6 py-2.5 text-label-md text-deep-navy font-medium hover:bg-surface-hover transition-all cursor-pointer"
           >
             {buttonLabel}

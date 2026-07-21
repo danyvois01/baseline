@@ -1,5 +1,10 @@
 /**
- * Data caching module.
- * Handles caching of scraped data to reduce external requests.
- * Implementation will be added alongside the scraper modules.
+ * Cache services barrel export.
  */
+
+export {
+  getCachedRankings,
+  invalidateCache,
+  clearCache,
+  type CacheOptions,
+} from "./rankings-cache";

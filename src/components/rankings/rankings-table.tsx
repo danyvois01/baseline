@@ -3,32 +3,19 @@
 /**
  * RankingsTable — Live ATP Rankings data table with expandable rows.
  * Grid: [# MOVE] | Player | Live Status | Points | +/- | Chevron
- * # and MOVE are merged into a single 130px cell, visually pairing the rank
- * number with its movement indicator. No avatar circle. Age in player meta.
  * Smooth expand/collapse via CSS grid-template-rows transition.
  */
 
 import { useState, useCallback } from "react";
-import type { LiveRankingEntry } from "@/lib/mock-data";
+import type { LiveRankingEntry } from "@/types";
 import { MovementBadge } from "./movement-badge";
 import { LiveStatusCell } from "./live-status-cell";
+import { PlayerCell } from "./player-cell";
 import { ExpandedCard } from "./expanded-card";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import "flag-icons/css/flag-icons.min.css";
-
-/** Format number with comma as thousands separator */
-function formatPoints(n: number): string {
-  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-/** Format diff with sign */
-function formatDiff(n: number): string {
-  const abs = Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  if (n > 0) return `+${abs}`;
-  if (n < 0) return `-${abs}`;
-  return "—";
-}
+import { formatPoints, formatDiff } from "@/lib/format";
+import { usePagination } from "./primitives/use-pagination";
 
 /**
  * Grid column definition shared between header, rows, and expanded card.
@@ -44,7 +31,6 @@ const GRID_COLS = "grid-cols-[50px_80px_1fr_1.2fr_120px_100px_50px]";
 
 interface RankingsTableProps {
   entries: LiveRankingEntry[];
-  /** Number of entries to show initially */
   initialCount?: number;
 }
 
@@ -52,19 +38,12 @@ export function RankingsTable({
   entries,
   initialCount = 20,
 }: RankingsTableProps) {
-  const [visibleCount, setVisibleCount] = useState(initialCount);
+  const { visibleCount, hasMore, buttonLabel, showMore } = usePagination(
+    entries.length,
+    initialCount,
+  );
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const visibleEntries = entries.slice(0, visibleCount);
-  const hasMore = visibleCount < entries.length;
-
-  const getNextIncrement = () => {
-    if (visibleCount <= 20) return 50;
-    if (visibleCount <= 50) return 100;
-    return visibleCount + 100;
-  };
-
-  const nextLimit = Math.min(getNextIncrement(), entries.length);
-  const buttonLabel = nextLimit >= entries.length ? "Show All Players" : `Show Top ${nextLimit}`;
 
   const toggleExpand = useCallback((id: string) => {
     setExpandedIds((prev) => {
@@ -87,11 +66,9 @@ export function RankingsTable({
           GRID_COLS
         )}
       >
-        {/* # header */}
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
           #
         </span>
-        {/* MOVE header */}
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
           Move
         </span>
@@ -107,7 +84,6 @@ export function RankingsTable({
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
           +/-
         </span>
-        {/* Empty header for chevron column */}
         <span />
       </div>
 
@@ -120,7 +96,7 @@ export function RankingsTable({
             key={entry.player.id}
             className="border-b border-border-subtle/60 last:border-b-0"
           >
-            {/* Collapsed Row — clickable to expand */}
+            {/* Collapsed Row */}
             <div
               onClick={() => toggleExpand(entry.player.id)}
               className={cn(
@@ -131,12 +107,10 @@ export function RankingsTable({
                   : "hover:bg-baseline-lime/5"
               )}
             >
-              {/* # — Rank number */}
               <span className="text-headline-md text-deep-navy font-heading font-extrabold text-center">
                 {entry.rank}
               </span>
 
-              {/* MOVE — Movement badge (centered in its own column) */}
               <div className="flex justify-center">
                 <MovementBadge
                   type={entry.movement.type}
@@ -144,42 +118,18 @@ export function RankingsTable({
                 />
               </div>
 
-              {/* Player — Flag + Name + Nationality · Age (no avatar) */}
-              <div className="flex flex-col">
-                <span className="text-body-md font-semibold text-deep-navy group-hover:text-primary-olive transition-colors">
-                  {entry.player.name}
-                </span>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span
-                    className={cn(
-                      "fi rounded-sm",
-                      `fi-${entry.player.countryCode}`
-                    )}
-                    style={{ fontSize: "14px" }}
-                  />
-                  <span className="inline-flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-medium px-2 py-0.5 uppercase tracking-wider">
-                    {entry.player.nationality}
-                  </span>
-                  <span className="text-[10px] text-on-surface-variant">·</span>
-                  <span className="text-[10px] text-on-surface-variant">
-                    {entry.player.age}
-                  </span>
-                </div>
-              </div>
+              <PlayerCell player={entry.player} />
 
-              {/* Live Status */}
               <LiveStatusCell
                 isActive={entry.liveStatus.isActive}
                 tournament={entry.liveStatus.tournament}
                 stage={entry.liveStatus.stage}
               />
 
-              {/* Points */}
               <span className="text-[20px] font-heading text-deep-navy font-extrabold text-right tabular-nums">
                 {formatPoints(entry.points)}
               </span>
 
-              {/* Diff (point change) */}
               <div className="flex justify-center">
                 <span
                   className={cn(
@@ -195,7 +145,6 @@ export function RankingsTable({
                 </span>
               </div>
 
-              {/* Expand chevron */}
               <div className="flex justify-end">
                 <ChevronDown
                   className={cn(
@@ -206,7 +155,7 @@ export function RankingsTable({
               </div>
             </div>
 
-            {/* Expanded Card — smooth transition via grid-template-rows */}
+            {/* Expanded Card */}
             <div
               className="grid transition-[grid-template-rows] duration-200 ease-out"
               style={{
@@ -231,7 +180,7 @@ export function RankingsTable({
       {hasMore && (
         <div className="flex justify-center py-4 border-t border-border-subtle">
           <button
-            onClick={() => setVisibleCount(nextLimit)}
+            onClick={showMore}
             className="rounded-full border border-border-subtle bg-white px-6 py-2.5 text-label-md text-deep-navy font-medium hover:bg-surface-hover transition-all cursor-pointer"
           >
             {buttonLabel}

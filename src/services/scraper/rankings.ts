@@ -1,37 +1,33 @@
-import * as cheerio from 'cheerio';
-import { RankingData, RankingEntry, RankChangeDirection } from '../../types/ranking';
+import { RankingData, RankingEntry } from '../../types/ranking';
+import { fetchAndLoadHtml, parseLastUpdated, parseRankChange } from './parse-utils';
+import { buildScraperUrl } from './config';
+import { getCachedRankings } from '../cache/rankings-cache';
+import { validateRankingData } from '@/lib/schemas/ranking-schema';
 
-const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY || '7a0b0ba3183412336e456a60c5c55c95';
 const TARGET_URL = 'https://live-tennis.eu/it/classifica-ufficiale-atp';
 
 /**
- * Fetches live ranking data (points, positions) from the source website.
+ * Fetches official ranking data with SWR caching.
+ * Returns cached data when fresh, triggers background revalidation when stale,
+ * and performs a full fetch only when no cache exists.
  */
 export async function fetchOfficialRankings(): Promise<RankingData> {
-  const url = `http://api.scraperapi.com/?api_key=${SCRAPER_API_KEY}&url=${TARGET_URL}&render=false&t=3`;
+  return getCachedRankings('singles', scrapeOfficialRankings);
+}
+
+/**
+ * Raw scraping logic — called by the cache layer when fresh data is needed.
+ * Validates the parsed output against the Zod schema before returning.
+ */
+async function scrapeOfficialRankings(): Promise<RankingData> {
+  const url = buildScraperUrl(TARGET_URL);
 
   try {
-    const response = await fetch(url, { next: { revalidate: 3600 } });
-    if (!response.ok) {
-      throw new Error(`ScraperAPI error: ${response.status} ${response.statusText}`);
-    }
-    const html = await response.text();
-    const $ = cheerio.load(html);
+    const { $, html } = await fetchAndLoadHtml(url);
+    const lastUpdated = parseLastUpdated($, html);
 
-    let lastUpdated = $('#u1').text().trim();
-    if (!lastUpdated) {
-      const scriptMatch = html.match(/Date\.parse\("([^"]+)"\)/);
-      if (scriptMatch && scriptMatch[1]) {
-        lastUpdated = scriptMatch[1];
-      } else {
-        lastUpdated = new Date().toISOString();
-      }
-    }
-
-    // Troviamo tutte le righe dei giocatori usando il parent diretto della cella .rk
-    // per evitare di matchare eventuali tag <tr> di layout esterni
     const rows = $('td.rk').parent('tr');
-    
+
     const entries: RankingEntry[] = [];
 
     rows.each((i, row) => {
@@ -39,31 +35,21 @@ export async function fetchOfficialRankings(): Promise<RankingData> {
 
       const rankText = cols.eq(0).text().trim();
       const rank = parseInt(rankText, 10);
-      if (isNaN(rank)) return; // Salta intestazioni
+      if (isNaN(rank)) return;
 
       const name = cols.eq(2).text().trim();
-      if (!name) return; // Riga vuota
-      
+      if (!name) return;
+
       const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       const ageText = cols.eq(3).text().trim();
       const age = isNaN(parseFloat(ageText)) ? 0 : parseFloat(ageText);
       const nationality = cols.eq(4).text().trim();
-      
+
       const pointsText = cols.eq(5).text().replace(/\D/g, '');
       const points = isNaN(parseInt(pointsText, 10)) ? 0 : parseInt(pointsText, 10);
-      
-      const rankChangeText = cols.eq(6).text().trim();
-      let rankChange = 0;
-      let rankChangeDirection: RankChangeDirection = 'none';
-      if (rankChangeText.includes('+')) {
-        rankChange = parseInt(rankChangeText.replace('+', ''), 10);
-        rankChangeDirection = 'up';
-      } else if (rankChangeText.includes('-')) {
-        rankChange = parseInt(rankChangeText.replace('-', ''), 10);
-        rankChangeDirection = 'down';
-      }
 
-      // Nello screenshot: "Pros. Set." è la penultima colonna
+      const { rankChange, rankChangeDirection } = parseRankChange(cols.eq(6).text().trim());
+
       const nextWeekPointsText = cols.eq(-2).text().replace(/\D/g, '');
       const nextWeekPoints = nextWeekPointsText ? parseInt(nextWeekPointsText, 10) : undefined;
 
@@ -83,14 +69,18 @@ export async function fetchOfficialRankings(): Promise<RankingData> {
       });
     });
 
-    return {
-      type: 'singles',
-      lastUpdated: lastUpdated,
-      entries
+    const rawData = {
+      type: 'singles' as const,
+      lastUpdated,
+      entries,
     };
 
+    validateRankingData(rawData, 'singles');
+
+    return rawData;
+
   } catch (error) {
-    console.error('Error fetching rankings:', error);
+    console.error('[scraper/official] Error fetching rankings:', error);
     throw error;
   }
 }

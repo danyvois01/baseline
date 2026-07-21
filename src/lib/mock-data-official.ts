@@ -3,39 +3,7 @@
  * Placeholder data for UI development — will be replaced by real scraping data.
  */
 
-/** A single entry in the Official ATP Rankings table */
-export interface OfficialRankingEntry {
-  /** Current official rank position */
-  rank: number;
-  /** Player information */
-  player: {
-    id: string;
-    name: string;
-    /** ISO 3166-1 alpha-3 country code for display (e.g. "ITA") */
-    nationality: string;
-    /** ISO 3166-1 alpha-2 country code for flag-icons (e.g. "it") */
-    countryCode: string;
-    age: number;
-    /** Player initials for avatar fallback */
-    initials: string;
-  };
-  /** Current official ranking points */
-  points: number;
-  /** Rank position movement compared to previous week */
-  movement: {
-    /** Type of movement indicator */
-    type: "up" | "down" | "none" | "mr" | "nmr";
-    /** Movement amount (only for up/down) */
-    value?: number;
-  };
-  /** Next week projection data */
-  nextWeek: {
-    /** Projected points for next week */
-    points: number;
-    /** Projected rank position change (positive = climbing, negative = dropping) */
-    rankChange: number;
-  };
-}
+import type { OfficialRankingEntry } from "@/types";
 
 export const MOCK_OFFICIAL_RANKINGS: OfficialRankingEntry[] = [
   {

@@ -3,8 +3,15 @@
  * These types will be expanded as new ranking features are implemented.
  */
 
-/** Supported ranking categories */
-export type RankingType = "singles" | "doubles" | "race-to-turin";
+/**
+ * Supported ranking categories. The site currently covers men's singles only.
+ *
+ * - `singles`: official standings, updated weekly after tournaments.
+ * - `live-singles`: real-time projected singles standings, updated daily as
+ *   matches are played. A distinct category from the official `singles`.
+ * - `race-to-turin`: year-end ATP Finals qualification race.
+ */
+export type RankingType = "singles" | "live-singles" | "race-to-turin";
 
 /** Direction of rank change compared to previous week */
 export type RankChangeDirection = "up" | "down" | "none" | "new";

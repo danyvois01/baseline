@@ -5,19 +5,14 @@
  * Grid: # | MOVE | Player | Points | Next Week
  * No expandable rows. No Live Status column.
  * "Next Week" shows projected points + projected rank movement for the upcoming week.
- * Same visual patterns as RankingsTable and RaceTable for consistency.
  */
 
-import { useState } from "react";
-import type { OfficialRankingEntry } from "@/lib/mock-data-official";
+import type { OfficialRankingEntry } from "@/types";
 import { MovementBadge } from "./movement-badge";
+import { PlayerCell } from "./player-cell";
 import { cn } from "@/lib/utils";
-import "flag-icons/css/flag-icons.min.css";
-
-/** Format number with comma as thousands separator */
-function formatPoints(n: number): string {
-  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
+import { formatPoints } from "@/lib/format";
+import { usePagination } from "./primitives/use-pagination";
 
 /**
  * Grid column definition.
@@ -31,7 +26,6 @@ const GRID_COLS = "grid-cols-[50px_80px_1fr_120px_160px]";
 
 interface OfficialTableProps {
   entries: OfficialRankingEntry[];
-  /** Number of entries to show initially */
   initialCount?: number;
 }
 
@@ -39,18 +33,11 @@ export function OfficialTable({
   entries,
   initialCount = 20,
 }: OfficialTableProps) {
-  const [visibleCount, setVisibleCount] = useState(initialCount);
+  const { visibleCount, hasMore, buttonLabel, showMore } = usePagination(
+    entries.length,
+    initialCount,
+  );
   const visibleEntries = entries.slice(0, visibleCount);
-  const hasMore = visibleCount < entries.length;
-
-  const getNextIncrement = () => {
-    if (visibleCount <= 20) return 50;
-    if (visibleCount <= 50) return 100;
-    return visibleCount + 100;
-  };
-
-  const nextLimit = Math.min(getNextIncrement(), entries.length);
-  const buttonLabel = nextLimit >= entries.length ? "Show All Players" : `Show Top ${nextLimit}`;
 
   return (
     <div className="w-full bg-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
@@ -61,11 +48,9 @@ export function OfficialTable({
           GRID_COLS
         )}
       >
-        {/* # header */}
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
           #
         </span>
-        {/* MOVE header */}
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
           Move
         </span>
@@ -90,12 +75,10 @@ export function OfficialTable({
             "hover:bg-baseline-lime/5"
           )}
         >
-          {/* # — Rank number */}
           <span className="text-headline-md text-deep-navy font-heading font-extrabold text-center">
             {entry.rank}
           </span>
 
-          {/* MOVE — Movement badge (centered in its own column) */}
           <div className="flex justify-center">
             <MovementBadge
               type={entry.movement.type}
@@ -103,35 +86,12 @@ export function OfficialTable({
             />
           </div>
 
-          {/* Player — Flag + Name + Nationality · Age (no avatar) */}
-          <div className="flex flex-col">
-            <span className="text-body-md font-semibold text-deep-navy group-hover:text-primary-olive transition-colors">
-              {entry.player.name}
-            </span>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span
-                className={cn(
-                  "fi rounded-sm",
-                  `fi-${entry.player.countryCode}`
-                )}
-                style={{ fontSize: "14px" }}
-              />
-              <span className="inline-flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-medium px-2 py-0.5 uppercase tracking-wider">
-                {entry.player.nationality}
-              </span>
-              <span className="text-[10px] text-on-surface-variant">·</span>
-              <span className="text-[10px] text-on-surface-variant">
-                {entry.player.age}
-              </span>
-            </div>
-          </div>
+          <PlayerCell player={entry.player} />
 
-          {/* Points */}
           <span className="text-[20px] font-heading text-deep-navy font-extrabold text-right tabular-nums">
             {formatPoints(entry.points)}
           </span>
 
-          {/* Next Week — Projected points + rank movement */}
           <div className="flex flex-col items-end gap-0.5 pr-2">
             <span className="text-body-md font-semibold text-deep-navy tabular-nums">
               {formatPoints(entry.nextWeek.points)}
@@ -163,7 +123,7 @@ export function OfficialTable({
       {hasMore && (
         <div className="flex justify-center py-4 border-t border-border-subtle">
           <button
-            onClick={() => setVisibleCount(nextLimit)}
+            onClick={showMore}
             className="rounded-full border border-border-subtle bg-white px-6 py-2.5 text-label-md text-deep-navy font-medium hover:bg-surface-hover transition-all cursor-pointer"
           >
             {buttonLabel}

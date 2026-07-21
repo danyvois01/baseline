@@ -102,7 +102,7 @@ function ChapterBlock({
       <p className="text-body-xl text-white/70 leading-relaxed">
         {chapter.content}
       </p>
-      {chapter.curiosity && (
+      {"curiosity" in chapter && chapter.curiosity && (
         <div className="mt-8 p-6 rounded-2xl bg-baseline-lime/10 border border-baseline-lime/20 flex items-start gap-4">
           <Clock className="w-6 h-6 text-baseline-lime shrink-0 mt-1" />
           <p className="text-body-md text-white/80">

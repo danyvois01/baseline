@@ -6,12 +6,12 @@
 /** Application metadata */
 export const APP_NAME = "ATP Rankings";
 export const APP_DESCRIPTION =
-  "Live ATP Tennis Rankings — Singles, Doubles & Race to Turin";
+  "Live ATP Tennis Rankings — Official, Live & Race to Turin";
 
 /** Ranking type labels for UI display */
 export const RANKING_TYPE_LABELS: Record<string, string> = {
-  singles: "Singles",
-  doubles: "Doubles",
+  singles: "Official",
+  "live-singles": "Live",
   "race-to-turin": "Race to Turin",
 } as const;
 

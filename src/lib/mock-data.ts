@@ -3,51 +3,7 @@
  * Placeholder data for UI development — will be replaced by real scraping data.
  */
 
-export interface LiveRankingEntry {
-  /** Current live rank position */
-  rank: number;
-  /** Player information */
-  player: {
-    id: string;
-    name: string;
-    /** ISO 3166-1 alpha-3 country code for display (e.g. "ITA") */
-    nationality: string;
-    /** ISO 3166-1 alpha-2 country code for flag-icons (e.g. "it") */
-    countryCode: string;
-    age: number;
-    /** Player initials for avatar fallback */
-    initials: string;
-  };
-  /** Current live points */
-  points: number;
-  /** Live status information */
-  liveStatus: {
-    /** Whether player is currently active in a tournament */
-    isActive: boolean;
-    /** Current tournament name */
-    tournament: string;
-    /** Current round/stage (e.g. "SF", "R32", "F", "QF") */
-    stage: string;
-  };
-  /** Rank position movement */
-  movement: {
-    /** Type of movement indicator */
-    type: "up" | "down" | "none" | "mr" | "nmr";
-    /** Movement amount (only for up/down) */
-    value?: number;
-  };
-  // --- Expanded card fields ---
-  /** Current official ranking points (before live adjustments) */
-  officialPoints: number;
-  /** Difference: livePoints - officialPoints */
-  pointsDiff: number;
-  /** Points if player wins their next match */
-  nextMatchPoints: number;
-  /** Points if player wins the tournament */
-  maxPoints: number;
-  /** Player's career-best rank position */
-  bestRanking: number;
-}
+import type { LiveRankingEntry } from "@/types";
 
 export const MOCK_LIVE_RANKINGS: LiveRankingEntry[] = [
   {

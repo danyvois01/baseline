@@ -5,7 +5,7 @@
 Questo documento descrive l'implementazione del sistema di scraping per ottenere i dati reali della classifica ATP dal sito `https://live-tennis.eu/it/classifica-ufficiale-atp`, come richiesto.
 
 ### 1. Librerie e API
-- **ScraperAPI**: Utilizzeremo ScraperAPI (con API key `7a0b0ba3183412336e456a60c5c55c95`) per ottenere la pagina HTML in modo affidabile, gestendo IP rotazionali.
+- **ScraperAPI**: Utilizzeremo ScraperAPI per ottenere la pagina HTML in modo affidabile, gestendo IP rotazionali. La API key va configurata tramite la variabile d'ambiente `SCRAPER_API_KEY` in `.env.local` (vedi `.env.example`) e non deve mai essere committata nel repository.
 - **Fetch API**: Utilizzeremo il `fetch` nativo di Node.js (v18+) senza dipendenze aggiuntive.
 - **Cheerio**: Verrà installata la libreria `cheerio` (es. `npm install cheerio`), che rappresenta lo standard per il parsing e la manipolazione dell'HTML lato server in Node.js, per estrarre i dati dalle righe della tabella.
 
