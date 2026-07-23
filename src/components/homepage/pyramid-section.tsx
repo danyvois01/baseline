@@ -110,7 +110,7 @@ function TierTextBlock({
     <div ref={ref} className="min-h-[100dvh] flex flex-col justify-center py-16 md:py-20">
       <motion.div 
         className={cn(
-          "bg-white/80 backdrop-blur-md border border-border-subtle rounded-3xl p-6 md:p-12 shadow-xl transition-all duration-700",
+          "bg-surface-white/80 backdrop-blur-md border border-border-subtle rounded-3xl p-6 md:p-12 shadow-xl transition-all duration-700",
           isInView ? "opacity-100 scale-100" : "opacity-30 scale-95"
         )}
       >
@@ -119,12 +119,12 @@ function TierTextBlock({
             <tier.icon className="w-8 h-8" />
           </div>
           <div>
-            <h3 className="text-[40px] font-heading font-extrabold text-deep-navy leading-none mb-2">{tier.name}</h3>
+            <h3 className="text-[40px] font-heading font-extrabold text-foreground leading-none mb-2">{tier.name}</h3>
             <p className={cn("text-label-lg font-bold uppercase tracking-wider", tier.textColor)}>{tier.tagline}</p>
           </div>
         </div>
         
-        <p className="text-body-xl text-deep-navy leading-relaxed mb-8">
+        <p className="text-body-xl text-foreground leading-relaxed mb-8">
           {tier.description}
         </p>
 
@@ -145,19 +145,19 @@ export function PyramidSection() {
       
       {/* Intro Titolo (Full Screen) */}
       <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 text-center pt-32 pb-24">
-        <h2 className="text-[50px] md:text-[70px] font-heading font-extrabold text-deep-navy leading-none mb-8">
+        <h2 className="text-[50px] md:text-[70px] font-heading font-extrabold text-foreground leading-none mb-8">
           La Piramide dei Tornei
         </h2>
         
         <div className="max-w-3xl mx-auto space-y-6 text-[18px] text-text-muted">
-          <p className="text-2xl md:text-3xl font-heading font-extrabold text-deep-navy mb-4">
+          <p className="text-2xl md:text-3xl font-heading font-extrabold text-foreground mb-4">
             Non tutti i tornei sono uguali
           </p>
           <p className="leading-relaxed">
             I tornei sono divisi in categorie ben precise, che determinano il prestigio, la difficoltà e, ovviamente, i punti in palio. Più si sale verso il vertice della piramide, maggiore è la gloria.
           </p>
           <p className="leading-relaxed">
-            I più importanti in assoluto sono i <strong className="text-deep-navy">Grand Slam</strong> (2000 punti al vincitore), seguiti dai Masters 1000, dagli ATP 500 e 250. La stagione culmina con le <strong className="text-amber-500">ATP Finals</strong>, riservate ai migliori 8 dell'anno.
+            I più importanti in assoluto sono i <strong className="text-foreground">Grand Slam</strong> (2000 punti al vincitore), seguiti dai Masters 1000, dagli ATP 500 e 250. La stagione culmina con le <strong className="text-amber-500">ATP Finals</strong>, riservate ai migliori 8 dell'anno.
           </p>
         </div>
 

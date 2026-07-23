@@ -66,7 +66,7 @@ export function HeroSection() {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
             {/* Badge removed */}
-            <h1 className="text-[12vw] sm:text-[70px] lg:text-[90px] xl:text-[110px] leading-[0.85] font-heading font-extrabold text-deep-navy tracking-tighter uppercase interactive cursor-none">
+            <h1 className="text-[12vw] sm:text-[70px] lg:text-[90px] xl:text-[110px] leading-[0.85] font-heading font-extrabold text-foreground tracking-tighter uppercase interactive cursor-none">
               Baseline
               <br />
               <span className="inline-block pb-4 pr-4 text-transparent bg-clip-text bg-gradient-to-r from-deep-navy to-primary-olive text-[8vw] sm:text-[50px] lg:text-[60px] xl:text-[70px]">
@@ -101,14 +101,14 @@ export function HeroSection() {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              {/* Court surface — solid color for contrast against white background */}
+              {/* Court surface — dark on light bg, slightly lighter than the page in dark mode */}
               <motion.rect
                 x={10}
                 y={10}
                 width={500}
                 height={280}
                 rx={4}
-                fill="#1C2127"
+                className="fill-[#1C2127] dark:fill-[#1C2333]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1, delay: 0.5 }}

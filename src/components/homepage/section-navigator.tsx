@@ -74,7 +74,7 @@ export function SectionNavigator({ sections }: SectionNavigatorProps) {
               >
                 {/* Tooltip label (appears on hover to the left) */}
                 <span
-                  className="absolute right-full mr-3 rounded-full bg-deep-navy px-3 py-1 text-label-md text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+                  className="absolute right-full mr-3 rounded-full bg-primary px-3 py-1 text-label-md text-primary-foreground whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
                 >
                   {section.label}
                 </span>

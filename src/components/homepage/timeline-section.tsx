@@ -8,33 +8,33 @@ import { cn } from "@/lib/utils";
 /** Surface colour tokens */
 const SURFACE_COLORS = {
   hard: {
-    bg: "bg-blue-50",
-    text: "text-blue-700",
-    border: "border-blue-200",
+    bg: "bg-blue-50 dark:bg-blue-500/15",
+    text: "text-blue-700 dark:text-blue-300",
+    border: "border-blue-200 dark:border-blue-500/30",
     dot: "bg-blue-500",
     dotHex: "#3B82F6",
     label: "Cemento",
   },
   clay: {
-    bg: "bg-orange-50",
-    text: "text-orange-700",
-    border: "border-orange-200",
+    bg: "bg-orange-50 dark:bg-orange-500/15",
+    text: "text-orange-700 dark:text-orange-300",
+    border: "border-orange-200 dark:border-orange-500/30",
     dot: "bg-orange-500",
     dotHex: "#F97316",
     label: "Terra Rossa",
   },
   grass: {
-    bg: "bg-green-50",
-    text: "text-green-700",
-    border: "border-green-200",
+    bg: "bg-green-50 dark:bg-green-500/15",
+    text: "text-green-700 dark:text-green-300",
+    border: "border-green-200 dark:border-green-500/30",
     dot: "bg-green-500",
     dotHex: "#22C55E",
     label: "Erba",
   },
   indoor: {
-    bg: "bg-purple-50",
-    text: "text-purple-700",
-    border: "border-purple-200",
+    bg: "bg-purple-50 dark:bg-purple-500/15",
+    text: "text-purple-700 dark:text-purple-300",
+    border: "border-purple-200 dark:border-purple-500/30",
     dot: "bg-purple-500",
     dotHex: "#A855F7",
     label: "Indoor",
@@ -108,7 +108,7 @@ function TimelineCard({ event, inView, isLeft }: { event: TimelineEvent; inView:
       animate={inView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x: xOffset, y: 20 }}
       transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
       className={cn(
-        "rounded-2xl border p-5 md:p-8 transition-all duration-300 hover:shadow-ambient hover:-translate-y-1 bg-white/90 backdrop-blur-xl relative z-10 max-w-[480px]",
+        "rounded-2xl border p-5 md:p-8 transition-all duration-300 hover:shadow-ambient hover:-translate-y-1 bg-surface-white/90 backdrop-blur-xl relative z-10 max-w-[480px]",
         surface.border
       )}
     >
@@ -121,7 +121,7 @@ function TimelineCard({ event, inView, isLeft }: { event: TimelineEvent; inView:
       >
         {event.period}
       </span>
-      <h3 className="text-2xl md:text-3xl font-heading font-extrabold text-deep-navy mb-2 leading-tight">
+      <h3 className="text-2xl md:text-3xl font-heading font-extrabold text-foreground mb-2 leading-tight">
         {event.title}
       </h3>
       <p className={cn("text-title-sm md:text-label-lg font-bold mb-3", surface.text)}>
@@ -159,7 +159,7 @@ function TimelineItem({ event, idx }: { event: TimelineEvent; idx: number }) {
             initial={{ scale: 0 }}
             animate={isInView ? { scale: 1 } : { scale: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="w-8 h-8 rounded-full border-4 border-white shadow-md z-20"
+            className="w-8 h-8 rounded-full border-4 border-background shadow-md z-20"
             style={{ backgroundColor: surface.dotHex }}
           />
         </div>
@@ -178,7 +178,7 @@ function TimelineItem({ event, idx }: { event: TimelineEvent; idx: number }) {
             initial={{ scale: 0 }}
             animate={isInView ? { scale: 1 } : { scale: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="w-6 h-6 rounded-full border-[3px] border-white shadow-md z-20"
+            className="w-6 h-6 rounded-full border-[3px] border-background shadow-md z-20"
             style={{ backgroundColor: surface.dotHex }}
           />
         </div>
@@ -212,7 +212,7 @@ export function TimelineSection() {
         
         {/* Header */}
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-[50px] md:text-[80px] font-heading font-extrabold text-deep-navy mb-6 leading-none">
+          <h2 className="text-[50px] md:text-[80px] font-heading font-extrabold text-foreground mb-6 leading-none">
             Un anno di Tennis
           </h2>
           <p className="text-body-xl text-text-muted max-w-3xl mx-auto">
@@ -225,10 +225,10 @@ export function TimelineSection() {
           {Object.entries(SURFACE_COLORS).map(([key, style]) => (
             <div
               key={key}
-              className="inline-flex items-center gap-2 rounded-full bg-white/95 backdrop-blur-md border border-border-subtle px-3 py-1.5 shadow-md"
+              className="inline-flex items-center gap-2 rounded-full bg-surface-white/95 backdrop-blur-md border border-border-subtle px-3 py-1.5 shadow-md"
             >
               <span className={cn("w-2 h-2 rounded-full", style.dot)} />
-              <span className="text-[11px] md:text-xs text-deep-navy font-extrabold uppercase tracking-widest">
+              <span className="text-[11px] md:text-xs text-foreground font-extrabold uppercase tracking-widest">
                 {style.label}
               </span>
             </div>

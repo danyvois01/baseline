@@ -111,10 +111,10 @@ export function RankingSection() {
             style={{ opacity: textOpacity, y: textY }}
             className="text-center max-w-xs z-10 p-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
           >
-            <div className="text-[90px] font-heading font-extrabold text-deep-navy leading-none mb-2">
+            <div className="text-[90px] font-heading font-extrabold text-foreground leading-none mb-2">
               ATP
             </div>
-            <h2 className="text-title-lg text-deep-navy mb-4 uppercase tracking-widest">
+            <h2 className="text-title-lg text-foreground mb-4 uppercase tracking-widest">
               Il Ranking
             </h2>
             <p className="text-body-md text-text-muted">
@@ -134,7 +134,7 @@ export function RankingSection() {
                 key={idx}
                 style={{ opacity: cardOpacity, y: cardY }}
                 className={cn(
-                  "absolute z-20 w-[240px] md:w-[280px] rounded-3xl bg-white/60 backdrop-blur-xl border border-border-subtle p-5 shadow-ambient",
+                  "absolute z-20 w-[240px] md:w-[280px] rounded-3xl bg-surface-white/60 backdrop-blur-xl border border-border-subtle p-5 shadow-ambient",
                   item.position
                 )}
               >
@@ -142,10 +142,10 @@ export function RankingSection() {
                   <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-baseline-lime/20 mb-3">
                     <item.icon className="h-5 w-5 text-primary-olive" />
                   </div>
-                  <h3 className="text-[32px] font-heading font-extrabold text-deep-navy leading-none mb-1">
+                  <h3 className="text-[32px] font-heading font-extrabold text-foreground leading-none mb-1">
                     {item.value}
                   </h3>
-                  <p className="text-title-sm text-deep-navy font-bold mb-2">
+                  <p className="text-title-sm text-foreground font-bold mb-2">
                     {item.label}
                   </p>
                   <p className="text-label-md text-text-muted">
@@ -168,10 +168,10 @@ export function RankingSection() {
           viewport={{ once: true, margin: "-10%" }}
           className="text-center mb-6"
         >
-          <div className="text-[70px] font-heading font-extrabold text-deep-navy leading-none mb-2">
+          <div className="text-[70px] font-heading font-extrabold text-foreground leading-none mb-2">
             ATP
           </div>
-          <h2 className="text-title-lg text-deep-navy mb-4 uppercase tracking-widest">
+          <h2 className="text-title-lg text-foreground mb-4 uppercase tracking-widest">
             Il Ranking
           </h2>
           <p className="text-body-md text-text-muted">
@@ -186,7 +186,7 @@ export function RankingSection() {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-15%" }}
-            className="w-full rounded-3xl bg-white/80 backdrop-blur-xl border border-border-subtle p-6 shadow-ambient flex flex-col items-center text-center relative overflow-hidden"
+            className="w-full rounded-3xl bg-surface-white/80 backdrop-blur-xl border border-border-subtle p-6 shadow-ambient flex flex-col items-center text-center relative overflow-hidden"
           >
             {/* Sottile background glow nell'angolo in base alla card */}
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-baseline-lime/10 rounded-full blur-2xl pointer-events-none" />
@@ -194,10 +194,10 @@ export function RankingSection() {
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-baseline-lime/20 mb-4 text-primary-olive shadow-sm">
               <item.icon className="h-7 w-7" />
             </div>
-            <h3 className="text-[48px] font-heading font-extrabold text-deep-navy leading-none mb-2">
+            <h3 className="text-[48px] font-heading font-extrabold text-foreground leading-none mb-2">
               {item.value}
             </h3>
-            <p className="text-title-md text-deep-navy font-bold mb-3">
+            <p className="text-title-md text-foreground font-bold mb-3">
               {item.label}
             </p>
             <p className="text-body-md text-text-muted">

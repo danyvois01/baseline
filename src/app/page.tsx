@@ -50,7 +50,7 @@ export default function Home() {
 
         {/* CTA Banner */}
         <section className="relative w-full px-4 sm:px-6 pb-12 sm:pb-16 mt-12 sm:mt-16 z-10">
-          <div className="relative w-full max-w-5xl mx-auto bg-deep-navy rounded-[32px] sm:rounded-[48px] py-16 sm:py-20 overflow-hidden shadow-2xl border border-surface-white/10">
+          <div className="relative w-full max-w-5xl mx-auto bg-deep-navy rounded-[32px] sm:rounded-[48px] py-16 sm:py-20 overflow-hidden shadow-2xl border border-white/10">
             {/* Sfondo dinamico pulito (Navy) */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
               <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-blue-500/5 blur-[100px]" />

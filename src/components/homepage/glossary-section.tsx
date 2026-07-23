@@ -113,10 +113,10 @@ export function GlossarySection() {
         
         {/* Header - Centrato */}
         <div className="text-center mb-6 sm:mb-8 relative z-10 w-full max-w-2xl">
-          <h2 className="text-[36px] sm:text-[48px] font-heading font-extrabold text-deep-navy mb-3 leading-tight">
+          <h2 className="text-[36px] sm:text-[48px] font-heading font-extrabold text-foreground mb-3 leading-tight">
             Parla come un Pro
           </h2>
-          <p className="text-base sm:text-lg text-deep-navy/60 font-medium leading-relaxed">
+          <p className="text-base sm:text-lg text-foreground/60 font-medium leading-relaxed">
             I telecronisti parlano spesso in codice. Ecco le parole chiave per seguire una partita senza perderti neanche un punto.
           </p>
         </div>
@@ -136,12 +136,12 @@ export function GlossarySection() {
                 >
                   <span className={`text-lg sm:text-xl font-heading font-black uppercase tracking-widest transition-all duration-300 px-5 py-1.5 rounded-full border-2 ${
                     isActive 
-                      ? "bg-[#DFFF00] border-[#DFFF00] text-deep-navy shadow-md scale-105" 
-                      : "bg-transparent border-transparent text-deep-navy/30 group-hover:text-deep-navy hover:bg-surface-gray/10"
+                      ? "bg-[#DFFF00] border-[#DFFF00] text-deep-navy shadow-md scale-105"
+                      : "bg-transparent border-transparent text-foreground/30 group-hover:text-foreground hover:bg-surface-gray/10"
                   }`}>
                     {item.term}
                   </span>
-                  <span className="ml-4 sm:ml-6 text-deep-navy/10 text-xs">●</span>
+                  <span className="ml-4 sm:ml-6 text-foreground/10 text-xs">●</span>
                 </button>
               );
             })}
@@ -157,7 +157,7 @@ export function GlossarySection() {
           {/* Freccia Sinistra (Nascosta su mobile dove si usa lo swipe) */}
           <button
             onClick={() => navigate("prev")}
-            className="hidden sm:flex w-14 h-14 rounded-full bg-white border border-border-subtle shadow-sm items-center justify-center text-deep-navy hover:bg-surface-gray hover:scale-110 transition-all group z-20"
+            className="hidden sm:flex w-14 h-14 rounded-full bg-surface-white border border-border-subtle shadow-sm items-center justify-center text-foreground hover:bg-surface-gray hover:scale-110 transition-all group z-20"
             aria-label="Carta precedente"
           >
             <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
@@ -192,7 +192,7 @@ export function GlossarySection() {
                     animate="animate"
                     exit="exit"
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className={`absolute inset-0 w-full h-full rounded-[32px] bg-deep-navy text-white shadow-2xl p-6 sm:p-8 flex flex-col justify-center items-center text-center border-[8px] border-surface-white/5 origin-bottom ${
+                    className={`absolute inset-0 w-full h-full rounded-[32px] bg-deep-navy text-white shadow-2xl p-6 sm:p-8 flex flex-col justify-center items-center text-center border-[8px] border-white/5 origin-bottom ${
                       isTopCard ? "cursor-grab active:cursor-grabbing" : ""
                     }`}
                     style={{ zIndex: 10 - index }}
