@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import { CustomCursor } from "@/components/layout/custom-cursor";
+import { ThemeProvider } from "@/providers/theme-provider";
+import { LocaleProvider } from "@/providers/locale-provider";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -30,13 +32,22 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="it"
       className={`${outfit.variable} ${inter.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-surface-white" suppressHydrationWarning>
-        <CustomCursor />
-        {children}
+      <body className="min-h-full flex flex-col bg-background" suppressHydrationWarning>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <LocaleProvider>
+            <CustomCursor />
+            {children}
+          </LocaleProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
