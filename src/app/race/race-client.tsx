@@ -30,7 +30,7 @@ export function RaceClient({
             <RaceSummaryCards summary={summary} />
 
             {/* Table Widget */}
-            <div className="w-full bg-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
+            <div className="w-full bg-surface-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
               <RaceTable entries={filtered} initialCount={20} />
             </div>
           </>

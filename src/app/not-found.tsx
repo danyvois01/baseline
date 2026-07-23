@@ -19,12 +19,12 @@ export default function NotFound() {
               <span className="text-[120px] md:text-[180px] font-heading font-extrabold text-surface-gray leading-none select-none">
                 404
               </span>
-              <span className="absolute inset-0 flex items-center justify-center text-[120px] md:text-[180px] font-heading font-extrabold text-deep-navy/5 leading-none select-none blur-sm">
+              <span className="absolute inset-0 flex items-center justify-center text-[120px] md:text-[180px] font-heading font-extrabold text-foreground/5 leading-none select-none blur-sm">
                 404
               </span>
             </div>
 
-            <h1 className="text-headline-lg text-deep-navy mb-3">
+            <h1 className="text-headline-lg text-foreground mb-3">
               Page not found
             </h1>
             <p className="text-body-lg text-text-muted max-w-md mb-10">
@@ -34,7 +34,7 @@ export default function NotFound() {
 
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-full bg-deep-navy px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-deep-navy/90 hover:scale-105 hover:shadow-ambient"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Baseline

@@ -61,8 +61,8 @@ export function RankingPageShell<T extends HasPlayer>({
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
         {/* Title + Subtitle */}
         <div>
-          <h1 className="text-headline-lg text-deep-navy mb-1">{title}</h1>
-          <p className="text-body-lg text-deep-navy/70 font-medium flex items-center gap-2">
+          <h1 className="text-headline-lg text-foreground mb-1">{title}</h1>
+          <p className="text-body-lg text-foreground/70 font-medium flex items-center gap-2">
             <span className="w-1 h-5 bg-[#DFFF00] rounded-full inline-block shrink-0" />
             {subtitle}
           </p>
@@ -78,13 +78,13 @@ export function RankingPageShell<T extends HasPlayer>({
               placeholder="Search player..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2.5 rounded-full border border-border-subtle bg-surface-gray/30 text-sm focus:outline-none focus:ring-2 focus:ring-baseline-lime focus:border-transparent transition-all w-40 md:w-48 lg:w-56 placeholder:text-text-muted text-deep-navy"
+              className="pl-10 pr-4 py-2.5 rounded-full border border-border-subtle bg-surface-gray/30 text-sm focus:outline-none focus:ring-2 focus:ring-baseline-lime focus:border-transparent transition-all w-40 md:w-48 lg:w-56 placeholder:text-text-muted text-foreground"
             />
           </div>
 
           {/* Filter Popover */}
           <Popover>
-            <PopoverTrigger className="relative inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface-gray/30 px-5 py-2.5 text-sm font-medium text-deep-navy transition-all duration-200 hover:bg-surface-hover cursor-pointer">
+            <PopoverTrigger className="relative inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface-gray/30 px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-200 hover:bg-surface-hover cursor-pointer">
               <SlidersHorizontal className="h-4 w-4" />
               Filter
               {activeFiltersCount > 0 && (
@@ -95,15 +95,15 @@ export function RankingPageShell<T extends HasPlayer>({
             </PopoverTrigger>
             <PopoverContent
               align="end"
-              className="w-72 p-5 rounded-[24px] shadow-ambient border-border-subtle bg-white"
+              className="w-72 p-5 rounded-[24px] shadow-ambient border-border-subtle bg-surface-white"
             >
               <div className="flex flex-col gap-5">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-deep-navy">Filters</h4>
+                  <h4 className="font-semibold text-foreground">Filters</h4>
                   {activeFiltersCount > 0 && (
                     <button
                       onClick={resetFilters}
-                      className="text-xs font-medium text-text-muted hover:text-deep-navy transition-colors flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-medium text-text-muted hover:text-foreground transition-colors flex items-center gap-1 cursor-pointer"
                     >
                       <X className="h-3 w-3" />
                       Reset
@@ -203,9 +203,9 @@ export function RankingPageShell<T extends HasPlayer>({
 
           {/* Updated Badge */}
           {lastUpdated && (
-            <div className="hidden md:block rounded-full border border-border-subtle bg-white px-5 py-2.5 text-sm text-text-muted shrink-0">
+            <div className="hidden md:block rounded-full border border-border-subtle bg-surface-white px-5 py-2.5 text-sm text-text-muted shrink-0">
               Updated:{" "}
-              <span className="font-medium text-deep-navy">{lastUpdated}</span>
+              <span className="font-medium text-foreground">{lastUpdated}</span>
             </div>
           )}
         </div>

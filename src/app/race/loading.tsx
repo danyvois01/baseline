@@ -50,12 +50,12 @@ export default function RaceLoading() {
 
           {/* Summary cards skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <div className="rounded-xl border border-border-subtle bg-white p-4 px-5">
+            <div className="rounded-xl border border-border-subtle bg-surface-white p-4 px-5">
               <div className="h-4 w-32 rounded bg-surface-gray animate-pulse mb-3" />
               <div className="h-7 w-16 rounded bg-surface-gray animate-pulse mb-2" />
               <div className="h-3 w-48 rounded bg-surface-gray animate-pulse" />
             </div>
-            <div className="rounded-xl border border-border-subtle bg-white p-4 px-5">
+            <div className="rounded-xl border border-border-subtle bg-surface-white p-4 px-5">
               <div className="h-4 w-36 rounded bg-surface-gray animate-pulse mb-3" />
               <div className="h-7 w-20 rounded bg-surface-gray animate-pulse mb-2" />
               <div className="h-3 w-56 rounded bg-surface-gray animate-pulse" />
@@ -63,9 +63,9 @@ export default function RaceLoading() {
           </div>
 
           {/* Table skeleton */}
-          <div className="w-full bg-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
+          <div className="w-full bg-surface-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
             {/* Widget header */}
-            <div className="flex items-center justify-between p-4 md:px-6 border-b border-border-subtle bg-white">
+            <div className="flex items-center justify-between p-4 md:px-6 border-b border-border-subtle bg-surface-white">
               <div className="h-6 w-40 rounded-full bg-surface-gray animate-pulse" />
               <div className="flex items-center gap-3">
                 <div className="h-10 w-48 rounded-full bg-surface-gray animate-pulse" />

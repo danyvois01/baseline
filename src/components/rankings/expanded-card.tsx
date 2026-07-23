@@ -50,7 +50,7 @@ export function ExpandedCard({
           <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold">
             Career High
           </span>
-          <span className="text-body-md font-heading font-extrabold text-deep-navy">
+          <span className="text-body-md font-heading font-extrabold text-foreground">
             #{bestRanking}
           </span>
         </div>
@@ -65,7 +65,7 @@ export function ExpandedCard({
                   Proj. Next
                 </span>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-body-md font-heading font-extrabold text-deep-navy tabular-nums">
+                  <span className="text-body-md font-heading font-extrabold text-foreground tabular-nums">
                     {fmt(nextMatchPoints)}
                   </span>
                   <span className="text-[10px] text-text-muted font-medium">pts</span>
@@ -82,7 +82,7 @@ export function ExpandedCard({
                   Proj. Max
                 </span>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-body-md font-heading font-extrabold text-deep-navy tabular-nums">
+                  <span className="text-body-md font-heading font-extrabold text-foreground tabular-nums">
                     {fmt(maxPoints)}
                   </span>
                   <span className="text-[10px] text-text-muted font-medium">pts</span>
@@ -103,7 +103,7 @@ export function ExpandedCard({
             Official Points
           </span>
           <div className="flex justify-end items-baseline gap-1">
-            <span className="text-body-md font-heading font-extrabold text-deep-navy tabular-nums">
+            <span className="text-body-md font-heading font-extrabold text-foreground tabular-nums">
               {fmt(officialPoints)}
             </span>
             <span className="text-[10px] text-text-muted font-medium">pts</span>

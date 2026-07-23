@@ -44,8 +44,8 @@ export function LiveStatusCell({
         className={cn(
           "text-body-sm whitespace-nowrap",
           isActive
-            ? "text-deep-navy font-semibold"
-            : "text-deep-navy font-medium"
+            ? "text-foreground font-semibold"
+            : "text-foreground font-medium"
         )}
       >
         {isActive ? "Active" : "Out"} - {tournament}
@@ -56,7 +56,7 @@ export function LiveStatusCell({
         className={cn(
           "inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] tracking-wide uppercase shrink-0",
           isActive 
-            ? "bg-baseline-lime text-deep-navy font-bold" 
+            ? "bg-baseline-lime text-deep-navy font-bold"
             : "bg-surface-container text-on-surface-variant font-medium"
         )}
       >

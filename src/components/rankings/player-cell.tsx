@@ -16,7 +16,7 @@ interface PlayerCellProps {
 export function PlayerCell({ player }: PlayerCellProps) {
   return (
     <div className="flex flex-col">
-      <span className="text-body-md font-semibold text-deep-navy group-hover:text-primary-olive transition-colors">
+      <span className="text-body-md font-semibold text-foreground group-hover:text-primary-olive transition-colors">
         {player.name}
       </span>
       <div className="flex items-center gap-1.5 mt-0.5">

@@ -49,7 +49,7 @@ export default function OfficialLoading() {
           </div>
 
           {/* Table skeleton */}
-          <div className="w-full bg-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
+          <div className="w-full bg-surface-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
             {/* Header row */}
             <div className="grid grid-cols-[50px_80px_1fr_120px_160px] items-center px-6 py-4 border-b border-border-subtle bg-surface-gray/30">
               <div className="h-3 w-4 rounded bg-surface-gray animate-pulse mx-auto" />

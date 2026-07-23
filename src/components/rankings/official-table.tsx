@@ -40,7 +40,7 @@ export function OfficialTable({
   const visibleEntries = entries.slice(0, visibleCount);
 
   return (
-    <div className="w-full bg-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
+    <div className="w-full bg-surface-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
       {/* Table Header */}
       <div
         className={cn(
@@ -75,7 +75,7 @@ export function OfficialTable({
             "hover:bg-baseline-lime/5"
           )}
         >
-          <span className="text-headline-md text-deep-navy font-heading font-extrabold text-center">
+          <span className="text-headline-md text-foreground font-heading font-extrabold text-center">
             {entry.rank}
           </span>
 
@@ -88,12 +88,12 @@ export function OfficialTable({
 
           <PlayerCell player={entry.player} />
 
-          <span className="text-[20px] font-heading text-deep-navy font-extrabold text-right tabular-nums">
+          <span className="text-[20px] font-heading text-foreground font-extrabold text-right tabular-nums">
             {formatPoints(entry.points)}
           </span>
 
           <div className="flex flex-col items-end gap-0.5 pr-2">
-            <span className="text-body-md font-semibold text-deep-navy tabular-nums">
+            <span className="text-body-md font-semibold text-foreground tabular-nums">
               {formatPoints(entry.nextWeek.points)}
             </span>
             {entry.nextWeek.rankChange !== 0 ? (
@@ -124,7 +124,7 @@ export function OfficialTable({
         <div className="flex justify-center py-4 border-t border-border-subtle">
           <button
             onClick={showMore}
-            className="rounded-full border border-border-subtle bg-white px-6 py-2.5 text-label-md text-deep-navy font-medium hover:bg-surface-hover transition-all cursor-pointer"
+            className="rounded-full border border-border-subtle bg-surface-white px-6 py-2.5 text-label-md text-foreground font-medium hover:bg-surface-hover transition-all cursor-pointer"
           >
             {buttonLabel}
           </button>

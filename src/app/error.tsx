@@ -29,7 +29,7 @@ export default function GlobalError({
             <AlertTriangle className="h-10 w-10 text-error-red" />
           </div>
 
-          <h1 className="text-headline-lg text-deep-navy mb-3">
+          <h1 className="text-headline-lg text-foreground mb-3">
             Something went wrong
           </h1>
           <p className="text-body-lg text-text-muted mb-10">
@@ -40,7 +40,7 @@ export default function GlobalError({
           <div className="flex items-center gap-4">
             <button
               onClick={reset}
-              className="inline-flex items-center gap-2 rounded-full bg-deep-navy px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-deep-navy/90 hover:scale-105 hover:shadow-ambient cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer"
             >
               <RefreshCw className="h-4 w-4" />
               Try Again
@@ -48,7 +48,7 @@ export default function GlobalError({
 
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-white px-6 py-3 text-sm font-semibold text-deep-navy transition-all duration-300 hover:bg-surface-hover hover:shadow-ambient"
+              className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface-white px-6 py-3 text-sm font-semibold text-foreground transition-all duration-300 hover:bg-surface-hover hover:shadow-ambient"
             >
               <Home className="h-4 w-4" />
               Homepage
