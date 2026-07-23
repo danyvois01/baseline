@@ -34,9 +34,12 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocale] = useState<Locale>(DEFAULT_LOCALE);
 
   // Restore persisted choice after hydration; ignore unknown/corrupt values.
+  // setState here is intentional: reading localStorage during render would
+  // cause a hydration mismatch (SSR always renders the default locale).
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (stored === "it" || stored === "en") setLocale(stored);
     } catch {
       // localStorage unavailable (private mode) — keep default.

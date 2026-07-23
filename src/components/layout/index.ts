@@ -5,3 +5,4 @@
 
 export { TopNavBar } from "./top-nav-bar";
 export { Footer } from "./footer";
+export { SettingsPill } from "./settings-pill";

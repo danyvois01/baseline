@@ -12,29 +12,32 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-/** Navigation items configuration for Homepage */
-const HOME_NAV_ITEMS = [
-  { label: "Ranking", href: "#ranking" },
-  { label: "Tornei", href: "#pyramid" },
-  { label: "Stagione", href: "#timeline" },
-  { label: "Punteggio", href: "#scoring" },
-  { label: "Dizionario", href: "#glossary" },
-] as const;
-
-/** Navigation items configuration for Rankings App */
-const APP_NAV_ITEMS = [
-  { label: "Official Ranking", href: "/official" },
-  { label: "Live Ranking", href: "/live" },
-  { label: "Race to Turin", href: "/race" },
-] as const;
+import { useTranslation } from "@/providers/locale-provider";
+import { SettingsPill } from "./settings-pill";
 
 export function TopNavBar() {
   const pathname = usePathname();
   const { scrollY } = useScroll();
+  const { t } = useTranslation();
+
+  /** Navigation items configuration for Homepage */
+  const homeNavItems = [
+    { label: t.nav.home.ranking, href: "#ranking" },
+    { label: t.nav.home.tournaments, href: "#pyramid" },
+    { label: t.nav.home.season, href: "#timeline" },
+    { label: t.nav.home.scoring, href: "#scoring" },
+    { label: t.nav.home.glossary, href: "#glossary" },
+  ];
+
+  /** Navigation items configuration for Rankings App */
+  const appNavItems = [
+    { label: t.nav.app.official, href: "/official" },
+    { label: t.nav.app.live, href: "/live" },
+    { label: t.nav.app.race, href: "/race" },
+  ];
 
   const isHome = pathname === "/";
-  const currentNavItems = isHome ? HOME_NAV_ITEMS : APP_NAV_ITEMS;
+  const currentNavItems = isHome ? homeNavItems : appNavItems;
 
   // Animation values based on scroll
   const navWidth = useTransform(scrollY, [0, 100], ["100%", "90%"]);
@@ -70,7 +73,7 @@ export function TopNavBar() {
         y: navY,
         borderRadius: navRadius,
       }}
-      className="fixed left-0 right-0 mx-auto z-50 bg-white/80 backdrop-blur-xl border border-border-subtle overflow-hidden"
+      className="fixed left-0 right-0 mx-auto z-50 bg-surface-white/80 backdrop-blur-xl border border-border-subtle overflow-hidden"
     >
       <motion.div 
         style={{ boxShadow: `0px 12px 48px rgba(0,0,0,${shadowOpacity})` }}
@@ -108,7 +111,7 @@ export function TopNavBar() {
                   "relative rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300",
                   isActive
                     ? "text-deep-navy"
-                    : "text-deep-navy/70 hover:text-deep-navy hover:bg-surface-gray/50"
+                    : "text-foreground/70 hover:text-foreground hover:bg-surface-gray/50"
                 )}
               >
                 {isActive && (
@@ -126,20 +129,21 @@ export function TopNavBar() {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-3 z-10 shrink-0">
+          <SettingsPill />
           {isHome ? (
-            <Link 
+            <Link
               href="/official"
-              className="rounded-full bg-deep-navy px-4 md:px-6 py-2 md:py-2.5 text-xs md:text-sm font-semibold text-white transition-all duration-300 hover:bg-deep-navy/90 hover:scale-105 hover:shadow-ambient cursor-pointer whitespace-nowrap"
+              className="rounded-full bg-primary px-4 md:px-6 py-2 md:py-2.5 text-xs md:text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer whitespace-nowrap"
             >
-              <span className="sm:hidden">Classifiche</span>
-              <span className="hidden sm:inline">Vai alle Classifiche</span>
+              <span className="sm:hidden">{t.nav.goToRankingsShort}</span>
+              <span className="hidden sm:inline">{t.nav.goToRankings}</span>
             </Link>
           ) : (
-            <Link 
+            <Link
               href="/"
-              className="rounded-full bg-deep-navy px-4 md:px-6 py-2 md:py-2.5 text-xs md:text-sm font-semibold text-white transition-all duration-300 hover:bg-deep-navy/90 hover:scale-105 hover:shadow-ambient cursor-pointer whitespace-nowrap"
+              className="rounded-full bg-primary px-4 md:px-6 py-2 md:py-2.5 text-xs md:text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer whitespace-nowrap"
             >
-              Torna alla Home
+              {t.nav.backToHome}
             </Link>
           )}
         </div>
