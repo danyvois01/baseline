@@ -3,6 +3,7 @@
 import { RankingsTable } from "@/components/rankings";
 import { RankingPageShell } from "@/components/rankings/ranking-page-shell";
 import type { LiveRankingEntry } from "@/types";
+import { useTranslation } from "@/providers/locale-provider";
 
 interface LiveClientProps {
   initialRankings: LiveRankingEntry[];
@@ -10,10 +11,12 @@ interface LiveClientProps {
 }
 
 export function LiveClient({ initialRankings, lastUpdated }: LiveClientProps) {
+  const { t } = useTranslation();
+
   return (
     <RankingPageShell
-      title="Live ATP Rankings"
-      subtitle="Real-time point projections based on ongoing tournament results."
+      title={t.rankings.pages.liveTitle}
+      subtitle={t.rankings.pages.liveSubtitle}
       lastUpdated={lastUpdated}
       entries={initialRankings}
     >

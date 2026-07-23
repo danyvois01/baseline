@@ -3,6 +3,7 @@
 import { RaceSummaryCards, RaceTable } from "@/components/rankings";
 import { RankingPageShell } from "@/components/rankings/ranking-page-shell";
 import type { RaceRankingEntry, RaceSummary } from "@/types";
+import { useTranslation } from "@/providers/locale-provider";
 
 interface RaceClientProps {
   summary: RaceSummary;
@@ -15,12 +16,14 @@ export function RaceClient({
   initialRankings,
   lastUpdated,
 }: RaceClientProps) {
+  const { t } = useTranslation();
+
   return (
     <>
       {/* Page header + filters via shell */}
       <RankingPageShell
-        title="Race to Turin"
-        subtitle="The top 8 singles players of the calendar year qualify for the prestigious season finale in Turin, Italy."
+        title={t.rankings.pages.raceTitle}
+        subtitle={t.rankings.pages.raceSubtitle}
         lastUpdated={lastUpdated}
         entries={initialRankings}
       >

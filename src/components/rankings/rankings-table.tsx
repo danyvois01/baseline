@@ -16,6 +16,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPoints, formatDiff } from "@/lib/format";
 import { usePagination } from "./primitives/use-pagination";
+import { useTranslation } from "@/providers/locale-provider";
 
 /**
  * Grid column definition shared between header, rows, and expanded card.
@@ -38,6 +39,7 @@ export function RankingsTable({
   entries,
   initialCount = 20,
 }: RankingsTableProps) {
+  const { t } = useTranslation();
   const { visibleCount, hasMore, buttonLabel, showMore } = usePagination(
     entries.length,
     initialCount,
@@ -67,22 +69,22 @@ export function RankingsTable({
         )}
       >
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
-          #
+          {t.rankings.table.rank}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
-          Move
+          {t.rankings.table.move}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider">
-          Player
+          {t.rankings.table.player}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider">
-          Live Status
+          {t.rankings.table.liveStatus}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider text-right">
-          Points
+          {t.rankings.table.points}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
-          +/-
+          {t.rankings.table.diff}
         </span>
         <span />
       </div>

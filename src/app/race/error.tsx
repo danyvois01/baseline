@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { TopNavBar, Footer } from "@/components/layout";
 import { AlertTriangle, RefreshCw } from "lucide-react";
+import { useTranslation } from "@/providers/locale-provider";
 
 /**
  * Error boundary for the /race route.
@@ -17,6 +18,8 @@ export default function RaceError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useTranslation();
+
   useEffect(() => {
     console.error("[/race] Unhandled error:", error);
   }, [error]);
@@ -33,11 +36,10 @@ export default function RaceError({
             </div>
 
             <h1 className="text-headline-lg text-foreground mb-3">
-              Something went wrong
+              {t.errors.title}
             </h1>
             <p className="text-body-lg text-text-muted max-w-md mb-8">
-              We couldn&apos;t load the Race to Turin standings. This may be a
-              temporary issue with our data source. Please try again.
+              {t.errors.raceBody}
             </p>
 
             <button
@@ -45,12 +47,12 @@ export default function RaceError({
               className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer"
             >
               <RefreshCw className="h-4 w-4" />
-              Retry
+              {t.errors.tryAgain}
             </button>
 
             {error.digest && (
               <p className="mt-6 text-body-sm text-text-muted/60">
-                Error ID: {error.digest}
+                {t.errors.errorId}{error.digest}
               </p>
             )}
           </div>

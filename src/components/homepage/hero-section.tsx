@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { ChevronDown } from "lucide-react";
+import { ScrollCue } from "./scroll-cue";
 
 /* ------------------------------------------------------------------ */
 /*  Court line definitions for draw-on animation                       */
@@ -37,11 +37,6 @@ export function HeroSection() {
   const courtY = useTransform(scrollYProgress, [0, 1], ["0%", "80%"]);
   const courtScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
-  const scrollToNext = () => {
-    const el = document.getElementById("ranking");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   return (
     <section
       id="hero"
@@ -69,8 +64,32 @@ export function HeroSection() {
             <h1 className="text-[12vw] sm:text-[70px] lg:text-[90px] xl:text-[110px] leading-[0.85] font-heading font-extrabold text-foreground tracking-tighter uppercase interactive cursor-none">
               Baseline
               <br />
-              <span className="inline-block pb-4 pr-4 text-transparent bg-clip-text bg-gradient-to-r from-deep-navy to-primary-olive text-[8vw] sm:text-[50px] lg:text-[60px] xl:text-[70px]">
-                La Linea Di Fondo
+              <span className="inline-block pb-4 pr-4 text-foreground text-[8vw] sm:text-[50px] lg:text-[60px] xl:text-[70px]">
+                La Linea Di{" "}
+                <span className="relative inline-block">
+                  Fondo
+                  {/* Hand-drawn lime underline, draws itself like the court lines */}
+                  <svg
+                    viewBox="0 0 200 14"
+                    preserveAspectRatio="none"
+                    className="absolute left-0 -bottom-[0.08em] w-full h-[0.16em] text-baseline-lime pointer-events-none"
+                    aria-hidden="true"
+                  >
+                    <motion.path
+                      d="M4,10 C40,4 120,2 196,8"
+                      stroke="currentColor"
+                      strokeWidth={7}
+                      strokeLinecap="round"
+                      fill="none"
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={{ pathLength: 1, opacity: 1 }}
+                      transition={{
+                        pathLength: { duration: 0.7, delay: 1.1, ease: "easeInOut" },
+                        opacity: { duration: 0.2, delay: 1.1 },
+                      }}
+                    />
+                  </svg>
+                </span>
               </span>
             </h1>
           </motion.div>
@@ -202,22 +221,11 @@ export function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1 }}
-        onClick={scrollToNext}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-text-muted/60 hover:text-primary-olive transition-colors cursor-pointer"
-        aria-label="Scroll down"
-      >
-        <span className="text-[10px] font-bold uppercase tracking-widest">Scopri</span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <ChevronDown className="w-4 h-4" />
-        </motion.div>
-      </motion.button>
+      <ScrollCue
+        targetId="ranking"
+        label="Scopri"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2"
+      />
     </section>
   );
 }

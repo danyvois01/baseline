@@ -16,6 +16,7 @@ import { formatPoints, formatDiff } from "@/lib/format";
 import { usePagination } from "./primitives/use-pagination";
 import { CircleCheckBig, Trophy } from "lucide-react";
 import type { RaceRankingEntry } from "@/types";
+import { useTranslation } from "@/providers/locale-provider";
 
 /**
  * Grid column definition.
@@ -37,10 +38,11 @@ interface RaceTableProps {
 }
 
 export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
+  const { t } = useTranslation();
   const { visibleCount, hasMore, buttonLabel, showMore } = usePagination(
     entries.length,
     initialCount,
-    "Show Full Race",
+    t.rankings.race.showFullRace,
   );
   const visibleEntries = entries.slice(0, visibleCount);
 
@@ -54,25 +56,25 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
         )}
       >
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
-          #
+          {t.rankings.table.rank}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
-          Move
+          {t.rankings.table.move}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider">
-          Player
+          {t.rankings.table.player}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider">
-          Live Status
+          {t.rankings.table.liveStatus}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider text-right">
-          Points
+          {t.rankings.table.points}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
-          +/-
+          {t.rankings.table.diff}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
-          Status
+          {t.rankings.table.status}
         </span>
       </div>
 
@@ -92,7 +94,7 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                 <div className="flex justify-center">
                   <span className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground font-bold text-[10px] tracking-wider px-3.5 py-1.5 rounded-full uppercase shadow-sm border border-white/10 whitespace-nowrap">
                     <Trophy className="h-3.5 w-3.5 shrink-0 text-baseline-lime" />
-                    Turin Cut
+                    {t.rankings.race.turinCut}
                   </span>
                 </div>
                 <div className="col-span-3 border-t border-border-subtle" />
@@ -149,11 +151,11 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                 {entry.raceStatus === "qualified" ? (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-success-green-bg text-success-green-text px-3 py-1 text-xs font-medium">
                     <CircleCheckBig className="h-3.5 w-3.5" />
-                    Qualified
+                    {t.rankings.race.qualified}
                   </span>
                 ) : (
                   <span className="text-body-sm text-text-muted">
-                    In Contention
+                    {t.rankings.race.inContention}
                   </span>
                 )}
               </div>

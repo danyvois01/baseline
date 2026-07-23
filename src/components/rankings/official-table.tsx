@@ -13,6 +13,7 @@ import { PlayerCell } from "./player-cell";
 import { cn } from "@/lib/utils";
 import { formatPoints } from "@/lib/format";
 import { usePagination } from "./primitives/use-pagination";
+import { useTranslation } from "@/providers/locale-provider";
 
 /**
  * Grid column definition.
@@ -33,6 +34,7 @@ export function OfficialTable({
   entries,
   initialCount = 20,
 }: OfficialTableProps) {
+  const { t } = useTranslation();
   const { visibleCount, hasMore, buttonLabel, showMore } = usePagination(
     entries.length,
     initialCount,
@@ -49,19 +51,19 @@ export function OfficialTable({
         )}
       >
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
-          #
+          {t.rankings.table.rank}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
-          Move
+          {t.rankings.table.move}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider">
-          Player
+          {t.rankings.table.player}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider text-right">
-          Points
+          {t.rankings.table.points}
         </span>
         <span className="text-label-md text-text-muted uppercase tracking-wider text-right pr-2">
-          Next Week
+          {t.rankings.table.nextWeek}
         </span>
       </div>
 

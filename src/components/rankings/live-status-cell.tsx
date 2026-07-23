@@ -7,6 +7,7 @@
  */
 
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/providers/locale-provider";
 
 interface LiveStatusCellProps {
   isActive: boolean;
@@ -19,6 +20,8 @@ export function LiveStatusCell({
   tournament,
   stage,
 }: LiveStatusCellProps) {
+  const { t } = useTranslation();
+
   if (!tournament && !stage) {
     return (
       <div className="flex items-center gap-2 opacity-30">
@@ -48,7 +51,8 @@ export function LiveStatusCell({
             : "text-foreground font-medium"
         )}
       >
-        {isActive ? "Active" : "Out"} - {tournament}
+        {isActive ? t.rankings.liveStatus.active : t.rankings.liveStatus.out} -{" "}
+        {tournament}
       </span>
 
       {/* Round badge — active uses tennis ball yellow (baseline-lime), out uses gray surface */}

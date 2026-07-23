@@ -3,6 +3,7 @@
 import { OfficialTable } from "@/components/rankings";
 import { RankingPageShell } from "@/components/rankings/ranking-page-shell";
 import type { OfficialRankingEntry } from "@/types";
+import { useTranslation } from "@/providers/locale-provider";
 
 interface OfficialClientProps {
   initialRankings: OfficialRankingEntry[];
@@ -13,10 +14,12 @@ export function OfficialClient({
   initialRankings,
   lastUpdated,
 }: OfficialClientProps) {
+  const { t } = useTranslation();
+
   return (
     <RankingPageShell
-      title="Official ATP Rankings"
-      subtitle="The official weekly ATP Tour singles rankings."
+      title={t.rankings.pages.officialTitle}
+      subtitle={t.rankings.pages.officialSubtitle}
       lastUpdated={lastUpdated}
       entries={initialRankings}
     >

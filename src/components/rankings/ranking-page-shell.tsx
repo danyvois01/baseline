@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import type { PlayerDisplay } from "@/types";
 import { useRankingFilters, type AgeGroup } from "@/hooks/use-ranking-filters";
+import { useTranslation } from "@/providers/locale-provider";
 
 type HasPlayer = { player: PlayerDisplay };
 
@@ -42,6 +43,7 @@ export function RankingPageShell<T extends HasPlayer>({
   entries,
   children,
 }: RankingPageShellProps<T>) {
+  const { t } = useTranslation();
   const {
     searchQuery,
     setSearchQuery,
@@ -75,7 +77,7 @@ export function RankingPageShell<T extends HasPlayer>({
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
             <input
               type="text"
-              placeholder="Search player..."
+              placeholder={t.rankings.shell.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-2.5 rounded-full border border-border-subtle bg-surface-gray/30 text-sm focus:outline-none focus:ring-2 focus:ring-baseline-lime focus:border-transparent transition-all w-40 md:w-48 lg:w-56 placeholder:text-text-muted text-foreground"
@@ -86,7 +88,7 @@ export function RankingPageShell<T extends HasPlayer>({
           <Popover>
             <PopoverTrigger className="relative inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface-gray/30 px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-200 hover:bg-surface-hover cursor-pointer">
               <SlidersHorizontal className="h-4 w-4" />
-              Filter
+              {t.rankings.shell.filter}
               {activeFiltersCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-baseline-lime text-[10px] font-bold text-deep-navy">
                   {activeFiltersCount}
@@ -99,14 +101,14 @@ export function RankingPageShell<T extends HasPlayer>({
             >
               <div className="flex flex-col gap-5">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-foreground">Filters</h4>
+                  <h4 className="font-semibold text-foreground">{t.rankings.shell.filtersHeading}</h4>
                   {activeFiltersCount > 0 && (
                     <button
                       onClick={resetFilters}
                       className="text-xs font-medium text-text-muted hover:text-foreground transition-colors flex items-center gap-1 cursor-pointer"
                     >
                       <X className="h-3 w-3" />
-                      Reset
+                      {t.rankings.shell.reset}
                     </button>
                   )}
                 </div>
@@ -114,21 +116,21 @@ export function RankingPageShell<T extends HasPlayer>({
                 {/* Nationality Select */}
                 <div className="space-y-2">
                   <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider pl-1">
-                    Nationality
+                    {t.rankings.shell.nationality}
                   </label>
                   <Select
                     value={nationalityFilter}
                     onValueChange={(val) => setNationalityFilter(val ?? "All")}
                   >
                     <SelectTrigger className="w-full rounded-full border-border-subtle px-4 py-3 h-auto focus:ring-baseline-lime">
-                      <SelectValue placeholder="Select nationality" />
+                      <SelectValue placeholder={t.rankings.shell.selectNationality} />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl border-border-subtle p-2 shadow-ambient">
                       <SelectItem
                         value="All"
                         className="rounded-xl py-2.5 px-3 cursor-pointer"
                       >
-                        <span className="font-medium">All Nationalities</span>
+                        <span className="font-medium">{t.rankings.shell.allNationalities}</span>
                       </SelectItem>
                       {uniqueNationalities.map((item) => (
                         <SelectItem
@@ -152,7 +154,7 @@ export function RankingPageShell<T extends HasPlayer>({
                 {/* Age Group Select */}
                 <div className="space-y-2">
                   <label className="text-[11px] font-bold text-text-muted uppercase tracking-wider pl-1">
-                    Age Group
+                    {t.rankings.shell.ageGroup}
                   </label>
                   <Select
                     value={ageFilter}
@@ -161,38 +163,38 @@ export function RankingPageShell<T extends HasPlayer>({
                     }
                   >
                     <SelectTrigger className="w-full rounded-full border-border-subtle px-4 py-3 h-auto focus:ring-baseline-lime">
-                      <SelectValue placeholder="Select age group" />
+                      <SelectValue placeholder={t.rankings.shell.selectAgeGroup} />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl border-border-subtle p-2 shadow-ambient">
                       <SelectItem
                         value="All"
                         className="rounded-xl py-2.5 px-3 cursor-pointer"
                       >
-                        <span className="font-medium">All Ages</span>
+                        <span className="font-medium">{t.rankings.shell.allAges}</span>
                       </SelectItem>
                       <SelectItem
                         value="Under 21"
                         className="rounded-xl py-2.5 px-3 cursor-pointer"
                       >
-                        <span className="font-medium">Under 21</span>
+                        <span className="font-medium">{t.rankings.shell.under21}</span>
                       </SelectItem>
                       <SelectItem
                         value="21-25"
                         className="rounded-xl py-2.5 px-3 cursor-pointer"
                       >
-                        <span className="font-medium">21 - 25</span>
+                        <span className="font-medium">{t.rankings.shell.age21to25}</span>
                       </SelectItem>
                       <SelectItem
                         value="26-30"
                         className="rounded-xl py-2.5 px-3 cursor-pointer"
                       >
-                        <span className="font-medium">26 - 30</span>
+                        <span className="font-medium">{t.rankings.shell.age26to30}</span>
                       </SelectItem>
                       <SelectItem
                         value="Over 30"
                         className="rounded-xl py-2.5 px-3 cursor-pointer"
                       >
-                        <span className="font-medium">Over 30</span>
+                        <span className="font-medium">{t.rankings.shell.over30}</span>
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -204,7 +206,7 @@ export function RankingPageShell<T extends HasPlayer>({
           {/* Updated Badge */}
           {lastUpdated && (
             <div className="hidden md:block rounded-full border border-border-subtle bg-surface-white px-5 py-2.5 text-sm text-text-muted shrink-0">
-              Updated:{" "}
+              {t.rankings.shell.updated}
               <span className="font-medium text-foreground">{lastUpdated}</span>
             </div>
           )}

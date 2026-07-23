@@ -9,6 +9,7 @@
  */
 
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/providers/locale-provider";
 
 /** Grid cols must match rankings-table.tsx GRID_COLS (7 columns) */
 const GRID_COLS = "grid-cols-[50px_80px_1fr_1.2fr_120px_100px_50px]";
@@ -38,6 +39,8 @@ export function ExpandedCard({
   bestRanking,
   isActive = true,
 }: ExpandedCardProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-surface-gray/30 shadow-inner border-t border-border-subtle/40 px-6 py-4">
       <div className={cn("grid items-start", GRID_COLS)}>
@@ -48,7 +51,7 @@ export function ExpandedCard({
         {/* Col 3 (Player): Career High */}
         <div className="flex flex-col gap-1">
           <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold">
-            Career High
+            {t.rankings.expandedCard.careerHigh}
           </span>
           <span className="text-body-md font-heading font-extrabold text-foreground">
             #{bestRanking}
@@ -62,15 +65,15 @@ export function ExpandedCard({
               {/* Next */}
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold flex items-center gap-1.5">
-                  Proj. Next
+                  {t.rankings.expandedCard.projNext}
                 </span>
                 <div className="flex items-baseline gap-1">
                   <span className="text-body-md font-heading font-extrabold text-foreground tabular-nums">
                     {fmt(nextMatchPoints)}
                   </span>
-                  <span className="text-[10px] text-text-muted font-medium">pts</span>
+                  <span className="text-[10px] text-text-muted font-medium">{t.rankings.expandedCard.pts}</span>
                 </div>
-                <span className="text-[10px] text-on-surface-variant font-medium">Wins next match</span>
+                <span className="text-[10px] text-on-surface-variant font-medium">{t.rankings.expandedCard.winsNextMatch}</span>
               </div>
 
               {/* Vertical Divider */}
@@ -79,15 +82,15 @@ export function ExpandedCard({
               {/* Max */}
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold">
-                  Proj. Max
+                  {t.rankings.expandedCard.projMax}
                 </span>
                 <div className="flex items-baseline gap-1">
                   <span className="text-body-md font-heading font-extrabold text-foreground tabular-nums">
                     {fmt(maxPoints)}
                   </span>
-                  <span className="text-[10px] text-text-muted font-medium">pts</span>
+                  <span className="text-[10px] text-text-muted font-medium">{t.rankings.expandedCard.pts}</span>
                 </div>
-                <span className="text-[10px] text-on-surface-variant font-medium">Title win</span>
+                <span className="text-[10px] text-on-surface-variant font-medium">{t.rankings.expandedCard.titleWin}</span>
               </div>
             </>
           ) : (
@@ -100,15 +103,15 @@ export function ExpandedCard({
         {/* Col 5 (Points): Official Points right-aligned to match the points above */}
         <div className="flex flex-col gap-1 text-right">
           <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold">
-            Official Points
+            {t.rankings.expandedCard.officialPoints}
           </span>
           <div className="flex justify-end items-baseline gap-1">
             <span className="text-body-md font-heading font-extrabold text-foreground tabular-nums">
               {fmt(officialPoints)}
             </span>
-            <span className="text-[10px] text-text-muted font-medium">pts</span>
+            <span className="text-[10px] text-text-muted font-medium">{t.rankings.expandedCard.pts}</span>
           </div>
-          <span className="text-[10px] text-on-surface-variant font-medium">ATP verified</span>
+          <span className="text-[10px] text-on-surface-variant font-medium">{t.rankings.expandedCard.atpVerified}</span>
         </div>
 
         {/* Col 6 & 7: Skip [+/-] and [Chevron] */}

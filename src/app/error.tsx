@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { useTranslation } from "@/providers/locale-provider";
 
 /**
  * Global root error boundary.
@@ -17,6 +18,8 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useTranslation();
+
   useEffect(() => {
     console.error("[global] Unhandled application error:", error);
   }, [error]);
@@ -30,11 +33,10 @@ export default function GlobalError({
           </div>
 
           <h1 className="text-headline-lg text-foreground mb-3">
-            Something went wrong
+            {t.errors.title}
           </h1>
           <p className="text-body-lg text-text-muted mb-10">
-            An unexpected error occurred. Our team has been notified. You can
-            try again or head back to the homepage.
+            {t.errors.genericBody}
           </p>
 
           <div className="flex items-center gap-4">
@@ -43,7 +45,7 @@ export default function GlobalError({
               className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer"
             >
               <RefreshCw className="h-4 w-4" />
-              Try Again
+              {t.errors.tryAgain}
             </button>
 
             <Link
@@ -51,13 +53,13 @@ export default function GlobalError({
               className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface-white px-6 py-3 text-sm font-semibold text-foreground transition-all duration-300 hover:bg-surface-hover hover:shadow-ambient"
             >
               <Home className="h-4 w-4" />
-              Homepage
+              {t.errors.homepage}
             </Link>
           </div>
 
           {error.digest && (
             <p className="mt-8 text-body-sm text-text-muted/60">
-              Error ID: {error.digest}
+              {t.errors.errorId}{error.digest}
             </p>
           )}
         </div>

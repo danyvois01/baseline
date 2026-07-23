@@ -1,13 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import { TopNavBar, Footer } from "@/components/layout";
 import { ArrowLeft } from "lucide-react";
+import { useTranslation } from "@/providers/locale-provider";
 
 /**
  * Global 404 Not Found page.
  * Displayed when a user navigates to a route that doesn't exist.
+ * Client component so the copy follows the selected locale.
  */
 
 export default function NotFound() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col min-h-screen bg-surface-white">
       <TopNavBar />
@@ -25,11 +31,10 @@ export default function NotFound() {
             </div>
 
             <h1 className="text-headline-lg text-foreground mb-3">
-              Page not found
+              {t.notFound.title}
             </h1>
             <p className="text-body-lg text-text-muted max-w-md mb-10">
-              The page you&apos;re looking for doesn&apos;t exist or may have
-              been moved. Try heading back to the homepage.
+              {t.notFound.body}
             </p>
 
             <Link
@@ -37,7 +42,7 @@ export default function NotFound() {
               className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Baseline
+              {t.notFound.backHome}
             </Link>
           </div>
         </div>
