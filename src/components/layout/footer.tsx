@@ -24,13 +24,22 @@ export function Footer() {
       <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-4 px-6 py-12 md:flex-row">
         {/* Brand Logo */}
         <Link href="/" className="shrink-0">
+          {/* Light/dark logo variants swapped via CSS to avoid a theme flash */}
           <Image
             src="/logo_new_crop.png"
             alt="Baseline Tennis"
             width={160}
             height={40}
             style={{ width: "auto", height: "40px" }}
-            className="object-contain opacity-80 hover:opacity-100 transition-opacity"
+            className="object-contain opacity-80 hover:opacity-100 transition-opacity dark:hidden"
+          />
+          <Image
+            src="/logo_new_crop_dark.png"
+            alt="Baseline Tennis"
+            width={160}
+            height={40}
+            style={{ width: "auto", height: "40px" }}
+            className="object-contain opacity-80 hover:opacity-100 transition-opacity hidden dark:block"
           />
         </Link>
 

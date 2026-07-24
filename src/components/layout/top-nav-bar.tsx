@@ -86,13 +86,23 @@ export function TopNavBar() {
       >
         {/* Left: Logo */}
         <Link href="/" onClick={handleLogoClick} className="flex items-center gap-2 shrink-0 z-10">
+          {/* Light/dark logo variants swapped via CSS to avoid a theme flash */}
           <Image
             src="/logo_new_crop.png"
             alt="Baseline — ATP & WTA Rankings"
             width={200}
             height={48}
             style={{ width: "auto", height: "48px" }}
-            className="object-contain"
+            className="object-contain dark:hidden"
+            priority
+          />
+          <Image
+            src="/logo_new_crop_dark.png"
+            alt="Baseline — ATP & WTA Rankings"
+            width={200}
+            height={48}
+            style={{ width: "auto", height: "48px" }}
+            className="object-contain hidden dark:block"
             priority
           />
         </Link>
