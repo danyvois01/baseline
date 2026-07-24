@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/providers/locale-provider";
 
 interface ScrollCueProps {
   /** id of the section to scroll to */
@@ -23,10 +24,12 @@ interface ScrollCueProps {
  */
 export function ScrollCue({
   targetId,
-  label = "Continua",
+  label,
   variant = "dark",
   className,
 }: ScrollCueProps) {
+  const { t } = useTranslation();
+  const cueLabel = label ?? t.home.scrollCue.defaultLabel;
   const scrollToTarget = () => {
     const el = document.getElementById(targetId);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -46,9 +49,9 @@ export function ScrollCue({
           : "text-white/60 hover:text-baseline-lime",
         className
       )}
-      aria-label={`Vai alla sezione successiva: ${label}`}
+      aria-label={t.home.scrollCue.ariaNext(cueLabel)}
     >
-      <span className="text-[10px] font-bold uppercase tracking-widest">{label}</span>
+      <span className="text-[10px] font-bold uppercase tracking-widest">{cueLabel}</span>
       <motion.div
         animate={{ y: [0, 6, 0] }}
         transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}

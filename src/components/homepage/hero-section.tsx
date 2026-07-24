@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { ScrollCue } from "./scroll-cue";
+import { useTranslation } from "@/providers/locale-provider";
 
 /* ------------------------------------------------------------------ */
 /*  Court line definitions for draw-on animation                       */
@@ -25,7 +26,13 @@ const BALL_CX = [60, 440, 120, 400, 260, 60];
 const BALL_CY = [240, 60, 120, 230, 50, 240];
 
 export function HeroSection() {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // The animated underline decorates the subtitle's last word in any locale.
+  const subtitleWords = t.home.hero.subtitle.split(" ");
+  const subtitleLastWord = subtitleWords[subtitleWords.length - 1];
+  const subtitleLead = subtitleWords.slice(0, -1).join(" ");
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -65,9 +72,9 @@ export function HeroSection() {
               Baseline
               <br />
               <span className="inline-block pb-4 pr-4 text-foreground text-[8vw] sm:text-[50px] lg:text-[60px] xl:text-[70px]">
-                La Linea Di{" "}
+                {subtitleLead}{" "}
                 <span className="relative inline-block">
-                  Fondo
+                  {subtitleLastWord}
                   {/* Hand-drawn lime underline, draws itself like the court lines */}
                   <svg
                     viewBox="0 0 200 14"
@@ -101,8 +108,7 @@ export function HeroSection() {
             className="mt-8 max-w-xl"
           >
             <p className="text-[20px] md:text-[22px] text-text-muted font-medium leading-relaxed">
-              La linea di fondo campo è il punto di partenza di ogni scambio. 
-              Qui su Baseline, è anche il fondamento della tua conoscenza del tennis professionistico.
+              {t.home.hero.lead}
             </p>
           </motion.div>
         </motion.div>
@@ -223,7 +229,7 @@ export function HeroSection() {
       {/* Scroll indicator */}
       <ScrollCue
         targetId="ranking"
-        label="Scopri"
+        label={t.home.hero.scrollLabel}
         className="absolute bottom-6 left-1/2 -translate-x-1/2"
       />
     </section>

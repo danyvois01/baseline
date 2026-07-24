@@ -2,56 +2,71 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { Clock, Info } from "lucide-react";
+import { Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/providers/locale-provider";
+import type { Dictionary } from "@/lib/i18n";
+import { ScrollCue } from "./scroll-cue";
 
 const SCORES = ["0", "15", "30", "40", "GAME"];
 
-const CHAPTERS = [
-  {
-    id: "game",
-    title: "Game, Set, Match: Come si gioca?",
-    content: "Il tennis ha un sistema di punteggio storico. Una partita è divisa in Set, che a loro volta sono divisi in Game.",
-    curiosity: "Il sistema di punteggio all'interno del game è nato probabilmente guardando i quadranti dell'orologio, ed è per questo che incrementa in questo modo bizzarro (15, 30, 40)."
-  },
-  {
-    id: "deuce",
-    title: "Deuce & Vantaggi",
-    content: "Se entrambi i giocatori arrivano a 40, si va in \"Deuce\" (Parità). Da qui in poi, per vincere il game serve conquistare due punti consecutivi. Il primo dà il \"Vantaggio\" (Ad); se si vince anche il secondo, è Game. Se si perde, si torna in parità."
-  },
-  {
-    id: "set",
-    title: "Il Set",
-    content: "Per vincere un Set bisogna conquistare 6 Game, mantenendo almeno due game di scarto (es. 6-4 o 6-3). Sul punteggio di 5-5, si prosegue fino a 7 (es. 7-5). Nei tornei normali vince la partita chi fa per primo 2 Set (\"Al meglio dei 3\"). Negli Slam maschili vince chi ne fa 3 (\"Al meglio dei 5\")."
-  },
-  {
-    id: "tiebreak",
-    title: "Il Tie-Break",
-    content: "Sul punteggio di 6-6, si gioca il Tie-Break: un game speciale dove i punti si contano numericamente (1, 2, 3...). Vince il set chi arriva a 7 punti per primo, sempre con almeno due punti di scarto."
-  }
-] as const;
+/** Chapter ids; titles/contents come from the locale dictionary by index. */
+const CHAPTER_IDS = ["game", "deuce", "set", "tiebreak"] as const;
 
-type ChapterId = typeof CHAPTERS[number]["id"];
+type Chapter = Dictionary["home"]["scoring"]["chapters"][number] & {
+  id: (typeof CHAPTER_IDS)[number];
+};
+
+type ChapterId = (typeof CHAPTER_IDS)[number];
 
 export function ScoringSection() {
+  const { t } = useTranslation();
   const [activeChapter, setActiveChapter] = useState<ChapterId>("game");
+
+  const chapters: Chapter[] = CHAPTER_IDS.map((id, i) => ({
+    id,
+    ...t.home.scoring.chapters[i],
+  }));
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { margin: "-10% 0px -10% 0px" });
 
   return (
-    <section id="scoring" ref={sectionRef} className="relative w-full bg-deep-navy text-white pb-32">
+    <section id="scoring" ref={sectionRef} className="relative w-full bg-deep-navy text-white pb-24">
+      {/* Soft seam: curved white-to-navy transition instead of a hard edge */}
+      <div className="absolute top-0 left-0 right-0 -translate-y-[99%] pointer-events-none" aria-hidden="true">
+        <svg
+          viewBox="0 0 1440 120"
+          preserveAspectRatio="none"
+          className="block w-full h-[60px] md:h-[120px]"
+        >
+          <path
+            d="M0,120 C360,20 1080,20 1440,120 L1440,121 L0,121 Z"
+            className="fill-deep-navy"
+          />
+        </svg>
+      </div>
+
       <div className="absolute inset-0 bg-[url('/noise.png')] opacity-5 mix-blend-overlay pointer-events-none" />
+
+      {/* Section header, styled like the light sections */}
+      <div className="relative max-w-[1280px] mx-auto px-6 pt-20 md:pt-28 text-center">
+        <h2 className="text-[40px] md:text-[64px] font-heading font-extrabold text-white leading-none mb-4">
+          {t.home.scoring.title}
+        </h2>
+        <p className="text-body-lg text-white/60 max-w-2xl mx-auto">
+          {t.home.scoring.lead}
+        </p>
+      </div>
 
       {/* Main Container */}
       <div className="max-w-[1280px] mx-auto px-6 relative flex flex-col md:flex-row gap-12 lg:gap-24">
-        
+
         {/* Left Column: Scrolling Text */}
-        <div className="w-full md:w-[45%] pt-20 pb-20 md:pt-32 md:py-[30vh]">
-          {CHAPTERS.map((chapter) => (
-             <ChapterBlock 
-               key={chapter.id} 
-               chapter={chapter} 
-               setActiveChapter={setActiveChapter} 
+        <div className="w-full md:w-[45%] pt-16 pb-20 md:pt-24 md:py-[20vh]">
+          {chapters.map((chapter) => (
+             <ChapterBlock
+               key={chapter.id}
+               chapter={chapter}
+               setActiveChapter={setActiveChapter}
              />
           ))}
         </div>
@@ -62,22 +77,29 @@ export function ScoringSection() {
         </div>
 
       </div>
+
+      {/* Next-section cue (light variant on navy) */}
+      <div className="relative flex justify-center pt-4">
+        <ScrollCue targetId="glossary" label={t.home.scoring.scrollNext} variant="light" />
+      </div>
     </section>
   );
 }
 
 // -- Components --
 
-function ChapterBlock({ 
-  chapter, 
-  setActiveChapter 
-}: { 
-  chapter: typeof CHAPTERS[number]; 
-  setActiveChapter: (id: ChapterId) => void 
+function ChapterBlock({
+  chapter,
+  setActiveChapter,
+}: {
+  chapter: Chapter;
+  setActiveChapter: (id: ChapterId) => void;
 }) {
+  const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
-  // Trigger active state when block is near the center of viewport
-  const isInView = useInView(ref, { margin: "-45% 0px -45% 0px" });
+  // Wider margin + taller blocks: each chapter "rests" longer while the
+  // sticky scoreboard is in view, matching the held-scroll feel of Ranking
+  const isInView = useInView(ref, { margin: "-35% 0px -35% 0px" });
 
   useEffect(() => {
     if (isInView) {
@@ -86,9 +108,9 @@ function ChapterBlock({
   }, [isInView, chapter.id, setActiveChapter]);
 
   return (
-    <motion.div 
+    <motion.div
       ref={ref}
-      className="min-h-[50vh] flex flex-col justify-center mb-24 md:mb-0"
+      className="min-h-[50vh] md:min-h-[70vh] flex flex-col justify-center mb-24 md:mb-0"
       initial={{ opacity: 0.3, filter: "blur(4px)" }}
       animate={{ 
         opacity: isInView ? 1 : 0.3,
@@ -102,11 +124,11 @@ function ChapterBlock({
       <p className="text-body-xl text-white/70 leading-relaxed">
         {chapter.content}
       </p>
-      {"curiosity" in chapter && chapter.curiosity && (
+      {chapter.curiosity !== "" && (
         <div className="mt-8 p-6 rounded-2xl bg-baseline-lime/10 border border-baseline-lime/20 flex items-start gap-4">
           <Clock className="w-6 h-6 text-baseline-lime shrink-0 mt-1" />
           <p className="text-body-md text-white/80">
-            <strong className="text-baseline-lime">Curiosità:</strong> {chapter.curiosity}
+            <strong className="text-baseline-lime">{t.home.scoring.curiosityLabel}</strong> {chapter.curiosity}
           </p>
         </div>
       )}
@@ -133,9 +155,9 @@ function VisualContent({ activeChapter }: { activeChapter: ChapterId }) {
 // -- Visual States --
 
 function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
+  const { t } = useTranslation();
   const [playerScore, setPlayerScore] = useState(mode === "deuce" ? 3 : 0);
   const [opponentScore, setOpponentScore] = useState(mode === "deuce" ? 3 : 0);
-  const [isDeuce, setIsDeuce] = useState(false);
   const [advantage, setAdvantage] = useState<"player" | "opponent" | null>(null);
 
   const handlePlayerScore = () => {
@@ -174,21 +196,22 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
   };
 
   const getBadgeText = () => {
-    if (playerScore === 4) return "Hai vinto il game!";
-    if (opponentScore === 4) return "L'avversario vince il game!";
+    const b = t.home.scoring.badges;
+    if (playerScore === 4) return b.gameYouWin;
+    if (opponentScore === 4) return b.gameOpponentWins;
     if (playerScore === 3 && opponentScore === 3) {
-      if (advantage === "player") return "Vantaggio: Tu";
-      if (advantage === "opponent") return "Vantaggio: Avversario";
-      if (mode === "deuce") return "Deuce: Clicca per il vantaggio";
-      return "Parità (Deuce)";
+      if (advantage === "player") return b.advantageYou;
+      if (advantage === "opponent") return b.advantageOpponent;
+      if (mode === "deuce") return b.deuceClick;
+      return b.deuce;
     }
-    return "Il Game: Clicca per giocare";
+    return b.gameIdle;
   };
 
   const getBadgeStyle = () => {
     if (playerScore === 4) return "bg-baseline-lime text-black shadow-[0_0_15px_rgba(223,255,0,0.5)]";
-    if (opponentScore === 4) return "bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.5)]";
-    if (playerScore === 3 && opponentScore === 3) return "bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.5)]";
+    if (opponentScore === 4) return "bg-baseline-lime text-black shadow-[0_0_15px_rgba(223,255,0,0.5)]";
+    if (playerScore === 3 && opponentScore === 3) return "bg-baseline-lime text-black shadow-[0_0_15px_rgba(223,255,0,0.5)]";
     return "bg-white/10 text-white";
   };
 
@@ -210,7 +233,7 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
       <div className="relative overflow-hidden inline-flex flex-col items-center p-6 md:p-8 lg:p-10 rounded-[3rem] bg-black border-[4px] border-[#222] shadow-[0_30px_100px_rgba(0,0,0,0.8)] w-full">
         <div className="flex gap-4 md:gap-8">
         <div className="flex flex-col items-center">
-          <span className="text-white/50 font-bold uppercase tracking-widest mb-3 md:mb-4 text-sm md:text-base">Tu</span>
+          <span className="text-white/50 font-bold uppercase tracking-widest mb-3 md:mb-4 text-sm md:text-base">{t.home.scoring.you}</span>
           <button 
             onClick={handlePlayerScore}
             disabled={playerScore === 4 || opponentScore === 4}
@@ -235,7 +258,7 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
           <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white/20" />
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-white/50 font-bold uppercase tracking-widest mb-3 md:mb-4 text-sm md:text-base">Avversario</span>
+          <span className="text-white/50 font-bold uppercase tracking-widest mb-3 md:mb-4 text-sm md:text-base">{t.home.scoring.opponent}</span>
           <button 
             onClick={handleOpponentScore}
             disabled={playerScore === 4 || opponentScore === 4}
@@ -268,7 +291,7 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
                 onClick={reset}
                 className="px-6 py-2 md:px-8 md:py-3 rounded-full bg-white text-black font-bold uppercase tracking-widest hover:bg-baseline-lime transition-colors text-sm md:text-base shadow-[0_0_30px_rgba(255,255,255,0.3)]"
               >
-                Rigioca
+                {t.home.scoring.replay}
               </button>
             </motion.div>
           )}
@@ -281,6 +304,7 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
 
 
 function SetVisual() {
+  const { t } = useTranslation();
   const [playerGames, setPlayerGames] = useState(0);
   const [opponentGames, setOpponentGames] = useState(0);
 
@@ -349,7 +373,7 @@ function SetVisual() {
             (status === "player_won" || status === "opponent_won") && "opacity-50 pointer-events-none"
           )}
         >
-          <span className="text-xs opacity-70 leading-none mb-1">+1 Game</span>
+          <span className="text-xs opacity-70 leading-none mb-1">{t.home.scoring.plusOneGame}</span>
           <span className="text-sm leading-none">{name}</span>
         </button>
         <div className="flex gap-2 justify-center sm:justify-start">
@@ -360,16 +384,17 @@ function SetVisual() {
   };
 
   const getBadgeText = () => {
-    if (status === "player_won") return "Hai vinto il Set!";
-    if (status === "opponent_won") return "L'avversario vince il Set!";
-    if (status === "tie_break") return "Tie-Break! (6-6)";
-    return "Il Set: Vinci 6 Game";
+    const b = t.home.scoring.badges;
+    if (status === "player_won") return b.setYouWin;
+    if (status === "opponent_won") return b.setOpponentWins;
+    if (status === "tie_break") return b.setTiebreak;
+    return b.setIdle;
   };
 
   const getBadgeStyle = () => {
     if (status === "player_won") return "bg-baseline-lime text-black shadow-[0_0_15px_rgba(223,255,0,0.5)]";
-    if (status === "opponent_won") return "bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.5)]";
-    if (status === "tie_break") return "bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.5)]";
+    if (status === "opponent_won") return "bg-baseline-lime text-black shadow-[0_0_15px_rgba(223,255,0,0.5)]";
+    if (status === "tie_break") return "bg-baseline-lime text-black shadow-[0_0_15px_rgba(223,255,0,0.5)]";
     return "bg-white/10 text-white";
   };
 
@@ -390,8 +415,8 @@ function SetVisual() {
 
       <div className="relative overflow-hidden p-6 md:p-10 rounded-[3rem] bg-black border-[4px] border-[#222] shadow-[0_30px_100px_rgba(0,0,0,0.8)] w-full">
         <div className="flex flex-col gap-8 md:gap-10">
-          {renderPlayerRow("Tu", playerGames, true)}
-          {renderPlayerRow("Avversario", opponentGames, false)}
+          {renderPlayerRow(t.home.scoring.you, playerGames, true)}
+          {renderPlayerRow(t.home.scoring.opponent, opponentGames, false)}
         </div>
 
         <AnimatePresence>
@@ -406,7 +431,7 @@ function SetVisual() {
                 onClick={reset}
                 className="px-6 py-2 md:px-8 md:py-3 rounded-full bg-white text-black font-bold uppercase tracking-widest hover:bg-baseline-lime transition-colors text-sm md:text-base shadow-[0_0_30px_rgba(255,255,255,0.3)]"
               >
-                Rigioca
+                {t.home.scoring.replay}
               </button>
             </motion.div>
           )}
@@ -417,6 +442,7 @@ function SetVisual() {
 }
 
 function TieBreakVisual() {
+  const { t } = useTranslation();
   const [playerScore, setPlayerScore] = useState(0);
   const [opponentScore, setOpponentScore] = useState(0);
 
@@ -444,15 +470,16 @@ function TieBreakVisual() {
   };
 
   const getBadgeText = () => {
-    if (status === "player_won") return "Hai vinto poi il set! (7-6)";
-    if (status === "opponent_won") return "L'avversario vince il set (7-6)";
-    return "Tie-Break: Arriva a 7 punti";
+    const b = t.home.scoring.badges;
+    if (status === "player_won") return b.tiebreakYouWin;
+    if (status === "opponent_won") return b.tiebreakOpponentWins;
+    return b.tiebreakIdle;
   };
 
   const getBadgeStyle = () => {
     if (status === "player_won") return "bg-baseline-lime text-black shadow-[0_0_15px_rgba(223,255,0,0.5)]";
-    if (status === "opponent_won") return "bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.5)]";
-    return "bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.5)]";
+    if (status === "opponent_won") return "bg-baseline-lime text-black shadow-[0_0_15px_rgba(223,255,0,0.5)]";
+    return "bg-baseline-lime text-black shadow-[0_0_15px_rgba(223,255,0,0.5)]";
   };
 
   return (
@@ -473,7 +500,7 @@ function TieBreakVisual() {
       <div className="relative inline-flex flex-col items-center p-6 md:p-8 lg:p-10 rounded-[3rem] bg-black border-[4px] border-[#222] shadow-[0_30px_100px_rgba(0,0,0,0.8)]">
         <div className="flex gap-4 md:gap-8">
           <div className="flex flex-col items-center gap-4">
-            <span className="text-white/50 font-bold uppercase tracking-widest text-sm md:text-base">Tu</span>
+            <span className="text-white/50 font-bold uppercase tracking-widest text-sm md:text-base">{t.home.scoring.you}</span>
             <button
               onClick={handlePlayerScore}
               disabled={status !== "playing"}
@@ -491,7 +518,7 @@ function TieBreakVisual() {
               "text-xs uppercase tracking-wider font-bold transition-opacity",
               status === "playing" ? "text-baseline-lime opacity-100 animate-pulse" : "opacity-0"
             )}>
-              + Clicca
+              {t.home.scoring.clickHint}
             </span>
           </div>
 
@@ -500,7 +527,7 @@ function TieBreakVisual() {
           </div>
 
           <div className="flex flex-col items-center gap-4">
-            <span className="text-white/50 font-bold uppercase tracking-widest text-sm md:text-base">Avversario</span>
+            <span className="text-white/50 font-bold uppercase tracking-widest text-sm md:text-base">{t.home.scoring.opponent}</span>
             <button
               onClick={handleOpponentScore}
               disabled={status !== "playing"}
@@ -518,7 +545,7 @@ function TieBreakVisual() {
               "text-xs uppercase tracking-wider font-bold transition-opacity",
               status === "playing" ? "text-white/50 opacity-100" : "opacity-0"
             )}>
-              + Clicca
+              {t.home.scoring.clickHint}
             </span>
           </div>
         </div>
@@ -535,7 +562,7 @@ function TieBreakVisual() {
                 onClick={reset}
                 className="px-6 py-2 md:px-8 md:py-3 rounded-full bg-white text-black font-bold uppercase tracking-widest hover:bg-baseline-lime transition-colors text-sm md:text-base shadow-[0_0_30px_rgba(255,255,255,0.3)]"
               >
-                Rigioca
+                {t.home.scoring.replay}
               </button>
             </motion.div>
           )}

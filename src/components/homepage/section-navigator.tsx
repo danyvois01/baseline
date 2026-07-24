@@ -8,6 +8,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/providers/locale-provider";
 
 interface SectionMeta {
   readonly id: string;
@@ -19,6 +20,7 @@ interface SectionNavigatorProps {
 }
 
 export function SectionNavigator({ sections }: SectionNavigatorProps) {
+  const { t } = useTranslation();
   const [activeId, setActiveId] = useState<string>(sections[0].id);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -61,7 +63,7 @@ export function SectionNavigator({ sections }: SectionNavigatorProps) {
           exit={{ opacity: 0, x: 20 }}
           transition={{ duration: 0.3 }}
           className="fixed right-3 top-1/2 -translate-y-1/2 z-40 hidden xl:flex flex-col items-center gap-3"
-          aria-label="Section navigation"
+          aria-label={t.home.sections.navAriaLabel}
         >
           {sections.map((section) => {
             const isActive = activeId === section.id;
@@ -70,7 +72,7 @@ export function SectionNavigator({ sections }: SectionNavigatorProps) {
                 key={section.id}
                 onClick={() => scrollTo(section.id)}
                 className="group relative flex items-center justify-center cursor-pointer p-1"
-                aria-label={`Go to ${section.label}`}
+                aria-label={t.home.sections.goTo(section.label)}
               >
                 {/* Tooltip label (appears on hover to the left) */}
                 <span

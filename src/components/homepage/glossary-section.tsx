@@ -1,73 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useTranslation } from "@/providers/locale-provider";
 
-const TERMS = [
-  {
-    term: "ACE",
-    def: "Un servizio vincente perfetto, su cui l'avversario non riesce nemmeno a mettere la racchetta.",
-  },
-  {
-    term: "BREAK",
-    def: "Vincere un game in cui a servire era l'avversario. Poiché chi batte ha un grosso vantaggio, \"strappare il servizio\" è la chiave per vincere.",
-  },
-  {
-    term: "BASELINE",
-    def: "La linea di fondo campo. Il nostro nome. È da dove si batte e dove si scambiano la maggior parte dei colpi nel tennis moderno.",
-  },
-  {
-    term: "LET",
-    def: "Quando il servizio tocca il nastro della rete ma cade comunque nel rettangolo corretto. Il giudice chiama \"Let!\" e la battuta si ripete senza penalità.",
-  },
-  {
-    term: "DOUBLE FAULT",
-    def: "Chi batte ha due possibilità per mettere in campo il servizio. Se le sbaglia entrambe, perde il punto.",
-  },
-  {
-    term: "DROP SHOT",
-    def: "Un colpo \"smorzato\" che fa rimbalzare la palla appena oltre la rete, costringendo l'avversario a una corsa disperata in avanti.",
-  },
-  {
-    term: "LOB",
-    def: "Un colpo alto e arcuato, usato per scavalcare l'avversario quando questo si è avvicinato troppo alla rete.",
-  },
-  {
-    term: "PASSANTE",
-    def: "Il colpo con cui si supera lateralmente l'avversario che è sceso a rete. Può essere giocato in diagonale (cross) o lungo la linea (lungolinea).",
-  },
-  {
-    term: "WINNER",
-    def: "Un colpo talmente potente, preciso o improvviso che l'avversario non riesce nemmeno a toccare con la racchetta prima del secondo rimbalzo.",
-  },
-  {
-    term: "UNFORCED ERROR",
-    def: "L'incubo di ogni tennista. È un errore commesso su una palla comoda, senza che l'avversario abbia fatto nulla per mettere in difficoltà chi colpisce.",
-  },
-  {
-    term: "TOP SPIN",
-    def: "La rotazione dal basso verso l'alto impressa alla pallina. La fa viaggiare alta sopra la rete per poi farla scendere rapidamente, facendola rimbalzare alta e profonda. È la base del tennis moderno.",
-  },
-  {
-    term: "VOLLEY",
-    def: "Il colpo al volo, eseguito prima che la palla tocchi terra, solitamente quando ci si trova nei pressi della rete per chiudere il punto.",
-  },
-  {
-    term: "SMASH",
-    def: "La schiacciata. Un colpo violento eseguito sopra la testa, quasi sempre in risposta a un lob corto dell'avversario. È l'equivalente della schiacciata nella pallavolo.",
-  },
-  {
-    term: "SLICE",
-    def: "La rotazione contraria al Top Spin, dall'alto verso il basso. La pallina rimane bassissima dopo il rimbalzo, costringendo l'avversario a piegare le gambe fino a terra per colpire.",
-  },
-  {
-    term: "SERVE & VOLLEY",
-    def: "Una tattica aggressiva e spettacolare. Subito dopo aver battuto, il giocatore corre verso la rete per chiudere il punto al volo, togliendo tempo all'avversario.",
-  },
-];
+
 
 export function GlossarySection() {
+  const { t } = useTranslation();
+  const terms = t.home.glossary.terms;
   const [activeIndex, setActiveIndex] = useState(0);
   const [leaveX, setLeaveX] = useState(-300);
 
@@ -77,8 +19,8 @@ export function GlossarySection() {
     setLeaveX(direction === "next" ? -300 : 300);
     setTimeout(() => {
       setActiveIndex((prev) => {
-        if (direction === "next") return (prev + 1) % TERMS.length;
-        return (prev - 1 + TERMS.length) % TERMS.length;
+        if (direction === "next") return (prev + 1) % terms.length;
+        return (prev - 1 + terms.length) % terms.length;
       });
     }, 10);
   };
@@ -91,7 +33,7 @@ export function GlossarySection() {
     }, 10);
   };
 
-  const handleDragEnd = (event: any, info: any) => {
+  const handleDragEnd = (_event: PointerEvent, info: PanInfo) => {
     const swipeThreshold = 50;
     if (info.offset.x > swipeThreshold) {
       navigate("prev"); // trascinato verso destra
@@ -102,9 +44,9 @@ export function GlossarySection() {
 
   // Otteniamo le 3 carte visibili per il loop infinito
   const visibleCards = [
-    TERMS[activeIndex],
-    TERMS[(activeIndex + 1) % TERMS.length],
-    TERMS[(activeIndex + 2) % TERMS.length],
+    terms[activeIndex],
+    terms[(activeIndex + 1) % terms.length],
+    terms[(activeIndex + 2) % terms.length],
   ];
 
   return (
@@ -114,10 +56,10 @@ export function GlossarySection() {
         {/* Header - Centrato */}
         <div className="text-center mb-6 sm:mb-8 relative z-10 w-full max-w-2xl">
           <h2 className="text-[36px] sm:text-[48px] font-heading font-extrabold text-foreground mb-3 leading-tight">
-            Parla come un Pro
+            {t.home.glossary.title}
           </h2>
           <p className="text-base sm:text-lg text-foreground/60 font-medium leading-relaxed">
-            I telecronisti parlano spesso in codice. Ecco le parole chiave per seguire una partita senza perderti neanche un punto.
+            {t.home.glossary.lead}
           </p>
         </div>
 
@@ -125,8 +67,8 @@ export function GlossarySection() {
         <div className="w-full relative mb-8 sm:mb-10 border-y border-border-subtle overflow-hidden bg-surface-white">
           <div className="flex animate-marquee hover:[animation-play-state:paused] whitespace-nowrap py-3 sm:py-4 items-center w-max">
             {/* Ripetiamo l'array 4 volte per coprire schermi larghi e permettere il loop infinito */}
-            {[...TERMS, ...TERMS, ...TERMS, ...TERMS].map((item, idx) => {
-              const realIndex = idx % TERMS.length;
+            {[...terms, ...terms, ...terms, ...terms].map((item, idx) => {
+              const realIndex = idx % terms.length;
               const isActive = activeIndex === realIndex;
               return (
                 <button
@@ -158,7 +100,7 @@ export function GlossarySection() {
           <button
             onClick={() => navigate("prev")}
             className="hidden sm:flex w-14 h-14 rounded-full bg-surface-white border border-border-subtle shadow-sm items-center justify-center text-foreground hover:bg-surface-gray hover:scale-110 transition-all group z-20"
-            aria-label="Carta precedente"
+            aria-label={t.home.glossary.prevCard}
           >
             <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
           </button>
@@ -211,7 +153,7 @@ export function GlossarySection() {
                     
                     {isTopCard && (
                        <div className="absolute bottom-6 flex gap-4 text-surface-gray/40 font-bold uppercase tracking-widest text-xs pointer-events-none sm:hidden">
-                         <span>&larr; Swipe &rarr;</span>
+                         <span>{t.home.glossary.swipeHint}</span>
                        </div>
                     )}
                   </motion.div>
@@ -224,7 +166,7 @@ export function GlossarySection() {
           <button
             onClick={() => navigate("next")}
             className="hidden sm:flex w-14 h-14 rounded-full bg-deep-navy text-white shadow-lg shadow-deep-navy/20 items-center justify-center hover:bg-deep-navy/90 hover:scale-110 transition-all group z-20"
-            aria-label="Prossima carta"
+            aria-label={t.home.glossary.nextCard}
           >
             <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
           </button>

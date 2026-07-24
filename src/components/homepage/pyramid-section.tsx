@@ -9,91 +9,37 @@ import {
   Star,
   Layers,
   Footprints,
-  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/providers/locale-provider";
+import type { Dictionary } from "@/lib/i18n";
+import { ScrollCue } from "./scroll-cue";
 
-const TIERS = [
-  {
-    id: "finals",
-    name: "ATP Finals",
-    points: "1500",
-    tagline: "La punta della piramide",
-    description:
-      "Riservato solamente ai migliori 8 giocatori della stagione. È l'unico torneo con una spettacolare fase iniziale a gironi (Round Robin) prima delle semifinali a eliminazione diretta.",
-    icon: Crown,
-    color: "bg-amber-400",
-    textColor: "text-amber-500",
-    w: "w-[20%]",
-  },
-  {
-    id: "slam",
-    name: "Grand Slam",
-    points: "2000",
-    tagline: "I quattro pilastri storici",
-    description:
-      "Australian Open, Roland Garros, Wimbledon e US Open. I tornei più antichi, prestigiosi e fisicamente brutali: sono gli unici dove si gioca al meglio dei 5 set.",
-    icon: Medal,
-    color: "bg-violet-500",
-    textColor: "text-violet-600",
-    w: "w-[36%]",
-  },
-  {
-    id: "masters",
-    name: "Masters 1000",
-    points: "1000",
-    tagline: "L'élite del tour",
-    description:
-      "Nove appuntamenti obbligatori sparsi nel mondo, appena un gradino sotto gli Slam per importanza. Vincerne uno significa entrare nell'élite.",
-    icon: Award,
-    color: "bg-blue-500",
-    textColor: "text-blue-600",
-    w: "w-[52%]",
-  },
-  {
-    id: "500",
-    name: "ATP 500",
-    points: "500",
-    tagline: "L'alto livello",
-    description:
-      "Tredici tornei di grande importanza. Cruciali per consolidare la propria posizione in Top 20 o per accumulare punti preziosi.",
-    icon: Star,
-    color: "bg-emerald-500",
-    textColor: "text-emerald-600",
-    w: "w-[68%]",
-  },
-  {
-    id: "250",
-    name: "ATP 250",
-    points: "250",
-    tagline: "La base del circuito maggiore",
-    description:
-      "L'ossatura del circuito. Decine di tornei in tutto il mondo ogni settimana, occasioni preziose per emergere e far debuttare i giovani talenti.",
-    icon: Layers,
-    color: "bg-gray-400",
-    textColor: "text-gray-600",
-    w: "w-[84%]",
-  },
-  {
-    id: "challenger",
-    name: "Challenger & ITF",
-    points: "175",
-    tagline: "Il trampolino di lancio",
-    description:
-      "Le leghe minori. Il trampolino di lancio essenziale per i giovani tennisti e per chi cerca di accumulare i primi punti.",
-    icon: Footprints,
-    color: "bg-stone-400",
-    textColor: "text-stone-600",
-    w: "w-[100%]",
-  },
+/**
+ * Tier tones form a tonal navy scale: full deep-navy at the top of the
+ * pyramid (Grand Slam) fading toward the base. The floating ATP Finals
+ * crown and the active tier are highlighted in baseline-lime.
+ */
+/** Non-text tier metadata; names/taglines/descriptions come from the locale dictionary by index. */
+const TIER_META = [
+  { id: "finals", points: "1500", icon: Crown, tone: "bg-baseline-lime", w: "w-[20%]" },
+  { id: "slam", points: "2000", icon: Medal, tone: "bg-deep-navy", w: "w-[36%]" },
+  { id: "masters", points: "1000", icon: Award, tone: "bg-deep-navy/85", w: "w-[52%]" },
+  { id: "500", points: "500", icon: Star, tone: "bg-deep-navy/70", w: "w-[68%]" },
+  { id: "250", points: "250", icon: Layers, tone: "bg-deep-navy/55", w: "w-[84%]" },
+  { id: "challenger", points: "175", icon: Footprints, tone: "bg-deep-navy/40", w: "w-[100%]" },
 ] as const;
 
+type Tier = (typeof TIER_META)[number] & Dictionary["home"]["pyramid"]["tiers"][number];
+
 // Componente per il singolo blocco di testo che aggiorna lo stato "active" quando entra nel viewport
-function TierTextBlock({ 
-  tier, 
-  setActiveTier 
-}: { 
-  tier: typeof TIERS[number]; 
+function TierTextBlock({
+  tier,
+  pointsToWinner,
+  setActiveTier,
+}: {
+  tier: Tier;
+  pointsToWinner: string;
   setActiveTier: (id: string) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -108,29 +54,29 @@ function TierTextBlock({
 
   return (
     <div ref={ref} className="min-h-[100dvh] flex flex-col justify-center py-16 md:py-20">
-      <motion.div 
+      <motion.div
         className={cn(
-          "bg-surface-white/80 backdrop-blur-md border border-border-subtle rounded-3xl p-6 md:p-12 shadow-xl transition-all duration-700",
+          "bg-surface-white/85 backdrop-blur-md border border-border-subtle rounded-3xl p-6 md:p-12 shadow-xl transition-all duration-700",
           isInView ? "opacity-100 scale-100" : "opacity-30 scale-95"
         )}
       >
         <div className="flex items-center gap-6 mb-6">
-          <div className={cn("w-16 h-16 rounded-full flex items-center justify-center shadow-lg text-white", tier.color)}>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg bg-deep-navy text-baseline-lime">
             <tier.icon className="w-8 h-8" />
           </div>
           <div>
             <h3 className="text-[40px] font-heading font-extrabold text-foreground leading-none mb-2">{tier.name}</h3>
-            <p className={cn("text-label-lg font-bold uppercase tracking-wider", tier.textColor)}>{tier.tagline}</p>
+            <p className="text-label-lg font-bold uppercase tracking-wider text-primary-olive">{tier.tagline}</p>
           </div>
         </div>
-        
+
         <p className="text-body-xl text-foreground leading-relaxed mb-8">
           {tier.description}
         </p>
 
         <div className="inline-flex items-center gap-3 bg-surface-gray rounded-full px-5 py-2 border border-border-subtle">
-          <span className="text-label-md font-medium text-text-muted">Punti al vincitore:</span>
-          <span className={cn("text-headline-sm font-black", tier.textColor)}>{tier.points}</span>
+          <span className="text-label-md font-medium text-text-muted">{pointsToWinner}</span>
+          <span className="text-headline-sm font-black text-primary-olive">{tier.points}</span>
         </div>
       </motion.div>
     </div>
@@ -138,86 +84,84 @@ function TierTextBlock({
 }
 
 export function PyramidSection() {
+  const { t } = useTranslation();
   const [activeTier, setActiveTier] = useState<string>("finals");
+
+  const tiers: Tier[] = TIER_META.map((meta, i) => ({
+    ...meta,
+    ...t.home.pyramid.tiers[i],
+  }));
 
   return (
     <section id="pyramid" className="relative w-full bg-surface-white">
-      
+
       {/* Intro Titolo (Full Screen) */}
       <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 text-center pt-32 pb-24">
         <h2 className="text-[50px] md:text-[70px] font-heading font-extrabold text-foreground leading-none mb-8">
-          La Piramide dei Tornei
+          {t.home.pyramid.title}
         </h2>
-        
+
         <div className="max-w-3xl mx-auto space-y-6 text-[18px] text-text-muted">
           <p className="text-2xl md:text-3xl font-heading font-extrabold text-foreground mb-4">
-            Non tutti i tornei sono uguali
+            {t.home.pyramid.lead}
           </p>
           <p className="leading-relaxed">
-            I tornei sono divisi in categorie ben precise, che determinano il prestigio, la difficoltà e, ovviamente, i punti in palio. Più si sale verso il vertice della piramide, maggiore è la gloria.
+            {t.home.pyramid.intro1}
           </p>
           <p className="leading-relaxed">
-            I più importanti in assoluto sono i <strong className="text-foreground">Grand Slam</strong> (2000 punti al vincitore), seguiti dai Masters 1000, dagli ATP 500 e 250. La stagione culmina con le <strong className="text-amber-500">ATP Finals</strong>, riservate ai migliori 8 dell'anno.
+            {t.home.pyramid.intro2BeforeSlam}<strong className="text-foreground">Grand Slam</strong>{t.home.pyramid.intro2AfterSlam}<strong className="text-primary-olive">ATP Finals</strong>{t.home.pyramid.intro2AfterFinals}
           </p>
         </div>
 
         {/* Scroll indicator (like Hero) */}
-        <button
-          onClick={() => {
-            const el = document.getElementById("pyramid-content");
-            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-text-muted/60 hover:text-primary-olive transition-colors cursor-pointer"
-          aria-label="Scroll to pyramid graphic"
-        >
-          <span className="text-[10px] font-bold uppercase tracking-widest">Esplora la piramide</span>
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <ChevronDown className="w-4 h-4" />
-          </motion.div>
-        </button>
+        <ScrollCue
+          targetId="pyramid-content"
+          label={t.home.pyramid.exploreLabel}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2"
+        />
       </div>
 
       <div id="pyramid-content" className="max-w-[1400px] mx-auto px-6 relative flex flex-col lg:flex-row items-start">
-        
+
         {/* Sinistra: Piramide Grafica (Sticky) */}
         <div className="hidden lg:flex lg:w-1/2 sticky top-0 pt-24 h-screen items-center justify-center p-12">
           <div className="w-full max-w-[400px] flex flex-col items-center gap-2">
-            {TIERS.map((tier, index) => {
-              const activeIndex = TIERS.findIndex(t => t.id === activeTier);
+            {tiers.map((tier, index) => {
+              const activeIndex = tiers.findIndex((x) => x.id === activeTier);
               const isPassed = index <= activeIndex;
               const isActive = activeTier === tier.id;
               const isFinals = tier.id === "finals";
-              
+
               return (
-                <div 
-                  key={tier.id + "-graphic"} 
+                <div
+                  key={tier.id + "-graphic"}
                   className={cn(
                     "transition-all duration-500 ease-out flex items-center justify-center",
                     // The floating crown vs the pyramid tiers
-                    isFinals 
-                      ? "h-16 w-16 rounded-full mb-8 relative" 
+                    isFinals
+                      ? "h-16 w-16 rounded-full mb-8 relative"
                       : `h-12 rounded-lg mt-1 ${tier.w}`,
-                    // Active vs inactive states
-                    isActive 
-                      ? `${tier.color} shadow-[0_0_30px_rgba(0,0,0,0.15)] scale-110 z-10` 
+                    // Active tier is lime, passed tiers keep their navy tone, future tiers stay neutral
+                    isActive
+                      ? "bg-baseline-lime shadow-[0_0_30px_rgba(223,255,0,0.4)] scale-110 z-10"
                       : isPassed
-                        ? `${tier.color} opacity-90 scale-100` // Keep color for passed tiers
-                        : isFinals 
-                          ? "bg-surface-gray border border-amber-200 scale-100 opacity-50"
-                          : "bg-surface-gray border border-border-subtle scale-100 opacity-60"
+                        ? `${tier.tone} opacity-95 scale-100`
+                        : "bg-surface-gray border border-border-subtle scale-100 opacity-60"
                   )}
                 >
                   {isActive || isPassed ? (
-                    <span className="text-white font-bold text-sm tracking-wider uppercase drop-shadow-md">
+                    <span
+                      className={cn(
+                        "font-bold text-sm tracking-wider uppercase",
+                        isActive || isFinals ? "text-deep-navy" : "text-white drop-shadow-md"
+                      )}
+                    >
                       {isFinals ? <Crown className="w-8 h-8" /> : tier.name}
                     </span>
                   ) : (
-                    isFinals && <Crown className="w-8 h-8 text-amber-500 opacity-60" />
+                    isFinals && <Crown className="w-8 h-8 text-text-muted opacity-60" />
                   )}
-                  
+
                   {/* Visual connector line for the floating crown */}
                   {isFinals && (
                     <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[1px] h-6 border-l border-dashed border-border-subtle" />
@@ -231,16 +175,22 @@ export function PyramidSection() {
         {/* Destra: Testi a scorrimento */}
         <div className="w-full lg:w-1/2 relative z-10">
           <div className="pb-[50vh]">
-            {TIERS.map((tier) => (
-              <TierTextBlock 
-                key={tier.id} 
-                tier={tier} 
-                setActiveTier={setActiveTier} 
+            {tiers.map((tier) => (
+              <TierTextBlock
+                key={tier.id}
+                tier={tier}
+                pointsToWinner={t.home.pyramid.pointsToWinner}
+                setActiveTier={setActiveTier}
               />
             ))}
           </div>
         </div>
 
+      </div>
+
+      {/* Next-section cue */}
+      <div className="relative flex justify-center pb-12 -mt-[30vh]">
+        <ScrollCue targetId="timeline" label={t.home.pyramid.scrollNext} />
       </div>
     </section>
   );
