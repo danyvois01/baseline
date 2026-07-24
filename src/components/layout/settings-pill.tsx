@@ -12,6 +12,7 @@ import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "@/providers/locale-provider";
+import { StableLabel } from "@/components/ui/stable-label";
 
 const emptySubscribe = () => () => {};
 
@@ -63,7 +64,7 @@ export function SettingsPill() {
         aria-label={t.settings.switchLanguage}
         className="flex h-10 items-center justify-center rounded-r-full px-3 text-sm font-semibold text-foreground/80 transition-colors hover:bg-surface-gray/50 hover:text-foreground cursor-pointer"
       >
-        {t.settings.targetLanguage}
+        <StableLabel text={(d) => d.settings.targetLanguage} />
       </button>
     </div>
   );
