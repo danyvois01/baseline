@@ -25,6 +25,7 @@ import {
 import type { PlayerDisplay } from "@/types";
 import { useRankingFilters, type AgeGroup } from "@/hooks/use-ranking-filters";
 import { useTranslation } from "@/providers/locale-provider";
+import { StableLabel } from "@/components/ui/stable-label";
 
 type HasPlayer = { player: PlayerDisplay };
 
@@ -88,7 +89,7 @@ export function RankingPageShell<T extends HasPlayer>({
           <Popover>
             <PopoverTrigger className="relative inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface-gray/30 px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-200 hover:bg-surface-hover cursor-pointer">
               <SlidersHorizontal className="h-4 w-4" />
-              {t.rankings.shell.filter}
+              <StableLabel text={(d) => d.rankings.shell.filter} />
               {activeFiltersCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-baseline-lime text-[10px] font-bold text-deep-navy">
                   {activeFiltersCount}
@@ -205,8 +206,8 @@ export function RankingPageShell<T extends HasPlayer>({
 
           {/* Updated Badge */}
           {lastUpdated && (
-            <div className="hidden md:block rounded-full border border-border-subtle bg-surface-white px-5 py-2.5 text-sm text-text-muted shrink-0">
-              {t.rankings.shell.updated}
+            <div className="hidden md:flex items-center gap-1 rounded-full border border-border-subtle bg-surface-white px-5 py-2.5 text-sm text-text-muted shrink-0">
+              <StableLabel text={(d) => d.rankings.shell.updated} />
               <span className="font-medium text-foreground">{lastUpdated}</span>
             </div>
           )}

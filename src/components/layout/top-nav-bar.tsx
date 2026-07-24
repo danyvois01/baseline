@@ -12,32 +12,35 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useTranslation } from "@/providers/locale-provider";
+import type { Dictionary } from "@/lib/i18n";
+import { StableLabel } from "@/components/ui/stable-label";
 import { SettingsPill } from "./settings-pill";
+
+/**
+ * Nav items carry dictionary accessors (not resolved strings) so labels can
+ * be rendered via StableLabel — sized to the widest translation, preventing
+ * layout shift when the language changes.
+ */
+const HOME_NAV_ITEMS = [
+  { text: (d: Dictionary) => d.nav.home.ranking, href: "#ranking" },
+  { text: (d: Dictionary) => d.nav.home.tournaments, href: "#pyramid" },
+  { text: (d: Dictionary) => d.nav.home.season, href: "#timeline" },
+  { text: (d: Dictionary) => d.nav.home.scoring, href: "#scoring" },
+  { text: (d: Dictionary) => d.nav.home.glossary, href: "#glossary" },
+] as const;
+
+const APP_NAV_ITEMS = [
+  { text: (d: Dictionary) => d.nav.app.official, href: "/official" },
+  { text: (d: Dictionary) => d.nav.app.live, href: "/live" },
+  { text: (d: Dictionary) => d.nav.app.race, href: "/race" },
+] as const;
 
 export function TopNavBar() {
   const pathname = usePathname();
   const { scrollY } = useScroll();
-  const { t } = useTranslation();
-
-  /** Navigation items configuration for Homepage */
-  const homeNavItems = [
-    { label: t.nav.home.ranking, href: "#ranking" },
-    { label: t.nav.home.tournaments, href: "#pyramid" },
-    { label: t.nav.home.season, href: "#timeline" },
-    { label: t.nav.home.scoring, href: "#scoring" },
-    { label: t.nav.home.glossary, href: "#glossary" },
-  ];
-
-  /** Navigation items configuration for Rankings App */
-  const appNavItems = [
-    { label: t.nav.app.official, href: "/official" },
-    { label: t.nav.app.live, href: "/live" },
-    { label: t.nav.app.race, href: "/race" },
-  ];
 
   const isHome = pathname === "/";
-  const currentNavItems = isHome ? homeNavItems : appNavItems;
+  const currentNavItems = isHome ? HOME_NAV_ITEMS : APP_NAV_ITEMS;
 
   // Animation values based on scroll
   const navWidth = useTransform(scrollY, [0, 100], ["100%", "90%"]);
@@ -131,7 +134,7 @@ export function TopNavBar() {
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
-                <span className="relative z-10">{item.label}</span>
+                <StableLabel text={item.text} className="relative z-10" />
               </Link>
             );
           })}
@@ -145,15 +148,15 @@ export function TopNavBar() {
               href="/official"
               className="rounded-full bg-primary px-4 md:px-6 py-2 md:py-2.5 text-xs md:text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer whitespace-nowrap"
             >
-              <span className="sm:hidden">{t.nav.goToRankingsShort}</span>
-              <span className="hidden sm:inline">{t.nav.goToRankings}</span>
+              <StableLabel text={(d) => d.nav.goToRankingsShort} className="sm:hidden" />
+              <StableLabel text={(d) => d.nav.goToRankings} className="hidden sm:inline-grid" />
             </Link>
           ) : (
             <Link
               href="/"
               className="rounded-full bg-primary px-4 md:px-6 py-2 md:py-2.5 text-xs md:text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer whitespace-nowrap"
             >
-              {t.nav.backToHome}
+              <StableLabel text={(d) => d.nav.backToHome} />
             </Link>
           )}
         </div>
