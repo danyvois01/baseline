@@ -21,6 +21,11 @@ function useStatOpacity(progress: MotionValue<number>, index: number) {
   return useTransform(progress, BANDS[index], [0, 1, 1, 0]);
 }
 
+/** Numbers arrive slightly small, settle at 1, and shrink a touch on exit. */
+function useStatScale(progress: MotionValue<number>, index: number) {
+  return useTransform(progress, BANDS[index], [0.92, 1, 1, 0.96]);
+}
+
 export function RankingSection() {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLElement>(null);
@@ -31,13 +36,29 @@ export function RankingSection() {
     offset: ["start start", "end end"],
   });
 
-  const barWidth = useTransform(scrollYProgress, [0, 0.95], ["0%", "100%"]);
+  // Progress ring fill (0 → 1 across the pinned scroll)
+  const ringProgress = useTransform(scrollYProgress, [0, 0.95], [0, 1]);
 
   const op0 = useStatOpacity(scrollYProgress, 0);
   const op1 = useStatOpacity(scrollYProgress, 1);
   const op2 = useStatOpacity(scrollYProgress, 2);
   const op3 = useStatOpacity(scrollYProgress, 3);
   const opacities = [op0, op1, op2, op3];
+
+  const sc0 = useStatScale(scrollYProgress, 0);
+  const sc1 = useStatScale(scrollYProgress, 1);
+  const sc2 = useStatScale(scrollYProgress, 2);
+  const sc3 = useStatScale(scrollYProgress, 3);
+  const scales = [sc0, sc1, sc2, sc3];
+
+  // Current stat index (1-based) for the "01 — 04" indicator
+  const activeIndex = useTransform(scrollYProgress, (v) => {
+    for (let i = BANDS.length - 1; i >= 0; i--) {
+      if (v >= BANDS[i][0]) return i;
+    }
+    return 0;
+  });
+  const indexLabel = useTransform(activeIndex, (i) => String(i + 1).padStart(2, "0"));
 
   return (
     <section
