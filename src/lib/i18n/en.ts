@@ -24,6 +24,7 @@ export const en: Dictionary = {
     goToRankings: "Go to Rankings",
     goToRankingsShort: "Rankings",
     backToHome: "Back to Home",
+    backToHomeShort: "Home",
   },
   footer: {
     terms: "Terms of Service",
@@ -275,7 +276,7 @@ export const en: Dictionary = {
       title: "Scoring",
       lead: "Game, Set, Match: tennis's scoring system, explained with an interactive scoreboard.",
       scrollNext: "The Glossary",
-      curiosityLabel: "Fun fact:",
+      curiosityLabel: "Fun fact",
       you: "You",
       opponent: "Opponent",
       replay: "Replay",

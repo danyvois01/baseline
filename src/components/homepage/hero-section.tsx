@@ -144,7 +144,7 @@ export function HeroSection() {
                 <motion.path
                   key={i}
                   d={line.d}
-                  stroke="#DFFF00"
+                  className="stroke-baseline-lime"
                   strokeWidth={2}
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -164,7 +164,7 @@ export function HeroSection() {
                 y1={10}
                 x2={260}
                 y2={290}
-                stroke="#DFFF00"
+                className="stroke-baseline-lime"
                 strokeWidth={3}
                 strokeDasharray="8 6"
                 initial={{ pathLength: 0, opacity: 0 }}
@@ -188,7 +188,7 @@ export function HeroSection() {
               {/* Ball trail */}
               <motion.circle
                 r={5}
-                fill="#DFFF00"
+                className="fill-baseline-lime"
                 initial={{ opacity: 0 }}
                 animate={{
                   cx: BALL_CX,
@@ -206,7 +206,7 @@ export function HeroSection() {
               {/* Main tennis ball */}
               <motion.circle
                 r={7}
-                fill="#DFFF00"
+                className="fill-baseline-lime"
                 filter="url(#ball-glow)"
                 initial={{ opacity: 0 }}
                 animate={{

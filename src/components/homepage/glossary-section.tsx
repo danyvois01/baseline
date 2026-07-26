@@ -1,77 +1,43 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   motion,
   AnimatePresence,
-  useScroll,
-  useMotionValueEvent,
   type PanInfo,
 } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/providers/locale-provider";
 import { ScrollCue } from "./scroll-cue";
 
-/** Tailwind `sm` breakpoint — below this the section is not pinned (swipe deck). */
-const PINNED_MEDIA_QUERY = "(min-width: 640px)";
-
 export function GlossarySection() {
   const { t } = useTranslation();
   const terms = t.home.glossary.terms;
-  const containerRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [leaveX, setLeaveX] = useState(-300);
 
-  /** Change card with the correct exit direction for the leaving card. */
-  const changeIndex = (index: number) => {
+  const navigate = (direction: "next" | "prev") => {
+    setLeaveX(direction === "next" ? -300 : 300);
+    setTimeout(() => {
+      setActiveIndex((prev) => {
+        if (direction === "next") return (prev + 1) % terms.length;
+        return (prev - 1 + terms.length) % terms.length;
+      });
+    }, 10);
+  };
+
+  const jumpTo = (index: number) => {
     if (index === activeIndex) return;
     setLeaveX(index > activeIndex ? -300 : 300);
     setTimeout(() => setActiveIndex(index), 10);
   };
 
-  /*
-   * Desktop pinned scrollytelling: section scroll progress drives the
-   * active card deterministically, so manual navigation (arrows, marquee)
-   * scrolls the page to the card's progress point instead of fighting it.
-   */
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    if (!window.matchMedia(PINNED_MEDIA_QUERY).matches) return;
-    const idx = Math.min(terms.length - 1, Math.max(0, Math.floor(v * terms.length)));
-    changeIndex(idx);
-  });
-
-  /** Scroll the page to the progress point of the target card (desktop). */
-  const scrollToIndex = (index: number) => {
-    const el = containerRef.current;
-    if (!el || !window.matchMedia(PINNED_MEDIA_QUERY).matches) {
-      changeIndex(index);
-      return;
-    }
-    const sectionTop = window.scrollY + el.getBoundingClientRect().top;
-    const scrollable = el.offsetHeight - window.innerHeight;
-    const progressPoint = (index + 0.5) / terms.length;
-    window.scrollTo({ top: sectionTop + progressPoint * scrollable, behavior: "smooth" });
-  };
-
-  const navigate = (direction: "next" | "prev") => {
-    const next =
-      direction === "next"
-        ? (activeIndex + 1) % terms.length
-        : (activeIndex - 1 + terms.length) % terms.length;
-    scrollToIndex(next);
-  };
-
   const handleDragEnd = (_event: PointerEvent, info: PanInfo) => {
     const swipeThreshold = 50;
     if (info.offset.x > swipeThreshold) {
-      navigate("prev"); // trascinato verso destra
+      navigate("prev");
     } else if (info.offset.x < -swipeThreshold) {
-      navigate("next"); // trascinato verso sinistra
+      navigate("next");
     }
   };
 
@@ -83,14 +49,8 @@ export function GlossarySection() {
   ];
 
   return (
-    <section
-      id="glossary"
-      ref={containerRef}
-      className="relative w-full bg-surface-white sm:h-[250vh]"
-    >
-      {/* Inner frame: pinned on desktop, normal flow on mobile */}
-      <div className="sm:sticky sm:top-0 sm:h-screen flex flex-col justify-center pt-28 pb-16 sm:py-0 overflow-hidden">
-        <div className="max-w-7xl w-full mx-auto px-6 flex flex-col items-center">
+    <section id="glossary" className="relative w-full bg-surface-white pt-28 pb-16 sm:pt-32 sm:pb-24 overflow-hidden">
+      <div className="max-w-7xl w-full mx-auto px-6 flex flex-col items-center">
 
           {/* Header - Centrato */}
           <div className="text-center mb-6 sm:mb-8 relative z-10 w-full max-w-2xl">
@@ -112,7 +72,7 @@ export function GlossarySection() {
                 return (
                   <button
                     key={`marquee-${idx}`}
-                    onClick={() => scrollToIndex(realIndex)}
+                    onClick={() => jumpTo(realIndex)}
                     className="flex items-center group transition-all duration-300 mx-2 sm:mx-4"
                   >
                     <span className={`text-lg sm:text-xl font-heading font-black uppercase tracking-widest transition-all duration-300 px-5 py-1.5 rounded-full border-2 ${
@@ -209,12 +169,11 @@ export function GlossarySection() {
             </button>
           </div>
 
-          {/* Next-section cue */}
-          <div className="mt-10 sm:mt-12">
+          {/* Next-section cue — only on mobile */}
+          <div className="mt-10 sm:hidden">
             <ScrollCue targetId="cta" label={t.home.glossary.scrollNext} />
           </div>
         </div>
-      </div>
 
       {/* Stili personalizzati per marquee */}
       <style dangerouslySetInnerHTML={{__html: `

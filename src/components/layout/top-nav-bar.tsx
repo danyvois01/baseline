@@ -76,27 +76,26 @@ export function TopNavBar() {
         y: navY,
         borderRadius: navRadius,
       }}
-      className="fixed left-0 right-0 mx-auto z-50 bg-surface-white/80 backdrop-blur-xl border border-border-subtle overflow-hidden"
+      className="fixed left-0 right-0 mx-auto z-50 bg-surface-white/80 backdrop-blur-xl border border-border-subtle"
     >
-      <motion.div 
+      <motion.div
         style={{ boxShadow: `0px 12px 48px rgba(0,0,0,${shadowOpacity})` }}
-        className="absolute inset-0 pointer-events-none" 
+        className="absolute inset-0 rounded-[inherit] pointer-events-none"
       />
       
-      <motion.div 
+      <motion.div
         style={{ paddingLeft: navPadding, paddingRight: navPadding }}
-        className="relative flex h-20 items-center justify-between"
+        className="relative flex h-16 sm:h-20 items-center justify-between"
       >
         {/* Left: Logo */}
         <Link href="/" onClick={handleLogoClick} className="flex items-center gap-2 shrink-0 z-10">
-          {/* Light/dark logo variants swapped via CSS to avoid a theme flash */}
           <Image
             src="/logo_new_crop.png"
             alt="Baseline — ATP & WTA Rankings"
             width={200}
             height={48}
-            style={{ width: "auto", height: "48px" }}
-            className="object-contain dark:hidden"
+            style={{ width: "auto" }}
+            className="object-contain h-9 sm:h-12 dark:hidden"
             priority
           />
           <Image
@@ -104,8 +103,8 @@ export function TopNavBar() {
             alt="Baseline — ATP & WTA Rankings"
             width={200}
             height={48}
-            style={{ width: "auto", height: "48px" }}
-            className="object-contain hidden dark:block"
+            style={{ width: "auto" }}
+            className="object-contain h-9 sm:h-12 hidden dark:block"
             priority
           />
         </Link>
@@ -141,7 +140,7 @@ export function TopNavBar() {
         </nav>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-3 z-10 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 z-10 shrink-0">
           <SettingsPill />
           {isHome ? (
             <Link
@@ -156,11 +155,35 @@ export function TopNavBar() {
               href="/"
               className="rounded-full bg-primary px-4 md:px-6 py-2 md:py-2.5 text-xs md:text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer whitespace-nowrap"
             >
-              <StableLabel text={(d) => d.nav.backToHome} />
+              <StableLabel text={(d) => d.nav.backToHomeShort} className="sm:hidden" />
+              <StableLabel text={(d) => d.nav.backToHome} className="hidden sm:inline-grid" />
             </Link>
           )}
         </div>
       </motion.div>
+
+      {/* Mobile tab bar for ranking pages */}
+      {!isHome && (
+        <nav className="lg:hidden flex items-center justify-center gap-1 px-3 pb-2 pt-1 border-t border-border-subtle/50">
+          {APP_NAV_ITEMS.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "relative flex-1 text-center rounded-full px-2 py-1.5 text-xs font-semibold transition-all duration-200",
+                  isActive
+                    ? "bg-baseline-lime text-deep-navy"
+                    : "text-foreground/60 active:bg-surface-gray/50"
+                )}
+              >
+                <StableLabel text={item.text} className="relative z-10" />
+              </Link>
+            );
+          })}
+        </nav>
+      )}
     </motion.header>
   );
 }

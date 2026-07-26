@@ -26,6 +26,7 @@ export const it = {
     goToRankings: "Vai alle Classifiche",
     goToRankingsShort: "Classifiche",
     backToHome: "Torna alla Home",
+    backToHomeShort: "Home",
   },
   footer: {
     terms: "Termini di Servizio",
@@ -278,7 +279,7 @@ export const it = {
       title: "Il Punteggio",
       lead: "Game, Set, Match: il sistema di punteggio del tennis, spiegato con un tabellone interattivo.",
       scrollNext: "Il Dizionario",
-      curiosityLabel: "Curiosità:",
+      curiosityLabel: "Curiosità",
       you: "Tu",
       opponent: "Avversario",
       replay: "Rigioca",

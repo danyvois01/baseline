@@ -85,86 +85,121 @@ function TierTextBlock({
 
 export function PyramidSection() {
   const { t } = useTranslation();
-  const [activeTier, setActiveTier] = useState<string>("finals");
+  const [activeTier, setActiveTier] = useState<string>("slam");
 
   const tiers: Tier[] = TIER_META.map((meta, i) => ({
     ...meta,
     ...t.home.pyramid.tiers[i],
   }));
 
+  /*
+   * Narrative order: the pyramid builds top-down (Grand Slam → Challenger)
+   * while scrolling; the ATP Finals crown is the grand finale — it drops
+   * from above and lands on top of the completed pyramid.
+   */
+  const finalsTier = tiers[0];
+  const rowTiers = tiers.slice(1); // slam … challenger (graphic top → bottom)
+  const textTiers = [...rowTiers, finalsTier]; // reading order, crown last
+
+  const activeNarrativeIndex = textTiers.findIndex((x) => x.id === activeTier);
+  const finalsLanded = activeTier === "finals";
+
   return (
     <section id="pyramid" className="relative w-full bg-surface-white">
 
-      {/* Intro Titolo (Full Screen) */}
-      <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 text-center pt-32 pb-24">
-        <h2 className="text-[50px] md:text-[70px] font-heading font-extrabold text-foreground leading-none mb-8">
-          {t.home.pyramid.title}
-        </h2>
+      {/*
+        Intro title. Pinned briefly on desktop (tall wrapper + sticky frame)
+        so the viewport rests on the text before releasing to the pyramid,
+        matching the held-scroll feel of the other sections.
+      */}
+      <div className="relative md:h-[180vh]">
+        <div className="md:sticky md:top-0 relative min-h-[70dvh] md:min-h-screen w-full flex flex-col items-center justify-center px-6 text-center md:text-center pt-24 md:pt-32 pb-16 md:pb-24">
+          <h2 className="text-[36px] md:text-[70px] font-heading font-extrabold text-foreground leading-none mb-6 md:mb-8">
+            {t.home.pyramid.title}
+          </h2>
 
-        <div className="max-w-3xl mx-auto space-y-6 text-[18px] text-text-muted">
-          <p className="text-2xl md:text-3xl font-heading font-extrabold text-foreground mb-4">
-            {t.home.pyramid.lead}
-          </p>
-          <p className="leading-relaxed">
-            {t.home.pyramid.intro1}
-          </p>
-          <p className="leading-relaxed">
-            {t.home.pyramid.intro2BeforeSlam}<strong className="text-foreground">Grand Slam</strong>{t.home.pyramid.intro2AfterSlam}<strong className="text-primary-olive">ATP Finals</strong>{t.home.pyramid.intro2AfterFinals}
-          </p>
+          <div className="max-w-3xl mx-auto space-y-4 md:space-y-6 text-[15px] md:text-[18px] text-text-muted text-center">
+            <p className="text-xl md:text-3xl font-heading font-extrabold text-foreground mb-3 md:mb-4 text-center">
+              {t.home.pyramid.lead}
+            </p>
+            <p className="leading-relaxed">
+              {t.home.pyramid.intro1}
+            </p>
+            <p className="leading-relaxed">
+              {t.home.pyramid.intro2BeforeSlam}<strong className="text-foreground">Grand Slam</strong>{t.home.pyramid.intro2AfterSlam}<strong className="text-primary-olive">ATP Finals</strong>{t.home.pyramid.intro2AfterFinals}
+            </p>
+          </div>
+
+          {/* Scroll indicator (like Hero) */}
+          <ScrollCue
+            targetId="pyramid-content"
+            label={t.home.pyramid.exploreLabel}
+            className="absolute bottom-6 left-1/2 -translate-x-1/2"
+          />
         </div>
-
-        {/* Scroll indicator (like Hero) */}
-        <ScrollCue
-          targetId="pyramid-content"
-          label={t.home.pyramid.exploreLabel}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2"
-        />
       </div>
 
-      <div id="pyramid-content" className="max-w-[1400px] mx-auto px-6 relative flex flex-col lg:flex-row items-start">
+      <div id="pyramid-content" className="relative">
+      <div className="max-w-[1400px] mx-auto px-6 relative flex flex-col lg:flex-row items-start">
 
         {/* Sinistra: Piramide Grafica (Sticky) */}
         <div className="hidden lg:flex lg:w-1/2 sticky top-0 pt-24 h-screen items-center justify-center p-12">
           <div className="w-full max-w-[400px] flex flex-col items-center gap-2">
-            {tiers.map((tier, index) => {
-              const activeIndex = tiers.findIndex((x) => x.id === activeTier);
-              const isPassed = index <= activeIndex;
+
+            {/*
+              ATP Finals crown — the grand finale. Hidden while the pyramid
+              builds; when its chapter arrives it drops from above with a
+              spring and lands on top of the completed pyramid.
+            */}
+            <div className="h-16 mb-8 relative flex items-center justify-center">
+              <motion.div
+                initial={false}
+                animate={
+                  finalsLanded
+                    ? { y: 0, opacity: 1, scale: 1.1 }
+                    : { y: -140, opacity: 0, scale: 0.8 }
+                }
+                transition={
+                  finalsLanded
+                    ? { type: "spring", stiffness: 240, damping: 14, mass: 1.1 }
+                    : { duration: 0.3, ease: "easeIn" }
+                }
+                className="w-16 h-16 rounded-full bg-baseline-lime shadow-[0_0_30px_rgba(223,255,0,0.4)] flex items-center justify-center relative z-10"
+              >
+                <Crown className="w-8 h-8 text-deep-navy" />
+                {/* Connector line to the pyramid below */}
+                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[1px] h-6 border-l border-dashed border-border-subtle" />
+              </motion.div>
+            </div>
+
+            {/* Pyramid rows build top-down (Grand Slam → Challenger) */}
+            {rowTiers.map((tier, index) => {
+              const isBuilt = index <= activeNarrativeIndex;
               const isActive = activeTier === tier.id;
-              const isFinals = tier.id === "finals";
 
               return (
                 <div
                   key={tier.id + "-graphic"}
                   className={cn(
                     "transition-all duration-500 ease-out flex items-center justify-center",
-                    // The floating crown vs the pyramid tiers
-                    isFinals
-                      ? "h-16 w-16 rounded-full mb-8 relative"
-                      : `h-12 rounded-lg mt-1 ${tier.w}`,
-                    // Active tier is lime, passed tiers keep their navy tone, future tiers stay neutral
+                    `h-12 rounded-lg mt-1 ${tier.w}`,
+                    // Active tier is lime, built tiers keep their navy tone, future tiers stay neutral
                     isActive
                       ? "bg-baseline-lime shadow-[0_0_30px_rgba(223,255,0,0.4)] scale-110 z-10"
-                      : isPassed
+                      : isBuilt || finalsLanded
                         ? `${tier.tone} opacity-95 scale-100`
                         : "bg-surface-gray border border-border-subtle scale-100 opacity-60"
                   )}
                 >
-                  {isActive || isPassed ? (
+                  {(isBuilt || finalsLanded) && (
                     <span
                       className={cn(
                         "font-bold text-sm tracking-wider uppercase",
-                        isActive || isFinals ? "text-deep-navy" : "text-white drop-shadow-md"
+                        isActive ? "text-deep-navy" : "text-white drop-shadow-md"
                       )}
                     >
-                      {isFinals ? <Crown className="w-8 h-8" /> : tier.name}
+                      {tier.name}
                     </span>
-                  ) : (
-                    isFinals && <Crown className="w-8 h-8 text-text-muted opacity-60" />
-                  )}
-
-                  {/* Visual connector line for the floating crown */}
-                  {isFinals && (
-                    <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[1px] h-6 border-l border-dashed border-border-subtle" />
                   )}
                 </div>
               );
@@ -172,10 +207,10 @@ export function PyramidSection() {
           </div>
         </div>
 
-        {/* Destra: Testi a scorrimento */}
+        {/* Destra: Testi a scorrimento (Grand Slam per primo, ATP Finals come finale) */}
         <div className="w-full lg:w-1/2 relative z-10">
-          <div className="pb-[50vh]">
-            {tiers.map((tier) => (
+          <div className="pb-[35vh]">
+            {textTiers.map((tier) => (
               <TierTextBlock
                 key={tier.id}
                 tier={tier}
@@ -188,9 +223,17 @@ export function PyramidSection() {
 
       </div>
 
-      {/* Next-section cue */}
-      <div className="relative flex justify-center pb-12 -mt-[30vh]">
-        <ScrollCue targetId="timeline" label={t.home.pyramid.scrollNext} />
+      {/*
+        Next-section cue: sticks to the bottom of the viewport for the whole
+        scroll of the pyramid content, then settles at the section's end.
+      */}
+      <div className="sticky bottom-6 z-20 flex justify-center pb-2 pointer-events-none">
+        <ScrollCue
+          targetId="timeline"
+          label={t.home.pyramid.scrollNext}
+          className="pointer-events-auto"
+        />
+      </div>
       </div>
     </section>
   );
