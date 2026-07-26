@@ -35,6 +35,75 @@ export const it = {
     about: "Chi Siamo",
     copyright: "© 2026 Baseline Tennis. Tutti i diritti riservati.",
   },
+  privacyPage: {
+    title: "Informativa sulla Privacy",
+    lastUpdated: "Ultimo aggiornamento: 26 luglio 2026",
+    intro:
+      "Questa pagina descrive quali dati vengono trattati quando visiti Baseline, come vengono utilizzati e quali diritti hai in merito.",
+    sections: [
+      {
+        heading: "Titolare del trattamento",
+        paragraphs: [
+          "Il titolare del trattamento è il gestore di questo sito. Per qualsiasi domanda relativa a questa informativa o ai tuoi dati puoi scrivere a [EMAIL].",
+        ],
+      },
+      {
+        heading: "Dati trattati",
+        paragraphs: [
+          "Baseline non richiede registrazione e non raccoglie dati personali in modo attivo: non ci sono account, moduli di contatto né strumenti di tracciamento pubblicitario.",
+          "Come per qualsiasi sito web, il provider di hosting (Vercel Inc.) tratta gli indirizzi IP dei visitatori nei log del server, per finalità di sicurezza e di corretta erogazione del servizio. Questi log sono conservati per un periodo limitato.",
+        ],
+      },
+      {
+        heading: "Preferenze salvate nel browser",
+        paragraphs: [
+          "Le tue preferenze di tema (chiaro/scuro) e lingua (IT/EN) vengono salvate esclusivamente nel localStorage del tuo browser. Si tratta di memorizzazione tecnica: questi dati non lasciano mai il tuo dispositivo, non vengono trasmessi a nessuno e non richiedono consenso. Puoi cancellarli in qualsiasi momento eliminando i dati di navigazione del browser.",
+          "Baseline non utilizza cookie di profilazione né strumenti di analytics.",
+        ],
+      },
+      {
+        heading: "Servizi di terze parti",
+        paragraphs: [
+          "Il sito è ospitato su Vercel (Vercel Inc., USA), che agisce come responsabile del trattamento per i dati tecnici di connessione. Puoi consultare la loro informativa su vercel.com/legal/privacy-policy.",
+        ],
+      },
+      {
+        heading: "I tuoi diritti",
+        paragraphs: [
+          "Ai sensi del GDPR (Regolamento UE 2016/679) hai il diritto di accedere ai tuoi dati, chiederne la rettifica o la cancellazione, limitarne od opporti al trattamento, e proporre reclamo all'autorità di controllo (in Italia, il Garante per la Protezione dei Dati Personali). Per esercitare questi diritti puoi scrivere al contatto indicato sopra.",
+        ],
+      },
+      {
+        heading: "Modifiche a questa informativa",
+        paragraphs: [
+          "Eventuali modifiche a questa informativa saranno pubblicate su questa pagina, con aggiornamento della data indicata in alto.",
+        ],
+      },
+    ],
+  },
+  aboutPage: {
+    title: "Chi Siamo",
+    intro:
+      "Baseline è una piattaforma moderna per seguire le classifiche del tennis professionistico in tempo reale.",
+    sections: [
+      {
+        heading: "Cos'è Baseline",
+        paragraphs: [
+          "Baseline nasce per rendere il ranking ATP semplice da capire e bello da consultare. Offre tre viste complementari: il ranking ufficiale aggiornato ogni settimana, il ranking live con le proiezioni punti basate sui tornei in corso, e la Race to Turin verso le ATP Finals.",
+          "Il nome viene dalla linea di fondo campo — la baseline — il punto di partenza di ogni scambio: qui è il punto di partenza della tua conoscenza del tennis.",
+        ],
+      },
+      {
+        heading: "I dati",
+        paragraphs: [
+          "Le classifiche vengono elaborate a partire da fonti pubblicamente accessibili e aggiornate a intervalli regolari. I dati sono forniti a puro scopo informativo: per le classifiche ufficiali fa sempre fede il sito ATP.",
+        ],
+      },
+    ],
+    disclaimerTitle: "Disclaimer",
+    disclaimerBody:
+      "Baseline è un progetto indipendente e non è affiliato, approvato o sponsorizzato da ATP Tour, Inc. Tutti i marchi citati appartengono ai rispettivi proprietari. I dati pubblicati non sono ufficiali e sono forniti a solo scopo informativo.",
+  },
   errors: {
     title: "Qualcosa è andato storto",
     genericBody:

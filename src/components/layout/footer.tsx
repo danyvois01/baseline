@@ -13,9 +13,7 @@ export function Footer() {
   const { t } = useTranslation();
 
   const footerLinks = [
-    { label: t.footer.terms, href: "/terms" },
     { label: t.footer.privacy, href: "/privacy" },
-    { label: t.footer.support, href: "/support" },
     { label: t.footer.about, href: "/about" },
   ];
 
@@ -46,13 +44,13 @@ export function Footer() {
         {/* Links */}
         <nav className="flex flex-wrap justify-center items-center gap-6">
           {footerLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               className="text-label-md text-text-muted font-medium no-underline hover:text-foreground transition-colors duration-200"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 

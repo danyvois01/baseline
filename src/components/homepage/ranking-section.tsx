@@ -69,61 +69,110 @@ export function RankingSection() {
       {/* --- DESKTOP: pinned full-screen frame --- */}
       <div className="hidden md:block sticky top-0 h-screen w-full overflow-hidden">
         {/*
-          Fixed grid layout — 3 rows, explicit heights.
-          Row 1 (auto): header area
-          Row 2 (1fr): counter center
-          Row 3 (auto): progress + cue
+          Layout — 3 rows:
+          Row 1 (auto): section title + main lead sentence, full width
+          Row 2 (1fr):  two columns — progress ring with the stat value on
+                        the left, label + description on the right
+          Row 3 (auto): scroll cue
         */}
-        <div className="h-full w-full max-w-3xl mx-auto px-6 grid grid-rows-[auto_1fr_auto] items-center justify-items-center pt-24 pb-8 gap-0">
+        <div className="h-full w-full max-w-5xl mx-auto px-6 grid grid-rows-[auto_1fr_auto] pt-24 pb-8">
 
-          {/* ROW 1: Header */}
-          <div className="text-center py-4">
-            <h2 className="text-[11px] text-text-muted uppercase tracking-[0.3em] font-bold mb-2">
+          {/* ROW 1: Header — the lead is the protagonist */}
+          <div className="text-center py-4 max-w-3xl mx-auto">
+            <h2 className="text-[11px] text-text-muted uppercase tracking-[0.3em] font-bold mb-4">
               {t.home.ranking.title}
             </h2>
-            <p className="text-[13px] text-text-muted/70 leading-relaxed max-w-sm mx-auto">
+            <p className="text-[20px] xl:text-[24px] text-foreground font-heading font-bold leading-snug">
               {t.home.ranking.lead}
             </p>
           </div>
 
-          {/* ROW 2: The counter (number + label/desc) — vertically centered in 1fr */}
-          <div className="flex flex-col items-center justify-center w-full">
-            {/* Number */}
-            <div className="grid place-items-center [&>*]:[grid-area:1/1]">
-              {highlights.map((item, idx) => (
-                <motion.span
-                  key={`val-${idx}`}
-                  style={{ opacity: opacities[idx] }}
-                  className={cn(
-                    "font-heading font-extrabold text-baseline-lime leading-none select-none",
-                    item.value.length <= 2 ? "text-[120px] xl:text-[160px]" : "text-[60px] xl:text-[80px]"
-                  )}
-                >
-                  {item.value}
-                </motion.span>
-              ))}
+          {/* ROW 2: ring left, explanation right */}
+          <div className="grid grid-cols-2 items-center gap-10 xl:gap-16 w-full">
+
+            {/* LEFT: progress ring with the stat value inside */}
+            <div className="relative flex items-center justify-center justify-self-end">
+              {/* Soft lime glow anchoring the ring on the white background */}
+              <div
+                className="absolute w-[320px] h-[320px] xl:w-[380px] xl:h-[380px] rounded-full bg-[radial-gradient(circle,rgba(223,255,0,0.12)_0%,transparent_65%)] pointer-events-none"
+                aria-hidden="true"
+              />
+
+              {/* Progress ring: closes as the section is scrolled */}
+              <svg
+                viewBox="0 0 100 100"
+                className="w-[300px] h-[300px] xl:w-[360px] xl:h-[360px] -rotate-90"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="47"
+                  fill="none"
+                  strokeWidth="1.2"
+                  className="stroke-surface-gray"
+                />
+                <motion.circle
+                  cx="50"
+                  cy="50"
+                  r="47"
+                  fill="none"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  className="stroke-baseline-lime"
+                  style={{ pathLength: ringProgress }}
+                />
+              </svg>
+
+              {/* Stat values, stacked at the ring's center — sized to fit inside */}
+              <div className="absolute inset-0 grid place-items-center [&>*]:[grid-area:1/1] px-12">
+                {highlights.map((item, idx) => (
+                  <motion.span
+                    key={`val-${idx}`}
+                    style={{ opacity: opacities[idx], scale: scales[idx] }}
+                    className={cn(
+                      "font-heading font-extrabold text-foreground leading-none select-none text-center",
+                      item.value.length <= 2
+                        ? "text-[110px] xl:text-[130px]"
+                        : "text-[38px] xl:text-[48px]"
+                    )}
+                  >
+                    {item.value}
+                  </motion.span>
+                ))}
+              </div>
             </div>
 
-            {/* Label + desc */}
-            <div className="grid place-items-center [&>*]:[grid-area:1/1] mt-6 text-center">
-              {highlights.map((item, idx) => (
-                <motion.div
-                  key={`lbl-${idx}`}
-                  style={{ opacity: opacities[idx] }}
-                  className="flex flex-col items-center"
-                >
-                  <span className="text-[18px] text-foreground font-bold mb-1">{item.label}</span>
-                  <span className="text-[14px] text-text-muted max-w-[280px] leading-snug">{item.desc}</span>
-                </motion.div>
-              ))}
+            {/* RIGHT: label + description + index */}
+            <div className="flex flex-col justify-center max-w-[380px]">
+              <div className="grid [&>*]:[grid-area:1/1]">
+                {highlights.map((item, idx) => (
+                  <motion.div
+                    key={`lbl-${idx}`}
+                    style={{ opacity: opacities[idx] }}
+                    className="flex flex-col"
+                  >
+                    <span className="text-[26px] xl:text-[30px] font-heading font-extrabold text-foreground leading-tight mb-3">
+                      {item.label}
+                    </span>
+                    <span className="text-[16px] xl:text-[17px] text-text-muted leading-relaxed">
+                      {item.desc}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Stat index indicator: 01 / 04 */}
+              <div className="flex items-baseline gap-1.5 mt-8 font-heading font-bold select-none">
+                <motion.span className="text-[15px] text-foreground">{indexLabel}</motion.span>
+                <span className="text-[12px] text-text-muted/60">/ {String(highlights.length).padStart(2, "0")}</span>
+              </div>
             </div>
+
           </div>
 
-          {/* ROW 3: Progress bar + cue */}
-          <div className="flex flex-col items-center gap-5 py-4">
-            <div className="w-32 h-[2px] bg-surface-gray rounded-full overflow-hidden">
-              <motion.div className="h-full bg-baseline-lime rounded-full" style={{ width: barWidth }} />
-            </div>
+          {/* ROW 3: Scroll cue */}
+          <div className="flex flex-col items-center py-4">
             <ScrollCue targetId="pyramid" label={t.home.ranking.scrollLabel} />
           </div>
 
@@ -149,7 +198,11 @@ export function RankingSection() {
             viewport={{ once: true, margin: "-15%" }}
             className="flex flex-col items-center text-center"
           >
-            <span className="text-[64px] font-heading font-extrabold text-baseline-lime leading-none mb-2">
+            <span className="relative text-[64px] font-heading font-extrabold text-foreground leading-none mb-2">
+              <span
+                className="absolute -inset-10 rounded-full bg-[radial-gradient(circle,rgba(223,255,0,0.15)_0%,transparent_70%)] pointer-events-none"
+                aria-hidden="true"
+              />
               {item.value}
             </span>
             <span className="text-[16px] text-foreground font-bold mb-1">{item.label}</span>
