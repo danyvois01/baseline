@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { TopNavBar, Footer } from "@/components/layout";
-import { RankingsTable, PageHeroSection } from "@/components/rankings";
-import { MOCK_LIVE_RANKINGS } from "@/lib/mock-data";
+import { LiveClient } from "./live-client";
+import { getLiveRankings } from "@/services/rankings-service";
 
 /**
  * Live ATP Rankings — /live page.
@@ -14,29 +14,19 @@ export const metadata: Metadata = {
     "Live ATP Tennis Rankings — Real-time point projections based on ongoing tournament results.",
 };
 
-export default function LivePage() {
+export default async function LivePage() {
+  const { rankings, lastUpdated } = await getLiveRankings();
+
   return (
-    <div className="flex flex-col min-h-screen bg-surface-gray">
-      {/* Navigation */}
+    <div className="flex flex-col min-h-screen bg-surface-white">
       <TopNavBar />
 
-      {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 pt-28">
         <div className="mx-auto max-w-[1280px] px-6 py-8">
-          {/* Hero: Title + Controls */}
-          <PageHeroSection
-            title="Live ATP Rankings"
-            description="Real-time point projections based on ongoing tournament results."
-            updatedAt="Just now"
-            liveIndicator
-          />
-
-          {/* Rankings Table */}
-          <RankingsTable entries={MOCK_LIVE_RANKINGS} initialCount={10} />
+          <LiveClient initialRankings={rankings} lastUpdated={lastUpdated} />
         </div>
       </main>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

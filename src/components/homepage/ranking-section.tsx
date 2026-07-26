@@ -1,201 +1,144 @@
 "use client";
 
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { useRef } from "react";
+import { cn } from "@/lib/utils";
+import { ScrollCue } from "./scroll-cue";
+import { useTranslation } from "@/providers/locale-provider";
+
 /**
- * RankingSection — Explains how the ATP ranking system works:
- * 52 weeks, best-19 results, point accumulation and defence.
+ * Scroll progress bands: each stat fades in and out within its band.
+ * First stat is visible immediately on entry.
  */
+const BANDS: [number, number, number, number][] = [
+  [0, 0.02, 0.18, 0.24],
+  [0.26, 0.30, 0.44, 0.50],
+  [0.52, 0.56, 0.70, 0.76],
+  [0.78, 0.82, 0.92, 0.98],
+];
 
-import { useEffect, useRef, useState } from "react";
-import { useInView } from "framer-motion";
-import {
-  Trophy,
-  BarChart3,
-  CalendarDays,
-  ShieldAlert,
-  Globe,
-  RotateCcwSquare,
-} from "lucide-react";
-import { AnimatedSection } from "./animated-section";
-
-/* ------------------------------------------------------------------ */
-/*  AnimatedValue — counts up from 0 for numeric values on scroll     */
-/* ------------------------------------------------------------------ */
-
-function AnimatedValue({
-  value,
-  className,
-}: {
-  value: string;
-  className?: string;
-}) {
-  const ref = useRef<HTMLParagraphElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.5 });
-  const isNumeric = /^\d+$/.test(value);
-  const [displayValue, setDisplayValue] = useState(isNumeric ? "0" : value);
-
-  useEffect(() => {
-    if (!isInView || !isNumeric) return;
-    const target = parseInt(value);
-    const duration = 1200;
-    const startTime = performance.now();
-
-    const animate = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setDisplayValue(Math.round(eased * target).toString());
-      if (progress < 1) requestAnimationFrame(animate);
-    };
-    requestAnimationFrame(animate);
-  }, [isInView, value, isNumeric]);
-
-  return (
-    <p ref={ref} className={className}>
-      {displayValue}
-    </p>
-  );
+function useStatOpacity(progress: MotionValue<number>, index: number) {
+  return useTransform(progress, BANDS[index], [0, 1, 1, 0]);
 }
-
-/* ------------------------------------------------------------------ */
-/*  Explanatory paragraphs with icons                                 */
-/* ------------------------------------------------------------------ */
-
-const EXPLANATIONS = [
-  {
-    icon: Globe,
-    title: "Il Circuito ATP:",
-    text: "I giocatori professionisti viaggiano per il mondo affrontandosi nei tornei ufficiali. Ottengono punti in base all\u2019importanza del torneo e a quanto avanzano nel tabellone.",
-  },
-  {
-    icon: CalendarDays,
-    title: "Le 52 Settimane:",
-    text: "La classifica non si azzera a gennaio. Conta i punti ottenuti esattamente nelle ultime 52 settimane. I punti \u201Cscadono\u201D un anno dopo essere stati conquistati.",
-  },
-  {
-    icon: Trophy,
-    title: "La Regola dei 19:",
-    text: "Il ranking ufficiale considera solo i migliori 19 risultati stagionali di un giocatore, per evitare che venga premiato semplicemente chi gioca pi\u00F9 tornei.",
-  },
-] as const;
-
-/* ------------------------------------------------------------------ */
-/*  Stat highlight cards                                              */
-/* ------------------------------------------------------------------ */
-
-const HIGHLIGHTS = [
-  {
-    icon: Trophy,
-    value: "19",
-    label: "I Migliori Risultati",
-    desc: "Vengono sommati solo i tuoi migliori piazzamenti stagionali.",
-  },
-  {
-    icon: CalendarDays,
-    value: "52",
-    label: "Settimane",
-    desc: "La \u201Cfinestra\u201D mobile del ranking. Calcolata sull\u2019ultimo anno.",
-  },
-  {
-    icon: RotateCcwSquare,
-    value: "Zero",
-    label: "Nessun Azzeramento",
-    desc: "La classifica non si azzera mai a gennaio: \u00E8 una corsa senza traguardo.",
-  },
-  {
-    icon: ShieldAlert,
-    value: "Scadenza",
-    label: "Difesa dei punti",
-    desc: "Ogni risultato \u201Cscade\u201D dopo un anno solare. Devi tornare a vincere.",
-  },
-] as const;
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                         */
 /* ------------------------------------------------------------------ */
 
 export function RankingSection() {
+  const { t } = useTranslation();
+  const containerRef = useRef<HTMLElement>(null);
+  const highlights = t.home.ranking.highlights;
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+
+  const barWidth = useTransform(scrollYProgress, [0, 0.95], ["0%", "100%"]);
+
+  const op0 = useStatOpacity(scrollYProgress, 0);
+  const op1 = useStatOpacity(scrollYProgress, 1);
+  const op2 = useStatOpacity(scrollYProgress, 2);
+  const op3 = useStatOpacity(scrollYProgress, 3);
+  const opacities = [op0, op1, op2, op3];
+
   return (
-    <section id="ranking" className="bg-surface-gray scroll-mt-20">
-      <div className="mx-auto max-w-[1280px] px-6 py-24">
-        <AnimatedSection>
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 rounded-full bg-baseline-lime/15 px-4 py-1.5 mb-6">
-              <BarChart3 className="h-3.5 w-3.5 text-primary-olive" />
-              <span className="text-label-md text-primary-olive font-bold uppercase tracking-wider">
-                Il Ranking
-              </span>
-            </div>
-            <h2 className="text-headline-lg text-deep-navy mb-4">
-              Come funziona la classifica mondiale?
+    <section
+      id="ranking"
+      ref={containerRef}
+      className="relative w-full md:h-[300vh] bg-surface-white"
+    >
+      {/* --- DESKTOP: pinned full-screen frame --- */}
+      <div className="hidden md:block sticky top-0 h-screen w-full overflow-hidden">
+        {/*
+          Fixed grid layout — 3 rows, explicit heights.
+          Row 1 (auto): header area
+          Row 2 (1fr): counter center
+          Row 3 (auto): progress + cue
+        */}
+        <div className="h-full w-full max-w-3xl mx-auto px-6 grid grid-rows-[auto_1fr_auto] items-center justify-items-center pt-24 pb-8 gap-0">
+
+          {/* ROW 1: Header */}
+          <div className="text-center py-4">
+            <h2 className="text-[11px] text-text-muted uppercase tracking-[0.3em] font-bold mb-2">
+              {t.home.ranking.title}
             </h2>
-            <p className="text-body-lg text-text-muted max-w-3xl mx-auto">
-              Il tennis è l&apos;unico sport globale che dura 11 mesi
-              l&apos;anno. Non esiste una &quot;stagione regolare&quot; come nel
-              calcio o nel basket: esiste solo il ranking mondiale, una
-              classifica viva che cambia ogni lunedì.
+            <p className="text-[13px] text-text-muted/70 leading-relaxed max-w-sm mx-auto">
+              {t.home.ranking.lead}
             </p>
           </div>
-        </AnimatedSection>
 
-        <div className="grid md:grid-cols-2 gap-12 items-start">
-          {/* Explanatory text */}
-          <AnimatedSection delay={0.1}>
-            <div className="rounded-2xl bg-white border border-border-subtle p-8 shadow-ambient">
-              <h3 className="text-headline-sm text-deep-navy mb-6">
-                I Punti e il Ranking
-              </h3>
-
-              <div className="space-y-5">
-                {EXPLANATIONS.map((item) => (
-                  <div key={item.title} className="flex gap-3">
-                    <div className="mt-0.5 flex-shrink-0">
-                      <item.icon className="h-4.5 w-4.5 text-primary-olive" />
-                    </div>
-                    <div>
-                      <p className="text-body-md text-text-muted leading-relaxed">
-                        <strong className="text-deep-navy">{item.title}</strong>{" "}
-                        {item.text}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 rounded-xl bg-baseline-lime/10 border border-baseline-lime/20 p-4">
-                <p className="text-body-sm text-primary-olive font-medium">
-                  ⚠️ Attenzione: chi l&apos;anno precedente ha guadagnato molti
-                  punti vincendo un torneo, dovrà difendere quell&apos;ottimo
-                  risultato l&apos;anno successivo tornando a vincere, altrimenti
-                  perderà i punti in scadenza precipitando in classifica!
-                </p>
-              </div>
+          {/* ROW 2: The counter (number + label/desc) — vertically centered in 1fr */}
+          <div className="flex flex-col items-center justify-center w-full">
+            {/* Number */}
+            <div className="grid place-items-center [&>*]:[grid-area:1/1]">
+              {highlights.map((item, idx) => (
+                <motion.span
+                  key={`val-${idx}`}
+                  style={{ opacity: opacities[idx] }}
+                  className={cn(
+                    "font-heading font-extrabold text-baseline-lime leading-none select-none",
+                    item.value.length <= 2 ? "text-[120px] xl:text-[160px]" : "text-[60px] xl:text-[80px]"
+                  )}
+                >
+                  {item.value}
+                </motion.span>
+              ))}
             </div>
-          </AnimatedSection>
 
-          {/* Stat cards grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {HIGHLIGHTS.map((item, idx) => (
-              <AnimatedSection key={item.label} delay={0.15 + idx * 0.1}>
-                <div className="rounded-2xl bg-white border border-border-subtle p-6 shadow-ambient transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 h-full">
-                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-baseline-lime/15 mb-4">
-                    <item.icon className="h-4.5 w-4.5 text-primary-olive" />
-                  </div>
-                  <AnimatedValue
-                    value={item.value}
-                    className="text-headline-md text-deep-navy"
-                  />
-                  <p className="text-label-lg text-deep-navy mt-1">
-                    {item.label}
-                  </p>
-                  <p className="text-body-sm text-text-muted mt-0.5">
-                    {item.desc}
-                  </p>
-                </div>
-              </AnimatedSection>
-            ))}
+            {/* Label + desc */}
+            <div className="grid place-items-center [&>*]:[grid-area:1/1] mt-6 text-center">
+              {highlights.map((item, idx) => (
+                <motion.div
+                  key={`lbl-${idx}`}
+                  style={{ opacity: opacities[idx] }}
+                  className="flex flex-col items-center"
+                >
+                  <span className="text-[18px] text-foreground font-bold mb-1">{item.label}</span>
+                  <span className="text-[14px] text-text-muted max-w-[280px] leading-snug">{item.desc}</span>
+                </motion.div>
+              ))}
+            </div>
           </div>
+
+          {/* ROW 3: Progress bar + cue */}
+          <div className="flex flex-col items-center gap-5 py-4">
+            <div className="w-32 h-[2px] bg-surface-gray rounded-full overflow-hidden">
+              <motion.div className="h-full bg-baseline-lime rounded-full" style={{ width: barWidth }} />
+            </div>
+            <ScrollCue targetId="pyramid" label={t.home.ranking.scrollLabel} />
+          </div>
+
         </div>
+      </div>
+
+      {/* --- MOBILE: simple vertical list --- */}
+      <div className="md:hidden flex flex-col w-full py-20 px-6 gap-14">
+        <div className="text-center">
+          <h2 className="text-[11px] text-text-muted uppercase tracking-[0.3em] font-bold mb-3">
+            {t.home.ranking.title}
+          </h2>
+          <p className="text-[14px] text-text-muted max-w-sm mx-auto leading-relaxed">
+            {t.home.ranking.lead}
+          </p>
+        </div>
+
+        {highlights.map((item, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-15%" }}
+            className="flex flex-col items-center text-center"
+          >
+            <span className="text-[64px] font-heading font-extrabold text-baseline-lime leading-none mb-2">
+              {item.value}
+            </span>
+            <span className="text-[16px] text-foreground font-bold mb-1">{item.label}</span>
+            <span className="text-[14px] text-text-muted max-w-[260px]">{item.desc}</span>
+          </motion.div>
+        ))}
       </div>
     </section>
   );

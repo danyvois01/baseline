@@ -1,4 +1,5 @@
 /**
- * Custom React hooks barrel export.
- * Reusable hooks for data fetching, UI state, and business logic will be exported from here.
+ * Hooks barrel export.
  */
+
+export { useRankingFilters, type AgeGroup, type RankingFiltersResult } from "./use-ranking-filters";

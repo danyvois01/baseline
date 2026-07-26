@@ -7,6 +7,7 @@
  */
 
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/providers/locale-provider";
 
 interface LiveStatusCellProps {
   isActive: boolean;
@@ -19,36 +20,47 @@ export function LiveStatusCell({
   tournament,
   stage,
 }: LiveStatusCellProps) {
+  const { t } = useTranslation();
+
+  if (!tournament && !stage) {
+    return (
+      <div className="flex items-center gap-2 opacity-30">
+        <span className="text-body-sm text-on-surface-variant font-medium">—</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-2">
-      {/* Status dot — active uses primary olive with live-pulse, out uses gray */}
+    <div className={cn("flex items-center gap-2", !isActive && "opacity-50 grayscale-[50%]")}>
+      {/* Status dot — active uses tennis ball yellow (baseline-lime) with live-pulse, out uses gray */}
       <div
         className={cn(
-          "w-2 h-2 rounded-full shrink-0",
+          "w-2.5 h-2.5 rounded-full shrink-0",
           isActive
-            ? "bg-primary-olive live-pulse"
+            ? "bg-baseline-lime live-pulse shadow-[0_0_8px_rgba(223,255,0,0.6)]"
             : "bg-on-surface-variant"
         )}
       />
 
-      {/* Status text — active text is medium weight */}
+      {/* Status text */}
       <span
         className={cn(
           "text-body-sm whitespace-nowrap",
           isActive
-            ? "text-deep-navy font-medium"
-            : "text-deep-navy"
+            ? "text-foreground font-semibold"
+            : "text-foreground font-medium"
         )}
       >
-        {isActive ? "Active" : "Out"} - {tournament}
+        {isActive ? t.rankings.liveStatus.active : t.rankings.liveStatus.out} -{" "}
+        {tournament}
       </span>
 
-      {/* Round badge — active uses Baseline Lime palette, out uses gray surface */}
+      {/* Round badge — active uses tennis ball yellow (baseline-lime), out uses gray surface */}
       <span
         className={cn(
           "inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] tracking-wide uppercase shrink-0",
-          isActive
-            ? "bg-baseline-lime text-on-primary-container font-bold"
+          isActive 
+            ? "bg-baseline-lime text-deep-navy font-bold"
             : "bg-surface-container text-on-surface-variant font-medium"
         )}
       >

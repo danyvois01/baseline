@@ -1,51 +1,40 @@
 "use client";
 
-/**
- * TimelineSection — Serpentine vertical timeline with SVG curved path.
- * Cards alternate left/right along a winding path that flows downward.
- * Desktop: serpentine layout with animated SVG curve.
- * Mobile: vertical stacked cards with a straight line.
- */
-
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { Calendar, Sun, CloudSun, Leaf, Snowflake } from "lucide-react";
+import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { AnimatedSection } from "./animated-section";
+import { useTranslation } from "@/providers/locale-provider";
+import { ScrollCue } from "./scroll-cue";
 
 /** Surface colour tokens */
 const SURFACE_COLORS = {
   hard: {
-    bg: "bg-blue-50",
-    text: "text-blue-700",
-    border: "border-blue-200",
+    bg: "bg-blue-50 dark:bg-blue-500/15",
+    text: "text-blue-700 dark:text-blue-300",
+    border: "border-blue-200 dark:border-blue-500/30",
     dot: "bg-blue-500",
     dotHex: "#3B82F6",
-    label: "Cemento",
   },
   clay: {
-    bg: "bg-orange-50",
-    text: "text-orange-700",
-    border: "border-orange-200",
+    bg: "bg-orange-50 dark:bg-orange-500/15",
+    text: "text-orange-700 dark:text-orange-300",
+    border: "border-orange-200 dark:border-orange-500/30",
     dot: "bg-orange-500",
     dotHex: "#F97316",
-    label: "Terra Rossa",
   },
   grass: {
-    bg: "bg-green-50",
-    text: "text-green-700",
-    border: "border-green-200",
+    bg: "bg-green-50 dark:bg-green-500/15",
+    text: "text-green-700 dark:text-green-300",
+    border: "border-green-200 dark:border-green-500/30",
     dot: "bg-green-500",
     dotHex: "#22C55E",
-    label: "Erba",
   },
   indoor: {
-    bg: "bg-purple-50",
-    text: "text-purple-700",
-    border: "border-purple-200",
+    bg: "bg-purple-50 dark:bg-purple-500/15",
+    text: "text-purple-700 dark:text-purple-300",
+    border: "border-purple-200 dark:border-purple-500/30",
     dot: "bg-purple-500",
     dotHex: "#A855F7",
-    label: "Indoor",
   },
 } as const;
 
@@ -57,326 +46,207 @@ interface TimelineEvent {
   highlight: string;
   description: string;
   surface: SurfaceType;
-  icon: typeof Sun;
 }
 
-const EVENTS: TimelineEvent[] = [
-  {
-    period: "Gennaio",
-    title: "Stagione Australiana",
-    highlight: "Australian Open",
-    description:
-      "L'apertura della stagione sul cemento all'aperto, culminante con il primo Slam dell'anno a Melbourne.",
-    surface: "hard",
-    icon: Sun,
-  },
-  {
-    period: "Marzo",
-    title: "Sunshine Double",
-    highlight: "Indian Wells & Miami",
-    description:
-      "I primi due Masters 1000 della stagione nel deserto californiano e in Florida.",
-    surface: "hard",
-    icon: Sun,
-  },
-  {
-    period: "Aprile—Maggio",
-    title: "La Terra Rossa Europea",
-    highlight: "Roland Garros",
-    description:
-      "La grande stagione sul rosso con i Masters 1000 di Monte Carlo, Madrid e Roma, prima dello Slam di Parigi.",
-    surface: "clay",
-    icon: CloudSun,
-  },
-  {
-    period: "Giugno—Luglio",
-    title: "Stagione sull'Erba",
-    highlight: "Wimbledon",
-    description:
-      "Il prestigioso e brevissimo swing sui prati inglesi che culmina nel Tempio di Londra.",
-    surface: "grass",
-    icon: Leaf,
-  },
-  {
-    period: "Agosto—Settembre",
-    title: "Summer Hardcourt Swing",
-    highlight: "US Open",
-    description:
-      "La corsa sul cemento nordamericano con i Masters 1000 del Canada e Cincinnati, che lancia l'ultimo Slam a New York.",
-    surface: "hard",
-    icon: Sun,
-  },
-  {
-    period: "Ottobre—Novembre",
-    title: "Asian Tour & Indoor Finals",
-    highlight: "ATP Finals",
-    description:
-      "Il Masters 1000 di Shanghai, l'ultimo 1000 indoor a Parigi-Bercy e la resa dei conti tra i migliori 8 a Torino.",
-    surface: "indoor",
-    icon: Snowflake,
-  },
-];
+/** Non-text event metadata; period/title/highlight/description come from the locale dictionary by index. */
+const EVENT_SURFACES: SurfaceType[] = ["hard", "hard", "clay", "grass", "hard", "indoor"];
 
-/**
- * SVG serpentine path for 6 nodes.
- * viewBox: 800 x 840
- *
- * Node positions (x, y):
- *   0: (200, 60)   — left
- *   1: (600, 200)  — right
- *   2: (200, 340)  — left
- *   3: (600, 480)  — right
- *   4: (200, 620)  — left
- *   5: (600, 760)  — right
- */
-const SERPENTINE_PATH =
-  "M 200 60 C 200 130, 600 130, 600 200 C 600 270, 200 270, 200 340 C 200 410, 600 410, 600 480 C 600 550, 200 550, 200 620 C 200 690, 600 690, 600 760";
-
-const NODE_POSITIONS = [
-  { x: 200, y: 60 },
-  { x: 600, y: 200 },
-  { x: 200, y: 340 },
-  { x: 600, y: 480 },
-  { x: 200, y: 620 },
-  { x: 600, y: 760 },
-];
-
-const SVG_WIDTH = 800;
-const SVG_HEIGHT = 840;
-
-/** Animated SVG serpentine path that draws itself on scroll */
-function SerpentinePath() {
-  const ref = useRef<SVGSVGElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.1 });
-
-  return (
-    <svg
-      ref={ref}
-      viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
-      fill="none"
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      preserveAspectRatio="none"
-    >
-      {/* Background path (subtle track) */}
-      <path
-        d={SERPENTINE_PATH}
-        stroke="#E9ECEF"
-        strokeWidth={3}
-        strokeLinecap="round"
-        fill="none"
-      />
-
-      {/* Animated foreground path */}
-      <motion.path
-        d={SERPENTINE_PATH}
-        stroke="#DFFF00"
-        strokeWidth={3}
-        strokeLinecap="round"
-        fill="none"
-        initial={{ pathLength: 0 }}
-        animate={isInView ? { pathLength: 1 } : { pathLength: 0 }}
-        transition={{ duration: 2.8, ease: "easeInOut", delay: 0.3 }}
-      />
-
-      {/* Node dots */}
-      {NODE_POSITIONS.map((pos, idx) => {
-        const surface = SURFACE_COLORS[EVENTS[idx].surface];
-        return (
-          <motion.circle
-            key={idx}
-            cx={pos.x}
-            cy={pos.y}
-            r={10}
-            fill={surface.dotHex}
-            stroke="#F1F3F5"
-            strokeWidth={4}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={
-              isInView
-                ? { scale: 1, opacity: 1 }
-                : { scale: 0, opacity: 0 }
-            }
-            transition={{
-              delay: 0.5 + idx * 0.35,
-              type: "spring",
-              stiffness: 300,
-              damping: 20,
-            }}
-          />
-        );
-      })}
-    </svg>
-  );
-}
-
-/** Card component for a timeline event */
-function TimelineCard({
-  event,
-  idx,
-}: {
-  event: TimelineEvent;
-  idx: number;
-}) {
+/** Clean card: neutral border, surface color carried by badge + highlight only. */
+function TimelineCardBody({ event }: { event: TimelineEvent }) {
   const surface = SURFACE_COLORS[event.surface];
 
   return (
-    <AnimatedSection delay={0.3 + idx * 0.15}>
-      <div
+    <div className="relative rounded-3xl border border-border-subtle bg-surface-white/90 backdrop-blur-xl shadow-ambient p-5 md:p-8 transition-all duration-300 hover:shadow-hover hover:-translate-y-1">
+      <span
         className={cn(
-          "rounded-xl border p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 bg-white/90 backdrop-blur-sm",
+          "inline-flex items-center gap-2 rounded-full font-bold px-4 py-1.5 text-label-md mb-3",
           surface.bg,
-          surface.border
+          surface.text
         )}
       >
-        {/* Period badge */}
-        <span
-          className={cn(
-            "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-label-md font-bold mb-2",
-            surface.bg,
-            surface.text
+        <span className={cn("w-1.5 h-1.5 rounded-full", surface.dot)} />
+        {event.period}
+      </span>
+      <h3 className="font-heading font-extrabold text-foreground leading-tight text-2xl md:text-3xl mb-2">
+        {event.title}
+      </h3>
+      <p className={cn("font-bold text-title-sm md:text-label-lg mb-3", surface.text)}>
+        {event.highlight}
+      </p>
+      <p className="text-text-muted text-body-md leading-relaxed">
+        {event.description}
+      </p>
+    </div>
+  );
+}
+
+/** One timeline row: alternating card left/right of the central line (desktop). */
+function TimelineItem({ event, idx }: { event: TimelineEvent; idx: number }) {
+  // Pari a sinistra, dispari a destra
+  const isLeft = idx % 2 === 0;
+  const surface = SURFACE_COLORS[event.surface];
+
+  const ref = useRef<HTMLDivElement>(null);
+  // Attiviamo l'animazione quando l'elemento entra nella parte centrale dello schermo
+  const isInView = useInView(ref, { margin: "-25% 0px -25% 0px", once: true });
+
+  const xOffset = isLeft ? -50 : 50;
+
+  return (
+    <div ref={ref} className="relative flex justify-center items-center w-full min-h-[300px] md:min-h-[45vh]">
+
+      {/* Desktop Layout */}
+      <div className="hidden md:flex w-full items-center">
+        {/* Left Side (Card or Empty Space) */}
+        <div className="w-1/2 flex justify-end pr-12 xl:pr-24">
+          {isLeft && (
+            <motion.div
+              initial={{ opacity: 0, x: xOffset, y: 20 }}
+              animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x: xOffset, y: 20 }}
+              transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+              className="max-w-[480px]"
+            >
+              <TimelineCardBody event={event} />
+            </motion.div>
           )}
-        >
-          <event.icon className="h-3 w-3" />
-          {event.period}
-        </span>
+        </div>
 
-        {/* Season title */}
-        <h3 className="text-label-lg text-deep-navy leading-tight">
-          {event.title}
-        </h3>
+        {/* Center Node */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={isInView ? { scale: 1 } : { scale: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="w-8 h-8 rounded-full border-4 border-surface-white shadow-md z-20"
+            style={{ backgroundColor: surface.dotHex }}
+          />
+        </div>
 
-        {/* Tournament highlight */}
-        <p className={cn("text-label-lg font-bold mb-1", surface.text)}>
-          {event.highlight}
-        </p>
-
-        {/* Description */}
-        <p className="text-body-sm text-text-muted leading-snug">
-          {event.description}
-        </p>
+        {/* Right Side (Empty Space or Card) */}
+        <div className="w-1/2 flex justify-start pl-12 xl:pl-24">
+          {!isLeft && (
+            <motion.div
+              initial={{ opacity: 0, x: xOffset, y: 20 }}
+              animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x: xOffset, y: 20 }}
+              transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+              className="max-w-[480px]"
+            >
+              <TimelineCardBody event={event} />
+            </motion.div>
+          )}
+        </div>
       </div>
-    </AnimatedSection>
+
+      {/* Mobile Layout */}
+      <div className="md:hidden flex w-full relative pl-16">
+        {/* Center Node Mobile */}
+        <div className="absolute left-[24px] top-1/2 -translate-y-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={isInView ? { scale: 1 } : { scale: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="w-6 h-6 rounded-full border-[3px] border-surface-white shadow-md z-20"
+            style={{ backgroundColor: surface.dotHex }}
+          />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 50, y: 20 }}
+          animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x: 50, y: 20 }}
+          transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+          className="w-full max-w-[480px]"
+        >
+          <TimelineCardBody event={event} />
+        </motion.div>
+      </div>
+
+    </div>
   );
 }
 
 export function TimelineSection() {
+  const { t } = useTranslation();
+  const containerRef = useRef<HTMLElement>(null);
+
+  const events: TimelineEvent[] = EVENT_SURFACES.map((surface, i) => ({
+    surface,
+    ...t.home.timeline.events[i],
+  }));
+
+  // Line fill driven by section scroll (free-flowing, no pinning)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start center", "end center"],
+  });
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 50, damping: 20, restDelta: 0.001 });
+  const lineFill = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
+
   return (
-    <section id="timeline" className="bg-surface-gray scroll-mt-20">
-      <div className="mx-auto max-w-[1280px] px-6 py-24">
-        <AnimatedSection>
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 rounded-full bg-baseline-lime/15 px-4 py-1.5 mb-6">
-              <Calendar className="h-3.5 w-3.5 text-primary-olive" />
-              <span className="text-label-md text-primary-olive font-bold uppercase tracking-wider">
-                La Stagione
-              </span>
-            </div>
-            <h2 className="text-headline-lg text-deep-navy mb-4">
-              Un anno di Tennis
-            </h2>
-            <p className="text-body-lg text-text-muted max-w-3xl mx-auto">
-              La stagione tennistica dura circa 11 mesi e segue l&apos;estate
-              in giro per il mondo, cambiando superficie di gioco. Ecco le
-              tappe fondamentali:
-            </p>
-          </div>
-        </AnimatedSection>
+    <section
+      id="timeline"
+      ref={containerRef}
+      className="relative w-full py-20 md:py-24 bg-surface-white"
+    >
+      <div className="mx-auto max-w-[1400px] px-6">
 
-        {/* Surface legend */}
-        <AnimatedSection delay={0.1}>
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            {Object.entries(SURFACE_COLORS).map(([key, style]) => (
-              <div
-                key={key}
-                className="inline-flex items-center gap-2 rounded-full bg-white border border-border-subtle px-4 py-2"
-              >
-                <span
-                  className={cn("w-2.5 h-2.5 rounded-full", style.dot)}
-                />
-                <span className="text-label-md text-deep-navy font-medium">
-                  {style.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </AnimatedSection>
-
-        {/* Mobile: vertical timeline with line */}
-        <div className="md:hidden flex flex-col gap-0">
-          {EVENTS.map((event, idx) => {
-            const surface = SURFACE_COLORS[event.surface];
-            return (
-              <div key={event.period} className="flex gap-4">
-                {/* Vertical line + dot */}
-                <div className="flex flex-col items-center">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{
-                      delay: 0.1 + idx * 0.1,
-                      type: "spring",
-                      stiffness: 300,
-                    }}
-                    className={cn(
-                      "w-4 h-4 rounded-full border-[3px] border-surface-gray shrink-0 z-10",
-                      surface.dot
-                    )}
-                  />
-                  {idx < EVENTS.length - 1 && (
-                    <div className="w-[2px] flex-1 bg-border-subtle min-h-[16px]" />
-                  )}
-                </div>
-
-                {/* Card */}
-                <div className="pb-6 flex-1">
-                  <TimelineCard event={event} idx={idx} />
-                </div>
-              </div>
-            );
-          })}
+        {/* Header */}
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="text-[50px] md:text-[80px] font-heading font-extrabold text-foreground mb-6 leading-none">
+            {t.home.timeline.title}
+          </h2>
+          <p className="text-body-xl text-text-muted max-w-3xl mx-auto">
+            {t.home.timeline.lead}
+          </p>
         </div>
 
-        {/* Desktop: serpentine winding timeline */}
-        <div
-          className="hidden md:block relative"
-          style={{ aspectRatio: `${SVG_WIDTH} / ${SVG_HEIGHT}` }}
-        >
-          {/* SVG curved path */}
-          <SerpentinePath />
+        {/*
+          Surface legend: static intro key under the header (not sticky —
+          a floating legend overlapped the cards while scrolling; each card
+          badge now carries its own surface dot anyway).
+        */}
+        <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-16 md:mb-24">
+          {Object.entries(SURFACE_COLORS).map(([key, style]) => (
+            <div
+              key={key}
+              className="inline-flex items-center gap-2 rounded-full bg-surface-white border border-border-subtle px-3 py-1.5 shadow-sm"
+            >
+              <span className={cn("w-2 h-2 rounded-full", style.dot)} />
+              <span className="text-[11px] md:text-xs text-foreground font-extrabold uppercase tracking-widest">
+                {t.home.timeline.surfaces[key as SurfaceType]}
+              </span>
+            </div>
+          ))}
+        </div>
 
-          {/* Cards positioned along the curve */}
-          {EVENTS.map((event, idx) => {
-            const node = NODE_POSITIONS[idx];
-            const isLeft = node.x < 400;
+        {/* The Timeline */}
+        <div className="relative flex flex-col gap-12 md:gap-8">
 
-            // Convert SVG coordinates to percentages
-            const topPercent = (node.y / SVG_HEIGHT) * 100;
+          {/* Central Line Track (Desktop) */}
+          <div className="hidden md:block absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-1.5 bg-surface-gray rounded-full overflow-hidden">
+            <motion.div
+              className="absolute top-0 left-0 w-full bg-baseline-lime"
+              style={{ height: lineFill }}
+            />
+          </div>
 
-            // Left-side nodes: card goes to the right of the dot
-            // Right-side nodes: card goes to the left of the dot
-            const style: React.CSSProperties = isLeft
-              ? {
-                  position: "absolute",
-                  top: `${topPercent}%`,
-                  left: `${(node.x / SVG_WIDTH) * 100 + 4}%`,
-                  transform: "translateY(-50%)",
-                  maxWidth: "340px",
-                }
-              : {
-                  position: "absolute",
-                  top: `${topPercent}%`,
-                  right: `${100 - (node.x / SVG_WIDTH) * 100 + 4}%`,
-                  transform: "translateY(-50%)",
-                  maxWidth: "340px",
-                };
+          {/* Left Line Track (Mobile) */}
+          <div className="md:hidden absolute top-0 bottom-0 left-[24px] -translate-x-1/2 w-1.5 bg-surface-gray rounded-full overflow-hidden">
+            <motion.div
+              className="absolute top-0 left-0 w-full bg-baseline-lime"
+              style={{ height: lineFill }}
+            />
+          </div>
 
-            return (
-              <div key={event.period} style={style}>
-                <TimelineCard event={event} idx={idx} />
-              </div>
-            );
-          })}
+          {/* Events */}
+          {events.map((event, idx) => (
+            <TimelineItem key={event.period} event={event} idx={idx} />
+          ))}
+
+        </div>
+
+        {/* Next-section cue */}
+        <div className="flex justify-center pt-12 md:pt-16">
+          <ScrollCue targetId="scoring" label={t.home.timeline.scrollNext} />
         </div>
       </div>
     </section>

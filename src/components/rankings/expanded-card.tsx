@@ -3,13 +3,13 @@
 /**
  * ExpandedCard — Secondary data panel for an expanded rankings row.
  * Aligns with parent grid columns (spilling from their reference area):
- * - Under Player: Best Ranking
- * - Under Live Status: Next + Max
- * - Under Points/+/-: Official Points
- * Each block uses 2 lines: label + value on top, subtitle below.
+ * - Under Player (Col 3): Career High
+ * - Under Live Status (Col 4): Projected Next & Max
+ * - Under Points (Col 5): Official Points (right-aligned)
  */
 
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/providers/locale-provider";
 
 /** Grid cols must match rankings-table.tsx GRID_COLS (7 columns) */
 const GRID_COLS = "grid-cols-[50px_80px_1fr_1.2fr_120px_100px_50px]";
@@ -23,6 +23,8 @@ interface ExpandedCardProps {
   officialPoints: number;
   /** Player's career-best rank position */
   bestRanking: number;
+  /** Whether the player is currently active in a tournament */
+  isActive?: boolean;
 }
 
 /** Format number with comma as thousands separator */
@@ -35,84 +37,85 @@ export function ExpandedCard({
   maxPoints,
   officialPoints,
   bestRanking,
+  isActive = true,
 }: ExpandedCardProps) {
+  const { t } = useTranslation();
+
   return (
-    <div className="bg-surface-container-low/50 border-t border-border-subtle/40 px-6 py-3">
+    <div className="bg-surface-gray/30 shadow-inner border-t border-border-subtle/40 px-6 py-4">
       <div className={cn("grid items-start", GRID_COLS)}>
-        {/* Skip [#] column */}
+        {/* Col 1 & 2: Skip [#] and [MOVE] */}
         <div />
-        {/* Skip [MOVE] column */}
         <div />
 
-        {/* Under Player: Best Ranking — 2 lines */}
-        <div className="flex flex-col">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">
-              Best Ranking
-            </span>
-            <span className="text-body-sm font-bold text-deep-navy">
-              #{bestRanking}
-            </span>
-          </div>
-          <span className="text-[10px] text-on-surface-variant">
-            Career high
+        {/* Col 3 (Player): Career High */}
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold">
+            {t.rankings.expandedCard.careerHigh}
+          </span>
+          <span className="text-body-md font-heading font-extrabold text-foreground">
+            #{bestRanking}
           </span>
         </div>
 
-        {/* Under Live Status: Next + Max grouped — 2 lines each */}
-        <div className="flex gap-6">
-          {/* Next */}
-          <div className="flex flex-col">
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">
-                Next
-              </span>
-              <span className="text-body-sm font-bold text-primary-olive tabular-nums">
-                {fmt(nextMatchPoints)}
-              </span>
-              <span className="text-[10px] text-on-surface-variant">pts</span>
-            </div>
-            <span className="text-[10px] text-on-surface-variant">
-              If wins next match
-            </span>
-          </div>
+        {/* Col 4 (Live Status): Proj. Next & Proj. Max */}
+        <div className="flex gap-8 items-start">
+          {isActive ? (
+            <>
+              {/* Next */}
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold flex items-center gap-1.5">
+                  {t.rankings.expandedCard.projNext}
+                </span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-body-md font-heading font-extrabold text-foreground tabular-nums">
+                    {fmt(nextMatchPoints)}
+                  </span>
+                  <span className="text-[10px] text-text-muted font-medium">{t.rankings.expandedCard.pts}</span>
+                </div>
+                <span className="text-[10px] text-on-surface-variant font-medium">{t.rankings.expandedCard.winsNextMatch}</span>
+              </div>
 
-          {/* Max */}
-          <div className="flex flex-col">
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">
-                Max
-              </span>
-              <span className="text-body-sm font-bold text-deep-navy tabular-nums">
-                {fmt(maxPoints)}
-              </span>
-              <span className="text-[10px] text-on-surface-variant">pts</span>
+              {/* Vertical Divider */}
+              <div className="w-[1px] h-10 bg-border-subtle/80 mt-1" />
+
+              {/* Max */}
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold">
+                  {t.rankings.expandedCard.projMax}
+                </span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-body-md font-heading font-extrabold text-foreground tabular-nums">
+                    {fmt(maxPoints)}
+                  </span>
+                  <span className="text-[10px] text-text-muted font-medium">{t.rankings.expandedCard.pts}</span>
+                </div>
+                <span className="text-[10px] text-on-surface-variant font-medium">{t.rankings.expandedCard.titleWin}</span>
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center h-10">
+              <span className="text-body-sm text-on-surface-variant font-medium opacity-50">—</span>
             </div>
-            <span className="text-[10px] text-on-surface-variant">
-              If wins tournament
-            </span>
-          </div>
+          )}
         </div>
 
-        {/* Under Points + +/- area: Official Points — centered across both columns */}
-        <div className="col-span-2 flex justify-center">
-          <div className="flex flex-col">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">
-              Official
-            </span>
-            <span className="text-body-sm font-bold text-deep-navy tabular-nums">
+        {/* Col 5 (Points): Official Points right-aligned to match the points above */}
+        <div className="flex flex-col gap-1 text-right">
+          <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold">
+            {t.rankings.expandedCard.officialPoints}
+          </span>
+          <div className="flex justify-end items-baseline gap-1">
+            <span className="text-body-md font-heading font-extrabold text-foreground tabular-nums">
               {fmt(officialPoints)}
             </span>
-            <span className="text-[10px] text-on-surface-variant">pts</span>
+            <span className="text-[10px] text-text-muted font-medium">{t.rankings.expandedCard.pts}</span>
           </div>
-          <span className="text-[10px] text-on-surface-variant">
-            Current official
-          </span>
-          </div>
+          <span className="text-[10px] text-on-surface-variant font-medium">{t.rankings.expandedCard.atpVerified}</span>
         </div>
 
-        {/* Skip chevron column */}
+        {/* Col 6 & 7: Skip [+/-] and [Chevron] */}
+        <div />
         <div />
       </div>
     </div>

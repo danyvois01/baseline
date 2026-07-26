@@ -4,7 +4,8 @@
  */
 
 export { AnimatedSection } from "./animated-section";
-export { SectionTabBar } from "./section-tab-bar";
+export { SectionNavigator } from "./section-navigator";
+export { ScrollCue } from "./scroll-cue";
 export { HeroSection } from "./hero-section";
 export { RankingSection } from "./ranking-section";
 export { PyramidSection } from "./pyramid-section";

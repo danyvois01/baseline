@@ -1,17 +1,9 @@
 /**
  * Mock data for Race to Turin rankings.
- * Extends LiveRankingEntry with race-specific qualification status.
  * Placeholder data for UI development — will be replaced by real scraping data.
  */
 
-import type { LiveRankingEntry } from "./mock-data";
-import type { RaceStatus, RaceSummary } from "@/types/ranking";
-
-/** A single entry in the Race to Turin table */
-export interface RaceRankingEntry extends LiveRankingEntry {
-  /** Qualification status for Turin Finals */
-  raceStatus: RaceStatus;
-}
+import type { RaceRankingEntry, RaceSummary } from "@/types";
 
 /** Summary data for the Race overview cards */
 export const MOCK_RACE_SUMMARY: RaceSummary = {
