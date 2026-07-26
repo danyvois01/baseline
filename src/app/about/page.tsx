@@ -8,9 +8,12 @@ import { AboutContent } from "./about-content";
  */
 
 export const metadata: Metadata = {
-  title: "About — Baseline",
+  title: "About",
   description:
     "Baseline is an independent platform for real-time ATP tennis rankings: official standings, live projections and the Race to Turin.",
+  alternates: {
+    canonical: "/about",
+  },
 };
 
 export default function AboutPage() {

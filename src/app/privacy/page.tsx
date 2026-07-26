@@ -8,9 +8,12 @@ import { PrivacyContent } from "./privacy-content";
  */
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Baseline",
+  title: "Privacy Policy",
   description:
     "How Baseline handles your data: no accounts, no tracking cookies, only technical hosting logs and local browser preferences.",
+  alternates: {
+    canonical: "/privacy",
+  },
 };
 
 export default function PrivacyPage() {

@@ -9,9 +9,12 @@ import { getOfficialRankings } from "@/services/rankings-service";
  */
 
 export const metadata: Metadata = {
-  title: "Official ATP Rankings — Baseline",
+  title: "Official ATP Rankings",
   description:
     "The official weekly ATP Tour singles rankings — verified standings, points, and next-week projections.",
+  alternates: {
+    canonical: "/official",
+  },
 };
 
 export default async function OfficialPage() {
@@ -22,9 +25,7 @@ export default async function OfficialPage() {
       <TopNavBar />
 
       <main className="flex-1 pt-28">
-        <div className="mx-auto max-w-[1280px] px-6 py-8">
-          <OfficialClient initialRankings={rankings} lastUpdated={lastUpdated} />
-        </div>
+        <OfficialClient initialRankings={rankings} lastUpdated={lastUpdated} />
       </main>
 
       <Footer />

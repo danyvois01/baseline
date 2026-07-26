@@ -9,9 +9,12 @@ import { getLiveRankings } from "@/services/rankings-service";
  */
 
 export const metadata: Metadata = {
-  title: "Live ATP Rankings — Baseline",
+  title: "Live ATP Rankings",
   description:
     "Live ATP Tennis Rankings — Real-time point projections based on ongoing tournament results.",
+  alternates: {
+    canonical: "/live",
+  },
 };
 
 export default async function LivePage() {
@@ -22,9 +25,7 @@ export default async function LivePage() {
       <TopNavBar />
 
       <main className="flex-1 pt-28">
-        <div className="mx-auto max-w-[1280px] px-6 py-8">
-          <LiveClient initialRankings={rankings} lastUpdated={lastUpdated} />
-        </div>
+        <LiveClient initialRankings={rankings} lastUpdated={lastUpdated} />
       </main>
 
       <Footer />
