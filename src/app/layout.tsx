@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
-import { CustomCursor } from "@/components/layout/custom-cursor";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { LocaleProvider } from "@/providers/locale-provider";
 
@@ -44,7 +43,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LocaleProvider>
-            <CustomCursor />
             {children}
           </LocaleProvider>
         </ThemeProvider>

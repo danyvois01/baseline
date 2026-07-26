@@ -68,7 +68,7 @@ export function HeroSection() {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
             {/* Badge removed */}
-            <h1 className="text-[12vw] sm:text-[70px] lg:text-[90px] xl:text-[110px] leading-[0.85] font-heading font-extrabold text-foreground tracking-tighter uppercase interactive cursor-none">
+            <h1 className="text-[12vw] sm:text-[70px] lg:text-[90px] xl:text-[110px] leading-[0.85] font-heading font-extrabold text-foreground tracking-tighter uppercase">
               Baseline
               <br />
               <span className="inline-block pb-4 pr-4 text-foreground text-[8vw] sm:text-[50px] lg:text-[60px] xl:text-[70px]">
