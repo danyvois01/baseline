@@ -35,6 +35,9 @@ yarn-error.log*
 core
 core.*
 
+# scraped HTML kept locally as scraper reference
+/ref/
+
 # env files (can opt-in for committing if needed)
 .env*
 # but do track the example template
