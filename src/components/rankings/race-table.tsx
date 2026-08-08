@@ -11,6 +11,7 @@
 import { MovementBadge } from "./movement-badge";
 import { LiveStatusCell } from "./live-status-cell";
 import { PlayerCell } from "./player-cell";
+import { PointsDiffBadge } from "./points-diff-badge";
 import { cn } from "@/lib/utils";
 import { formatPoints, formatDiff } from "@/lib/format";
 import { usePagination } from "./primitives/use-pagination";
@@ -58,25 +59,25 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
             GRID_COLS
           )}
         >
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-center">
             {t.rankings.table.rank}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-center">
             {t.rankings.table.move}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider">
             {t.rankings.table.player}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider">
             {t.rankings.table.liveStatus}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-right">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-right">
             {t.rankings.table.points}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-center">
             {t.rankings.table.diff}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-center">
             {t.rankings.table.status}
           </span>
         </div>
@@ -89,7 +90,10 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
             visibleEntries[index - 1]?.rank <= QUALIFICATION_CUTOFF;
 
           return (
-            <div key={entry.player.id}>
+            <div
+              key={entry.player.id}
+              className="border-b border-border-subtle/40 last:border-b-0"
+            >
               {showCut && (
                 <div className={cn("grid items-center px-6 py-3 bg-surface-gray/10 border-y border-border-subtle/50 my-1", GRID_COLS)}>
                   <div className="col-span-3 border-t border-border-subtle" />
@@ -107,10 +111,11 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                 className={cn(
                   "group grid items-center px-6 py-4 transition-all duration-300",
                   GRID_COLS,
+                  index % 2 === 1 && "bg-surface-gray/20",
                   "hover:bg-baseline-lime/5"
                 )}
               >
-                <span className="text-headline-md text-foreground font-heading font-extrabold text-center">
+                <span className="text-headline-md text-foreground font-heading font-extrabold text-center tabular-nums">
                   {entry.rank}
                 </span>
 
@@ -134,18 +139,7 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                 </span>
 
                 <div className="flex justify-center">
-                  <span
-                    className={cn(
-                      "inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[11px] font-bold tabular-nums",
-                      entry.pointsDiff > 0
-                        ? "bg-success-green-bg text-success-green-text"
-                        : entry.pointsDiff < 0
-                          ? "bg-error-red-bg text-error-red-text"
-                          : "bg-surface-container text-on-surface-variant"
-                    )}
-                  >
-                    {formatDiff(entry.pointsDiff)}
-                  </span>
+                  <PointsDiffBadge diff={entry.pointsDiff} />
                 </div>
 
                 <div className="flex justify-center">
@@ -155,7 +149,7 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                       {t.rankings.race.qualified}
                     </span>
                   ) : (
-                    <span className="text-body-sm text-text-muted">
+                    <span className="text-body-sm text-foreground/60">
                       {t.rankings.race.inContention}
                     </span>
                   )}
@@ -167,7 +161,7 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
       </div>
 
       {/* ═══ MOBILE CARD LIST ═══ */}
-      <div className="md:hidden divide-y divide-border-subtle/60">
+      <div className="md:hidden divide-y divide-border-subtle/40">
         {visibleEntries.map((entry, index) => {
           const showCut =
             entry.rank === QUALIFICATION_CUTOFF + 1 &&
@@ -185,11 +179,11 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                 </div>
               )}
 
-              <div className="px-4 py-3">
+              <div className={cn("px-4 py-3", index % 2 === 1 && "bg-surface-gray/20")}>
                 <div className="flex items-center gap-3">
                   {/* Rank + movement */}
                   <div className="flex flex-col items-center shrink-0 w-8">
-                    <span className="text-[20px] font-heading font-extrabold text-foreground">
+                    <span className="text-[20px] font-heading font-extrabold text-foreground tabular-nums">
                       {entry.rank}
                     </span>
                     <MovementBadge
@@ -210,11 +204,11 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                         className={cn("fi rounded-sm", `fi-${entry.player.countryCode}`)}
                         style={{ fontSize: "12px" }}
                       />
-                      <span className="text-[11px] text-text-muted font-medium uppercase">
+                      <span className="text-[11px] text-foreground/60 font-medium uppercase">
                         {entry.player.nationality}
                       </span>
-                      <span className="text-[11px] text-text-muted">·</span>
-                      <span className="text-[11px] text-text-muted">
+                      <span className="text-[10px] text-foreground/30">·</span>
+                      <span className="text-[11px] text-foreground/60 font-medium tabular-nums">
                         {entry.player.age}
                       </span>
                     </div>
@@ -237,7 +231,7 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                             ? "text-success-green-text"
                             : entry.pointsDiff < 0
                               ? "text-error-red-text"
-                              : "text-text-muted"
+                              : "text-foreground/60"
                         )}
                       >
                         {formatDiff(entry.pointsDiff)}

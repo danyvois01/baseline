@@ -8,7 +8,47 @@ import {
 } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/providers/locale-provider";
+import type { Dictionary } from "@/lib/i18n";
 import { ScrollCue } from "./scroll-cue";
+
+type CategoryId = keyof Dictionary["home"]["glossary"]["categories"];
+
+/**
+ * Category per term, index-matched to the i18n `terms` array (same pattern
+ * as Timeline's EVENT_META). Keep in sync if terms are added or reordered.
+ */
+const TERM_CATEGORIES: CategoryId[] = [
+  "serve", // ACE
+  "play",  // BREAK
+  "court", // BASELINE
+  "serve", // LET
+  "serve", // DOUBLE FAULT
+  "shots", // DROP SHOT
+  "shots", // LOB
+  "shots", // PASSANTE / PASSING SHOT
+  "play",  // WINNER
+  "play",  // UNFORCED ERROR
+  "shots", // TOP SPIN
+  "shots", // VOLLEY
+  "shots", // SMASH
+  "shots", // SLICE
+  "play",  // SERVE & VOLLEY
+];
+
+/** Court-corner decoration: two lines meeting at a right angle + service line. */
+function CourtCornerDetail() {
+  return (
+    <svg
+      viewBox="0 0 80 80"
+      className="absolute top-5 right-5 w-14 h-14 sm:w-16 sm:h-16 pointer-events-none opacity-[0.08]"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path d="M4,76 L4,4 L76,4" stroke="white" strokeWidth={3} strokeLinecap="round" />
+      <path d="M22,76 L22,22 L76,22" stroke="white" strokeWidth={2} strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export function GlossarySection() {
   const { t } = useTranslation();
@@ -41,12 +81,11 @@ export function GlossarySection() {
     }
   };
 
-  // Otteniamo le 3 carte visibili per il loop infinito
-  const visibleCards = [
-    terms[activeIndex],
-    terms[(activeIndex + 1) % terms.length],
-    terms[(activeIndex + 2) % terms.length],
-  ];
+  // Otteniamo le 3 carte visibili per il loop infinito (con indice reale per la categoria)
+  const visibleCards = [0, 1, 2].map((offset) => {
+    const realIndex = (activeIndex + offset) % terms.length;
+    return { ...terms[realIndex], category: TERM_CATEGORIES[realIndex] };
+  });
 
   return (
     <section id="glossary" className="relative w-full bg-surface-white pt-28 pb-16 sm:pt-32 sm:pb-24 overflow-hidden">
@@ -142,6 +181,15 @@ export function GlossarySection() {
                       onDragEnd={isTopCard ? handleDragEnd : undefined}
                       whileDrag={{ rotate: 3, scale: 1.05 }}
                     >
+                      {/* Court-corner decoration (echoes the Hero court) */}
+                      <CourtCornerDetail />
+
+                      {/* Category badge */}
+                      <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1 mb-4 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white/70">
+                        <span className="w-1.5 h-1.5 rounded-full bg-baseline-lime" />
+                        {t.home.glossary.categories[item.category]}
+                      </span>
+
                       <h3 className="text-3xl sm:text-4xl font-heading font-black text-baseline-lime mb-4 uppercase tracking-wider">
                         {item.term}
                       </h3>
@@ -169,8 +217,14 @@ export function GlossarySection() {
             </button>
           </div>
 
+          {/* Deck position counter */}
+          <div className="flex items-baseline gap-1.5 mt-8 sm:mt-10 font-heading font-bold select-none">
+            <span className="text-[15px] text-foreground">{String(activeIndex + 1).padStart(2, "0")}</span>
+            <span className="text-[12px] text-text-muted/60">/ {String(terms.length).padStart(2, "0")}</span>
+          </div>
+
           {/* Next-section cue — only on mobile */}
-          <div className="mt-10 sm:hidden">
+          <div className="mt-6 sm:hidden">
             <ScrollCue targetId="cta" label={t.home.glossary.scrollNext} />
           </div>
         </div>

@@ -2,7 +2,10 @@
 
 /**
  * PlayerCell — Reusable player info cell for rankings tables.
- * Renders: name (with hover color) + flag icon + nationality badge + age.
+ * Renders: name (with hover color) + flag icon + nationality code + age.
+ * Nationality and age are both static player attributes, so they share the
+ * same plain-text weight. Pills in these tables are reserved for live or
+ * changing state (movement, point diff, tournament round).
  */
 
 import type { PlayerDisplay } from "@/types";
@@ -24,11 +27,11 @@ export function PlayerCell({ player }: PlayerCellProps) {
           className={cn("fi rounded-sm", `fi-${player.countryCode}`)}
           style={{ fontSize: "14px" }}
         />
-        <span className="inline-flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-medium px-2 py-0.5 uppercase tracking-wider">
+        <span className="text-[10px] text-foreground/60 font-medium uppercase tracking-wider">
           {player.nationality}
         </span>
-        <span className="text-[10px] text-on-surface-variant">·</span>
-        <span className="text-[10px] text-on-surface-variant">
+        <span className="text-[10px] text-foreground/30">·</span>
+        <span className="text-[10px] text-foreground/60 font-medium tabular-nums">
           {player.age}
         </span>
       </div>

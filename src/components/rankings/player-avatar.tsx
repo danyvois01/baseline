@@ -15,7 +15,7 @@ interface PlayerAvatarProps {
 export function PlayerAvatar({ initials, size = 40 }: PlayerAvatarProps) {
   return (
     <div
-      className="flex items-center justify-center rounded-full bg-surface-container-highest text-foreground shrink-0"
+      className="flex items-center justify-center rounded-full bg-surface-gray text-foreground shrink-0"
       style={{
         width: size,
         height: size,

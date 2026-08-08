@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion, AnimatePresence } from "framer-motion";
 import {
   Crown,
   Medal,
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "@/providers/locale-provider";
 import type { Dictionary } from "@/lib/i18n";
 import { ScrollCue } from "./scroll-cue";
+import { CelebrationBurst } from "./celebration-burst";
 
 /**
  * Tier tones form a tonal navy scale: full deep-navy at the top of the
@@ -56,8 +57,10 @@ function TierTextBlock({
     <div ref={ref} className="min-h-[100dvh] flex flex-col justify-center py-16 md:py-20">
       <motion.div
         className={cn(
-          "bg-surface-white/85 backdrop-blur-md border border-border-subtle rounded-3xl p-6 md:p-12 shadow-xl transition-all duration-700",
-          isInView ? "opacity-100 scale-100" : "opacity-30 scale-95"
+          "bg-surface-white/85 backdrop-blur-md border border-border-subtle border-l-4 rounded-3xl p-6 md:p-12 shadow-xl transition-all duration-700",
+          isInView
+            ? "opacity-100 scale-100 border-l-baseline-lime"
+            : "opacity-30 scale-95 border-l-deep-navy/20"
         )}
       >
         <div className="flex items-center gap-6 mb-6">
@@ -86,6 +89,7 @@ function TierTextBlock({
 export function PyramidSection() {
   const { t } = useTranslation();
   const [activeTier, setActiveTier] = useState<string>("slam");
+  const prefersReducedMotion = useReducedMotion();
 
   const tiers: Tier[] = TIER_META.map((meta, i) => ({
     ...meta,
@@ -174,12 +178,27 @@ export function PyramidSection() {
                 initial={false}
                 animate={
                   finalsLanded
-                    ? { y: 0, opacity: 1, scale: 1.1 }
+                    ? {
+                        y: 0,
+                        opacity: 1,
+                        scale: 1.1,
+                        boxShadow: [
+                          "0 0 30px rgba(223,255,0,0.4)",
+                          "0 0 60px rgba(223,255,0,0.9)",
+                          "0 0 30px rgba(223,255,0,0.4)",
+                        ],
+                      }
                     : { y: -140, opacity: 0, scale: 0.8 }
                 }
                 transition={
                   finalsLanded
-                    ? { type: "spring", stiffness: 240, damping: 14, mass: 1.1 }
+                    ? {
+                        type: "spring",
+                        stiffness: 240,
+                        damping: 14,
+                        mass: 1.1,
+                        boxShadow: { duration: 0.7, delay: 0.15, times: [0, 0.35, 1] },
+                      }
                     : { duration: 0.3, ease: "easeIn" }
                 }
                 className="w-16 h-16 rounded-full bg-baseline-lime shadow-[0_0_30px_rgba(223,255,0,0.4)] flex items-center justify-center relative z-10"
@@ -187,6 +206,11 @@ export function PyramidSection() {
                 <Crown className="w-8 h-8 text-deep-navy" />
                 {/* Connector line to the pyramid below */}
                 <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[1px] h-6 border-l border-dashed border-border-subtle" />
+
+                {/* One-shot celebration burst when the crown lands */}
+                <AnimatePresence>
+                  {finalsLanded && !prefersReducedMotion && <CelebrationBurst />}
+                </AnimatePresence>
               </motion.div>
             </div>
 
@@ -196,17 +220,19 @@ export function PyramidSection() {
               const isActive = activeTier === tier.id;
 
               return (
-                <div
+                <motion.div
                   key={tier.id + "-graphic"}
+                  animate={{ scale: isActive ? 1.1 : 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
                   className={cn(
-                    "transition-all duration-500 ease-out flex items-center justify-center",
+                    "transition-[background-color,border-color,opacity,box-shadow] duration-500 ease-out flex items-center justify-center",
                     `h-12 rounded-lg mt-1 ${tier.w}`,
                     // Active tier is lime, built tiers keep their navy tone, future tiers stay neutral
                     isActive
-                      ? "bg-baseline-lime shadow-[0_0_30px_rgba(223,255,0,0.4)] scale-110 z-10"
+                      ? "bg-baseline-lime shadow-[0_0_30px_rgba(223,255,0,0.4)] z-10"
                       : isBuilt || finalsLanded
-                        ? `${tier.tone} opacity-95 scale-100`
-                        : "bg-surface-gray border border-border-subtle scale-100 opacity-60"
+                        ? `${tier.tone} opacity-95`
+                        : "bg-surface-gray border border-border-subtle opacity-60"
                   )}
                 >
                   {(isBuilt || finalsLanded) && (
@@ -219,7 +245,7 @@ export function PyramidSection() {
                       {tier.name}
                     </span>
                   )}
-                </div>
+                </motion.div>
               );
             })}
           </div>

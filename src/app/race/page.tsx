@@ -9,9 +9,12 @@ import { getRaceRankings } from "@/services/rankings-service";
  */
 
 export const metadata: Metadata = {
-  title: "Race to Turin - Baseline",
+  title: "Race to Turin",
   description:
     "Track the Race to Turin — ATP Finals qualification standings, cut-off projections, and qualified players.",
+  alternates: {
+    canonical: "/race",
+  },
 };
 
 export default async function RacePage() {
@@ -22,17 +25,14 @@ export default async function RacePage() {
       <TopNavBar />
 
       <main className="flex-1 pt-28">
-        <div className="mx-auto max-w-[1280px] px-6 py-8">
-          <RaceClient
-            summary={summary}
-            initialRankings={rankings}
-            lastUpdated={lastUpdated}
-          />
-        </div>
+        <RaceClient
+          summary={summary}
+          initialRankings={rankings}
+          lastUpdated={lastUpdated}
+        />
       </main>
 
       <Footer />
     </div>
   );
 }
-

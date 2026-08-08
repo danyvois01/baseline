@@ -13,17 +13,15 @@ export function Footer() {
   const { t } = useTranslation();
 
   const footerLinks = [
-    { label: t.footer.terms, href: "/terms" },
     { label: t.footer.privacy, href: "/privacy" },
-    { label: t.footer.support, href: "/support" },
     { label: t.footer.about, href: "/about" },
   ];
 
   return (
     <footer className="w-full border-t border-border-subtle/40 bg-surface-white mt-auto">
-      <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-4 px-6 py-12 md:flex-row">
+      <div className="mx-auto flex max-w-[1280px] flex-col items-center gap-4 px-6 py-12 md:grid md:grid-cols-3 md:items-center">
         {/* Brand Logo */}
-        <Link href="/" className="shrink-0">
+        <Link href="/" className="shrink-0 md:justify-self-start">
           {/* Light/dark logo variants swapped via CSS to avoid a theme flash */}
           <Image
             src="/logo_new_crop.png"
@@ -44,20 +42,20 @@ export function Footer() {
         </Link>
 
         {/* Links */}
-        <nav className="flex flex-wrap justify-center items-center gap-6">
+        <nav className="flex flex-wrap justify-center items-center gap-2 md:justify-self-center">
           {footerLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
-              className="text-label-md text-text-muted font-medium no-underline hover:text-foreground transition-colors duration-200"
+              className="text-label-md text-text-muted font-medium no-underline px-3 py-1.5 rounded-full hover:text-foreground hover:bg-surface-gray/50 transition-colors duration-200"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
         {/* Copyright */}
-        <p className="text-body-sm text-text-muted text-center md:text-right">
+        <p className="text-body-sm text-text-muted text-center md:text-right md:justify-self-end">
           {t.footer.copyright}
         </p>
       </div>

@@ -8,26 +8,6 @@ import { useTranslation } from "@/providers/locale-provider";
 /* ------------------------------------------------------------------ */
 /*  Court line definitions for draw-on animation                       */
 /* ------------------------------------------------------------------ */
-const COURT_LINES: { d: string; delay: number; duration: number }[] = [
-  { d: "M10,10 L510,10 L510,290 L10,290 Z", delay: 0, duration: 1.5 },
-  { d: "M10,45 L510,45", delay: 0.4, duration: 0.8 },
-  { d: "M10,255 L510,255", delay: 0.4, duration: 0.8 },
-  { d: "M155,45 L155,255", delay: 0.9, duration: 0.5 },
-  { d: "M365,45 L365,255", delay: 0.9, duration: 0.5 },
-  { d: "M155,150 L365,150", delay: 1.2, duration: 0.5 },
-  { d: "M10,150 L25,150", delay: 1.4, duration: 0.3 },
-  { d: "M495,150 L510,150", delay: 1.4, duration: 0.3 },
-];
-
-/* ------------------------------------------------------------------ */
-/*  Ball rally trajectory (keyframes for cx, cy)                       */
-/* ------------------------------------------------------------------ */
-const BALL_CX = [60, 440, 120, 400, 260, 60];
-const BALL_CY = [240, 60, 120, 230, 50, 240];
-
-/* ------------------------------------------------------------------ */
-/*  Court line definitions for draw-on animation                       */
-/* ------------------------------------------------------------------ */
 
 const COURT_LINES: { d: string; delay: number; duration: number }[] = [
   // Outer boundary (doubles court) — landscape 520×300

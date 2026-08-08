@@ -1,12 +1,31 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Lightbulb } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/providers/locale-provider";
 import type { Dictionary } from "@/lib/i18n";
 import { ScrollCue } from "./scroll-cue";
+import { CelebrationBurst } from "./celebration-burst";
+
+/**
+ * Re-triggerable lime border flash for score buttons: bump `flashKey` on each
+ * tap; the keyed span remounts and plays a ~250ms border-color pulse.
+ */
+function PressFlash({ flashKey, rounded = "rounded-3xl" }: { flashKey: number; rounded?: string }) {
+  if (flashKey === 0) return null;
+  return (
+    <motion.span
+      key={flashKey}
+      className={cn("absolute inset-0 border-2 border-baseline-lime pointer-events-none", rounded)}
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      aria-hidden="true"
+    />
+  );
+}
 
 const SCORES = ["0", "15", "30", "40", "GAME"];
 
@@ -100,7 +119,7 @@ function ChapterCard({ chapter }: { chapter: Chapter }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-15% 0px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="w-full grid md:grid-cols-2 gap-8 md:gap-10 lg:gap-14 items-center bg-surface-white border border-border-subtle rounded-3xl p-6 md:p-10 lg:p-12 shadow-xl"
+        className="relative overflow-hidden w-full grid md:grid-cols-2 gap-8 md:gap-10 lg:gap-14 items-center bg-surface-white border border-border-subtle rounded-3xl p-6 md:p-10 lg:p-12 shadow-xl"
       >
         {/* Explanation */}
         <div>
@@ -111,19 +130,16 @@ function ChapterCard({ chapter }: { chapter: Chapter }) {
             {chapter.content}
           </p>
           {chapter.curiosity !== "" && (
-            <div className="mt-8 p-5 md:p-6 rounded-2xl bg-surface-gray/60 border border-border-subtle flex items-start gap-4">
-              {/* Icon chip: same treatment as the Ranking stat cards */}
-              <div className="w-10 h-10 rounded-full bg-baseline-lime flex items-center justify-center shrink-0 shadow-[0_0_16px_rgba(223,255,0,0.35)]">
-                <Lightbulb className="w-5 h-5 text-deep-navy" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1.5">
+            <div className="mt-8 pl-5 md:pl-6 border-l-4 border-baseline-lime">
+              <div className="flex items-center gap-2.5 mb-2">
+                <Lightbulb className="w-4 h-4 text-primary-olive" />
+                <p className="text-[11px] font-bold uppercase tracking-widest text-primary-olive">
                   {t.home.scoring.curiosityLabel}
                 </p>
-                <p className="text-body-md text-foreground/80 leading-relaxed">
-                  {chapter.curiosity}
-                </p>
               </div>
+              <p className="text-body-md text-foreground/80 leading-relaxed italic">
+                {chapter.curiosity}
+              </p>
             </div>
           )}
         </div>
@@ -173,13 +189,17 @@ function ReplayOverlay({ show, onReset, label }: { show: boolean; onReset: () =>
 
 function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
   const { t } = useTranslation();
+  const prefersReducedMotion = useReducedMotion();
   const [playerScore, setPlayerScore] = useState(mode === "deuce" ? 3 : 0);
   const [opponentScore, setOpponentScore] = useState(mode === "deuce" ? 3 : 0);
   const [advantage, setAdvantage] = useState<"player" | "opponent" | null>(null);
+  const [playerFlash, setPlayerFlash] = useState(0);
+  const [opponentFlash, setOpponentFlash] = useState(0);
 
   const gameOver = playerScore === 4 || opponentScore === 4;
 
   const handlePlayerScore = () => {
+    setPlayerFlash((k) => k + 1);
     if (playerScore === 3 && opponentScore === 3) {
       if (advantage === "player") setPlayerScore(4);
       else if (advantage === "opponent") setAdvantage(null);
@@ -190,6 +210,7 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
   };
 
   const handleOpponentScore = () => {
+    setOpponentFlash((k) => k + 1);
     if (playerScore === 3 && opponentScore === 3) {
       if (advantage === "opponent") setOpponentScore(4);
       else if (advantage === "player") setAdvantage(null);
@@ -245,7 +266,7 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
               onClick={handlePlayerScore}
               disabled={gameOver}
               className={cn(
-                "w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
+                "relative w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
                 "bg-baseline-lime/10 border-baseline-lime/60 hover:bg-baseline-lime/20",
                 gameOver && "opacity-50 pointer-events-none"
               )}
@@ -256,6 +277,7 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
               )}>
                 {getDisplayScore(playerScore, advantage, true)}
               </span>
+              <PressFlash flashKey={playerFlash} />
             </button>
           </div>
           <div className="flex flex-col items-center justify-center gap-3 md:gap-4 pt-8 md:pt-10">
@@ -268,7 +290,7 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
               onClick={handleOpponentScore}
               disabled={gameOver}
               className={cn(
-                "w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
+                "relative w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
                 "bg-white/5 border-white/20 hover:bg-white/10",
                 gameOver && "opacity-50 pointer-events-none"
               )}
@@ -279,10 +301,15 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
               )}>
                 {getDisplayScore(opponentScore, advantage, false)}
               </span>
+              <PressFlash flashKey={opponentFlash} />
             </button>
           </div>
         </div>
 
+        {/* Win celebration, then the replay overlay */}
+        <AnimatePresence>
+          {gameOver && !prefersReducedMotion && <CelebrationBurst radius={110} />}
+        </AnimatePresence>
         <ReplayOverlay show={gameOver} onReset={reset} label={t.home.scoring.replay} />
       </div>
     </motion.div>
@@ -291,8 +318,11 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
 
 function SetVisual() {
   const { t } = useTranslation();
+  const prefersReducedMotion = useReducedMotion();
   const [playerGames, setPlayerGames] = useState(0);
   const [opponentGames, setOpponentGames] = useState(0);
+  const [playerFlash, setPlayerFlash] = useState(0);
+  const [opponentFlash, setOpponentFlash] = useState(0);
 
   const getStatus = () => {
     if (playerGames === 6 && opponentGames <= 4) return "player_won";
@@ -308,11 +338,13 @@ function SetVisual() {
 
   const handlePlayerWinGame = () => {
     if (setOver) return;
+    setPlayerFlash((k) => k + 1);
     setPlayerGames(p => p + 1);
   };
 
   const handleOpponentWinGame = () => {
     if (setOver) return;
+    setOpponentFlash((k) => k + 1);
     setOpponentGames(p => p + 1);
   };
 
@@ -355,13 +387,14 @@ function SetVisual() {
           onClick={isPlayer ? handlePlayerWinGame : handleOpponentWinGame}
           disabled={setOver}
           className={cn(
-            "w-full sm:w-36 py-2 px-4 flex flex-col items-center justify-center rounded-full border-2 font-bold uppercase tracking-wider transition-transform active:scale-95 text-center shrink-0",
+            "relative w-full sm:w-36 py-2 px-4 flex flex-col items-center justify-center rounded-full border-2 font-bold uppercase tracking-wider transition-transform active:scale-95 text-center shrink-0",
             isPlayer ? "border-baseline-lime text-baseline-lime hover:bg-baseline-lime/10" : "border-white/50 text-white/50 hover:bg-white/10",
             setOver && "opacity-50 pointer-events-none"
           )}
         >
           <span className="text-xs opacity-70 leading-none mb-1">{t.home.scoring.plusOneGame}</span>
           <span className="text-sm leading-none">{name}</span>
+          <PressFlash flashKey={isPlayer ? playerFlash : opponentFlash} rounded="rounded-full" />
         </button>
         <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center sm:justify-start">
           {boxes}
@@ -394,6 +427,10 @@ function SetVisual() {
           {renderPlayerRow(t.home.scoring.opponent, opponentGames, false)}
         </div>
 
+        {/* Win celebration, then the replay overlay */}
+        <AnimatePresence>
+          {setOver && !prefersReducedMotion && <CelebrationBurst radius={110} />}
+        </AnimatePresence>
         <ReplayOverlay show={setOver} onReset={reset} label={t.home.scoring.replay} />
       </div>
     </motion.div>
@@ -402,8 +439,11 @@ function SetVisual() {
 
 function TieBreakVisual() {
   const { t } = useTranslation();
+  const prefersReducedMotion = useReducedMotion();
   const [playerScore, setPlayerScore] = useState(0);
   const [opponentScore, setOpponentScore] = useState(0);
+  const [playerFlash, setPlayerFlash] = useState(0);
+  const [opponentFlash, setOpponentFlash] = useState(0);
 
   const getStatus = () => {
     if (playerScore >= 7 && playerScore - opponentScore >= 2) return "player_won";
@@ -416,11 +456,13 @@ function TieBreakVisual() {
 
   const handlePlayerScore = () => {
     if (over) return;
+    setPlayerFlash((k) => k + 1);
     setPlayerScore(p => p + 1);
   };
 
   const handleOpponentScore = () => {
     if (over) return;
+    setOpponentFlash((k) => k + 1);
     setOpponentScore(p => p + 1);
   };
 
@@ -454,7 +496,7 @@ function TieBreakVisual() {
               onClick={handlePlayerScore}
               disabled={over}
               className={cn(
-                "w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
+                "relative w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
                 "bg-baseline-lime/10 border-baseline-lime/60 hover:bg-baseline-lime/20",
                 over && "opacity-50 pointer-events-none"
               )}
@@ -462,6 +504,7 @@ function TieBreakVisual() {
               <span className="text-[50px] md:text-[80px] font-heading font-extrabold text-baseline-lime drop-shadow-[0_0_20px_rgba(223,255,0,0.6)]">
                 {playerScore}
               </span>
+              <PressFlash flashKey={playerFlash} />
             </button>
             <span className={cn(
               "text-xs uppercase tracking-wider font-bold transition-opacity",
@@ -481,7 +524,7 @@ function TieBreakVisual() {
               onClick={handleOpponentScore}
               disabled={over}
               className={cn(
-                "w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
+                "relative w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
                 "bg-white/5 border-white/20 hover:bg-white/10",
                 over && "opacity-50 pointer-events-none"
               )}
@@ -489,6 +532,7 @@ function TieBreakVisual() {
               <span className="text-[50px] md:text-[80px] font-heading font-extrabold text-white">
                 {opponentScore}
               </span>
+              <PressFlash flashKey={opponentFlash} />
             </button>
             <span className={cn(
               "text-xs uppercase tracking-wider font-bold transition-opacity",
@@ -499,6 +543,10 @@ function TieBreakVisual() {
           </div>
         </div>
 
+        {/* Win celebration, then the replay overlay */}
+        <AnimatePresence>
+          {over && !prefersReducedMotion && <CelebrationBurst radius={110} />}
+        </AnimatePresence>
         <ReplayOverlay show={over} onReset={reset} label={t.home.scoring.replay} />
       </div>
     </motion.div>

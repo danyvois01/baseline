@@ -29,6 +29,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
+
+# core dumps
+core
+core.*
+
+# scraped HTML kept locally as scraper reference
+/ref/
 
 # env files (can opt-in for committing if needed)
 .env*

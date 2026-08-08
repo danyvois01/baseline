@@ -5,8 +5,11 @@ export const en: Dictionary = {
   settings: {
     switchToDark: "Switch to dark theme",
     switchToLight: "Switch to light theme",
-    switchLanguage: "Passa all'italiano",
-    targetLanguage: "IT",
+    languageGroup: "Language",
+    switchToLocale: {
+      it: "Switch to Italian",
+      en: "Switch to English",
+    },
   },
   nav: {
     home: {
@@ -33,6 +36,75 @@ export const en: Dictionary = {
     about: "About Us",
     copyright: "© 2026 Baseline Tennis. All rights reserved.",
   },
+  privacyPage: {
+    title: "Privacy Policy",
+    lastUpdated: "Last updated: July 26, 2026",
+    intro:
+      "This page explains what data is processed when you visit Baseline, how it is used, and what rights you have.",
+    sections: [
+      {
+        heading: "Data controller",
+        paragraphs: [
+          "The data controller is the operator of this website. For any questions about this policy or your data, you can write to [EMAIL].",
+        ],
+      },
+      {
+        heading: "Data we process",
+        paragraphs: [
+          "Baseline does not require registration and does not actively collect personal data: there are no accounts, contact forms, or advertising trackers.",
+          "As with any website, the hosting provider (Vercel Inc.) processes visitors' IP addresses in server logs for security purposes and to properly deliver the service. These logs are retained for a limited period.",
+        ],
+      },
+      {
+        heading: "Preferences stored in your browser",
+        paragraphs: [
+          "Your theme (light/dark) and language (IT/EN) preferences are stored exclusively in your browser's localStorage. This is technical storage: the data never leaves your device, is not transmitted to anyone, and does not require consent. You can delete it at any time by clearing your browser data.",
+          "Baseline does not use profiling cookies or analytics tools.",
+        ],
+      },
+      {
+        heading: "Third-party services",
+        paragraphs: [
+          "The site is hosted on Vercel (Vercel Inc., USA), which acts as a data processor for technical connection data. You can read their policy at vercel.com/legal/privacy-policy.",
+        ],
+      },
+      {
+        heading: "Your rights",
+        paragraphs: [
+          "Under the GDPR (EU Regulation 2016/679) you have the right to access your data, request its rectification or erasure, restrict or object to its processing, and lodge a complaint with a supervisory authority (in Italy, the Garante per la Protezione dei Dati Personali). To exercise these rights, write to the contact listed above.",
+        ],
+      },
+      {
+        heading: "Changes to this policy",
+        paragraphs: [
+          "Any changes to this policy will be published on this page, updating the date shown at the top.",
+        ],
+      },
+    ],
+  },
+  aboutPage: {
+    title: "About Us",
+    intro:
+      "Baseline is a modern platform for following professional tennis rankings in real time.",
+    sections: [
+      {
+        heading: "What is Baseline",
+        paragraphs: [
+          "Baseline was created to make the ATP ranking easy to understand and a pleasure to browse. It offers three complementary views: the official ranking updated every week, the live ranking with point projections based on ongoing tournaments, and the Race to Turin towards the ATP Finals.",
+          "The name comes from the baseline — the line at the back of the court where every rally starts: here, it's the starting point of your tennis knowledge.",
+        ],
+      },
+      {
+        heading: "The data",
+        paragraphs: [
+          "Rankings are computed from publicly accessible sources and refreshed at regular intervals. Data is provided for informational purposes only: for official rankings, the ATP website is always the authoritative source.",
+        ],
+      },
+    ],
+    disclaimerTitle: "Disclaimer",
+    disclaimerBody:
+      "Baseline is an independent project and is not affiliated with, endorsed by, or sponsored by ATP Tour, Inc. All trademarks mentioned belong to their respective owners. Published data is unofficial and provided for informational purposes only.",
+  },
   errors: {
     title: "Something went wrong",
     genericBody:
@@ -54,6 +126,7 @@ export const en: Dictionary = {
   },
   rankings: {
     shell: {
+      microLabel: "ATP Tour — Rankings",
       searchPlaceholder: "Search player...",
       filter: "Filter",
       filtersHeading: "Filters",
@@ -97,6 +170,7 @@ export const en: Dictionary = {
     liveStatus: {
       active: "Active",
       out: "Out",
+      notPlaying: "Not playing",
     },
     race: {
       turinCut: "Turin Cut",
@@ -243,28 +317,28 @@ export const en: Dictionary = {
             "The first two Masters 1000s of the season, in the Californian desert and in Florida.",
         },
         {
-          period: "April—May",
+          period: "April-May",
           title: "The European Clay Swing",
           highlight: "Roland Garros",
           description:
             "The great clay season with the Monte Carlo, Madrid and Rome Masters 1000s, leading up to the Paris Slam.",
         },
         {
-          period: "June—July",
+          period: "June-July",
           title: "Grass Season",
           highlight: "Wimbledon",
           description:
             "The prestigious, ultra-short swing on English lawns that culminates at the Temple of London.",
         },
         {
-          period: "August—September",
+          period: "August-September",
           title: "Summer Hardcourt Swing",
           highlight: "US Open",
           description:
             "The North American hard-court run with the Canada and Cincinnati Masters 1000s, launching the last Slam in New York.",
         },
         {
-          period: "October—November",
+          period: "October-November",
           title: "Asian Tour & Indoor Finals",
           highlight: "ATP Finals",
           description:
@@ -333,6 +407,12 @@ export const en: Dictionary = {
       prevCard: "Previous card",
       nextCard: "Next card",
       swipeHint: "← Swipe →",
+      categories: {
+        serve: "Serve",
+        shots: "Shots",
+        play: "Play",
+        court: "Court",
+      },
       terms: [
         {
           term: "ACE",

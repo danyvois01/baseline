@@ -7,6 +7,7 @@
  * "Next Week" shows projected points + projected rank movement for the upcoming week.
  */
 
+import { type ReactNode } from "react";
 import type { OfficialRankingEntry } from "@/types";
 import { MovementBadge } from "./movement-badge";
 import { PlayerCell } from "./player-cell";
@@ -28,11 +29,14 @@ const GRID_COLS = "grid-cols-[50px_80px_1fr_120px_160px]";
 interface OfficialTableProps {
   entries: OfficialRankingEntry[];
   initialCount?: number;
+  /** Optional controls row (search/filter/updated) rendered inside the widget, above the table. */
+  toolbar?: ReactNode;
 }
 
 export function OfficialTable({
   entries,
   initialCount = 20,
+  toolbar,
 }: OfficialTableProps) {
   const { t } = useTranslation();
   const { visibleCount, hasMore, buttonLabel, showMore } = usePagination(
@@ -44,6 +48,9 @@ export function OfficialTable({
   return (
     <div className="w-full bg-surface-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
 
+      {/* Embedded controls (search / filter / updated) */}
+      {toolbar}
+
       {/* ═══ DESKTOP TABLE ═══ */}
       <div className="hidden md:block">
         {/* Table Header */}
@@ -53,34 +60,36 @@ export function OfficialTable({
             GRID_COLS
           )}
         >
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-center">
             {t.rankings.table.rank}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-center">
             {t.rankings.table.move}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider">
             {t.rankings.table.player}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-right">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-right">
             {t.rankings.table.points}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-right pr-2">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-right pr-2">
             {t.rankings.table.nextWeek}
           </span>
         </div>
 
         {/* Table Rows */}
-        {visibleEntries.map((entry) => (
+        {visibleEntries.map((entry, idx) => (
           <div
             key={entry.player.id}
             className={cn(
               "group grid items-center px-6 py-4 transition-all duration-300",
               GRID_COLS,
+              "border-b border-border-subtle/40 last:border-b-0",
+              idx % 2 === 1 && "bg-surface-gray/20",
               "hover:bg-baseline-lime/5"
             )}
           >
-            <span className="text-headline-md text-foreground font-heading font-extrabold text-center">
+            <span className="text-headline-md text-foreground font-heading font-extrabold text-center tabular-nums">
               {entry.rank}
             </span>
 
@@ -116,7 +125,7 @@ export function OfficialTable({
                   {Math.abs(entry.nextWeek.rankChange)}
                 </span>
               ) : (
-                <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-surface-container text-on-surface-variant">
+                <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-medium text-foreground/40">
                   —
                 </span>
               )}
@@ -126,16 +135,16 @@ export function OfficialTable({
       </div>
 
       {/* ═══ MOBILE CARD LIST ═══ */}
-      <div className="md:hidden divide-y divide-border-subtle/60">
-        {visibleEntries.map((entry) => (
+      <div className="md:hidden divide-y divide-border-subtle/40">
+        {visibleEntries.map((entry, idx) => (
           <div
             key={entry.player.id}
-            className="px-4 py-3"
+            className={cn("px-4 py-3", idx % 2 === 1 && "bg-surface-gray/20")}
           >
             <div className="flex items-center gap-3">
               {/* Rank + movement */}
               <div className="flex flex-col items-center shrink-0 w-8">
-                <span className="text-[20px] font-heading font-extrabold text-foreground">
+                <span className="text-[20px] font-heading font-extrabold text-foreground tabular-nums">
                   {entry.rank}
                 </span>
                 <MovementBadge
@@ -156,11 +165,11 @@ export function OfficialTable({
                     className={cn("fi rounded-sm", `fi-${entry.player.countryCode}`)}
                     style={{ fontSize: "12px" }}
                   />
-                  <span className="text-[11px] text-text-muted font-medium uppercase">
+                  <span className="text-[11px] text-foreground/60 font-medium uppercase">
                     {entry.player.nationality}
                   </span>
-                  <span className="text-[11px] text-text-muted">·</span>
-                  <span className="text-[11px] text-text-muted">
+                  <span className="text-[10px] text-foreground/30">·</span>
+                  <span className="text-[11px] text-foreground/60 font-medium tabular-nums">
                     {entry.player.age}
                   </span>
                 </div>
@@ -172,7 +181,7 @@ export function OfficialTable({
                   {formatPoints(entry.points)}
                 </span>
                 <div className="flex items-center gap-1">
-                  <span className="text-[11px] text-text-muted tabular-nums">
+                  <span className="text-[11px] text-foreground/60 tabular-nums">
                     {formatPoints(entry.nextWeek.points)}
                   </span>
                   {entry.nextWeek.rankChange !== 0 && (

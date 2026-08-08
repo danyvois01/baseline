@@ -10,7 +10,7 @@
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionTemplate, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { Dictionary } from "@/lib/i18n";
 import { StableLabel } from "@/components/ui/stable-label";
@@ -49,6 +49,11 @@ export function TopNavBar() {
   const shadowOpacity = useTransform(scrollY, [0, 100], [0, 0.08]);
   const navPadding = useTransform(scrollY, [0, 100], ["1.5rem", "0.75rem"]); // px-6 to px-3 ish
 
+  // A MotionValue cannot be interpolated into a plain template literal — it
+  // would stringify to "[object Object]" and the browser would drop the rule.
+  // useMotionTemplate composes it into a valid, still-animated CSS string.
+  const navShadow = useMotionTemplate`0px 12px 48px rgba(0,0,0,${shadowOpacity})`;
+
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href.startsWith("#")) {
       e.preventDefault();
@@ -79,16 +84,25 @@ export function TopNavBar() {
       className="fixed left-0 right-0 mx-auto z-50 bg-surface-white/80 backdrop-blur-xl border border-border-subtle"
     >
       <motion.div
-        style={{ boxShadow: `0px 12px 48px rgba(0,0,0,${shadowOpacity})` }}
+        style={{ boxShadow: navShadow }}
         className="absolute inset-0 rounded-[inherit] pointer-events-none"
       />
       
+      {/* Three explicit columns: the side columns share the leftover space
+          equally, so the middle one is optically centred while still being part
+          of the flow — the nav can no longer overlap the logo or the actions
+          the way an absolutely positioned one did. Columns are assigned
+          explicitly because the nav is display:none below xl. */}
       <motion.div
         style={{ paddingLeft: navPadding, paddingRight: navPadding }}
-        className="relative flex h-16 sm:h-20 items-center justify-between"
+        className="relative grid grid-cols-[1fr_auto_1fr] h-16 sm:h-20 items-center gap-2"
       >
         {/* Left: Logo */}
-        <Link href="/" onClick={handleLogoClick} className="flex items-center gap-2 shrink-0 z-10">
+        <Link
+          href="/"
+          onClick={handleLogoClick}
+          className="col-start-1 justify-self-start flex items-center gap-2 shrink-0 z-10"
+        >
           <Image
             src="/logo_new_crop.png"
             alt="Baseline — ATP & WTA Rankings"
@@ -110,7 +124,7 @@ export function TopNavBar() {
         </Link>
 
         {/* Center: Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+        <nav className="col-start-2 hidden xl:flex items-center gap-0.5">
           {currentNavItems.map((item) => {
             const isActive = !isHome && pathname === item.href;
 
@@ -120,7 +134,7 @@ export function TopNavBar() {
                 href={item.href}
                 onClick={(e) => handleScroll(e, item.href)}
                 className={cn(
-                  "relative rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300",
+                  "relative whitespace-nowrap rounded-full px-3.5 py-2.5 text-sm font-semibold transition-all duration-300",
                   isActive
                     ? "text-deep-navy"
                     : "text-foreground/70 hover:text-foreground hover:bg-surface-gray/50"
@@ -140,7 +154,7 @@ export function TopNavBar() {
         </nav>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2 sm:gap-3 z-10 shrink-0">
+        <div className="col-start-3 justify-self-end flex items-center gap-2 sm:gap-3 z-10 shrink-0">
           <SettingsPill />
           {isHome ? (
             <Link
@@ -164,7 +178,7 @@ export function TopNavBar() {
 
       {/* Mobile tab bar for ranking pages */}
       {!isHome && (
-        <nav className="lg:hidden flex items-center justify-center gap-1 px-3 pb-2 pt-1 border-t border-border-subtle/50">
+        <nav className="xl:hidden flex items-center justify-center gap-1 px-3 pb-2 pt-1 border-t border-border-subtle/50">
           {APP_NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (

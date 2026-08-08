@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, useInView, useReducedMotion } from "framer-motion";
+import { Sun, Sparkles, Trophy, Crown, Zap, Building2, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/providers/locale-provider";
 import { ScrollCue } from "./scroll-cue";
@@ -14,6 +15,7 @@ const SURFACE_COLORS = {
     border: "border-blue-200 dark:border-blue-500/30",
     dot: "bg-blue-500",
     dotHex: "#3B82F6",
+    glow: "hover:shadow-[0_8px_30px_rgba(59,130,246,0.25)]",
   },
   clay: {
     bg: "bg-orange-50 dark:bg-orange-500/15",
@@ -21,6 +23,7 @@ const SURFACE_COLORS = {
     border: "border-orange-200 dark:border-orange-500/30",
     dot: "bg-orange-500",
     dotHex: "#F97316",
+    glow: "hover:shadow-[0_8px_30px_rgba(249,115,22,0.25)]",
   },
   grass: {
     bg: "bg-green-50 dark:bg-green-500/15",
@@ -28,6 +31,7 @@ const SURFACE_COLORS = {
     border: "border-green-200 dark:border-green-500/30",
     dot: "bg-green-500",
     dotHex: "#22C55E",
+    glow: "hover:shadow-[0_8px_30px_rgba(34,197,94,0.25)]",
   },
   indoor: {
     bg: "bg-purple-50 dark:bg-purple-500/15",
@@ -35,6 +39,7 @@ const SURFACE_COLORS = {
     border: "border-purple-200 dark:border-purple-500/30",
     dot: "bg-purple-500",
     dotHex: "#A855F7",
+    glow: "hover:shadow-[0_8px_30px_rgba(168,85,247,0.25)]",
   },
 } as const;
 
@@ -46,33 +51,53 @@ interface TimelineEvent {
   highlight: string;
   description: string;
   surface: SurfaceType;
+  /** Grand Slam events get a larger, ringed node on the line. */
+  isMajor: boolean;
+  /** Navy chip icon (Pyramid-style: deep-navy circle, lime icon). */
+  icon: LucideIcon;
 }
 
 /** Non-text event metadata; period/title/highlight/description come from the locale dictionary by index. */
-const EVENT_SURFACES: SurfaceType[] = ["hard", "hard", "clay", "grass", "hard", "indoor"];
+const EVENT_META: { surface: SurfaceType; isMajor: boolean; icon: LucideIcon }[] = [
+  { surface: "hard", isMajor: true, icon: Sun },          // Australian Open — summer opener
+  { surface: "hard", isMajor: false, icon: Sparkles },    // Indian Wells & Miami — "Sunshine Double"
+  { surface: "clay", isMajor: true, icon: Trophy },       // Roland Garros
+  { surface: "grass", isMajor: true, icon: Crown },       // Wimbledon — "The Temple"
+  { surface: "hard", isMajor: true, icon: Zap },          // US Open — New York night energy
+  { surface: "indoor", isMajor: false, icon: Building2 }, // Asian/Indoor Finals — arenas
+];
 
 /** Clean card: neutral border, surface color carried by badge + highlight only. */
 function TimelineCardBody({ event }: { event: TimelineEvent }) {
   const surface = SURFACE_COLORS[event.surface];
 
   return (
-    <div className="relative rounded-3xl border border-border-subtle bg-surface-white/90 backdrop-blur-xl shadow-ambient p-5 md:p-8 transition-all duration-300 hover:shadow-hover hover:-translate-y-1">
-      <span
-        className={cn(
-          "inline-flex items-center gap-2 rounded-full font-bold px-4 py-1.5 text-label-md mb-3",
-          surface.bg,
-          surface.text
-        )}
-      >
+    <div
+      className={cn(
+        "relative rounded-3xl border border-border-subtle bg-surface-white/90 backdrop-blur-xl shadow-ambient p-5 md:p-8 transition-all duration-300 hover:-translate-y-1",
+        surface.glow
+      )}
+    >
+      <span className="inline-flex items-center gap-2 rounded-full font-bold px-4 py-1.5 text-label-md mb-4 bg-deep-navy text-white dark:bg-deep-navy dark:border dark:border-white/10">
         <span className={cn("w-1.5 h-1.5 rounded-full", surface.dot)} />
         {event.period}
       </span>
-      <h3 className="font-heading font-extrabold text-foreground leading-tight text-2xl md:text-3xl mb-2">
-        {event.title}
-      </h3>
-      <p className={cn("font-bold text-title-sm md:text-label-lg mb-3", surface.text)}>
-        {event.highlight}
-      </p>
+
+      {/* Header: navy icon chip (Pyramid-style) + title/highlight */}
+      <div className="flex items-center gap-4 mb-3">
+        <div className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-lg bg-deep-navy text-baseline-lime shrink-0">
+          <event.icon className="w-6 h-6 md:w-7 md:h-7" />
+        </div>
+        <div>
+          <h3 className="font-heading font-extrabold text-foreground leading-tight text-2xl md:text-3xl mb-1">
+            {event.title}
+          </h3>
+          <p className={cn("font-bold text-title-sm md:text-label-lg", surface.text)}>
+            {event.highlight}
+          </p>
+        </div>
+      </div>
+
       <p className="text-text-muted text-body-md leading-relaxed">
         {event.description}
       </p>
@@ -90,7 +115,10 @@ function TimelineItem({ event, idx }: { event: TimelineEvent; idx: number }) {
   // Attiviamo l'animazione quando l'elemento entra nella parte centrale dello schermo
   const isInView = useInView(ref, { margin: "-25% 0px -25% 0px", once: true });
 
-  const xOffset = isLeft ? -50 : 50;
+  // Small lateral offset + slight scale: reads as a fade, not a slide.
+  const xOffset = isLeft ? -24 : 24;
+  const cardHidden = { opacity: 0, x: xOffset, y: 12, scale: 0.96 };
+  const cardShown = { opacity: 1, x: 0, y: 0, scale: 1 };
 
   return (
     <div ref={ref} className="relative flex justify-center items-center w-full min-h-[300px] md:min-h-[45vh]">
@@ -101,9 +129,9 @@ function TimelineItem({ event, idx }: { event: TimelineEvent; idx: number }) {
         <div className="w-1/2 flex justify-end pr-12 xl:pr-24">
           {isLeft && (
             <motion.div
-              initial={{ opacity: 0, x: xOffset, y: 20 }}
-              animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x: xOffset, y: 20 }}
-              transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+              initial={cardHidden}
+              animate={isInView ? cardShown : cardHidden}
+              transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
               className="max-w-[480px]"
             >
               <TimelineCardBody event={event} />
@@ -111,14 +139,20 @@ function TimelineItem({ event, idx }: { event: TimelineEvent; idx: number }) {
           )}
         </div>
 
-        {/* Center Node */}
+        {/* Center Node — Grand Slams get a bigger, ringed marker */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
           <motion.div
             initial={{ scale: 0 }}
             animate={isInView ? { scale: 1 } : { scale: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="w-8 h-8 rounded-full border-4 border-surface-white shadow-md z-20"
-            style={{ backgroundColor: surface.dotHex }}
+            className={cn(
+              "rounded-full border-4 border-surface-white shadow-md z-20",
+              event.isMajor ? "w-10 h-10" : "w-8 h-8"
+            )}
+            style={{
+              backgroundColor: surface.dotHex,
+              boxShadow: event.isMajor ? `0 0 0 3px ${surface.dotHex}66` : undefined,
+            }}
           />
         </div>
 
@@ -126,9 +160,9 @@ function TimelineItem({ event, idx }: { event: TimelineEvent; idx: number }) {
         <div className="w-1/2 flex justify-start pl-12 xl:pl-24">
           {!isLeft && (
             <motion.div
-              initial={{ opacity: 0, x: xOffset, y: 20 }}
-              animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x: xOffset, y: 20 }}
-              transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+              initial={cardHidden}
+              animate={isInView ? cardShown : cardHidden}
+              transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
               className="max-w-[480px]"
             >
               <TimelineCardBody event={event} />
@@ -145,15 +179,21 @@ function TimelineItem({ event, idx }: { event: TimelineEvent; idx: number }) {
             initial={{ scale: 0 }}
             animate={isInView ? { scale: 1 } : { scale: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="w-6 h-6 rounded-full border-[3px] border-surface-white shadow-md z-20"
-            style={{ backgroundColor: surface.dotHex }}
+            className={cn(
+              "rounded-full border-[3px] border-surface-white shadow-md z-20",
+              event.isMajor ? "w-8 h-8" : "w-6 h-6"
+            )}
+            style={{
+              backgroundColor: surface.dotHex,
+              boxShadow: event.isMajor ? `0 0 0 2px ${surface.dotHex}66` : undefined,
+            }}
           />
         </div>
 
         <motion.div
-          initial={{ opacity: 0, x: 50, y: 20 }}
-          animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x: 50, y: 20 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+          initial={{ opacity: 0, x: 24, y: 12, scale: 0.96 }}
+          animate={isInView ? cardShown : { opacity: 0, x: 24, y: 12, scale: 0.96 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
           className="w-full max-w-[480px]"
         >
           <TimelineCardBody event={event} />
@@ -167,9 +207,10 @@ function TimelineItem({ event, idx }: { event: TimelineEvent; idx: number }) {
 export function TimelineSection() {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useReducedMotion();
 
-  const events: TimelineEvent[] = EVENT_SURFACES.map((surface, i) => ({
-    surface,
+  const events: TimelineEvent[] = EVENT_META.map((meta, i) => ({
+    ...meta,
     ...t.home.timeline.events[i],
   }));
 
@@ -229,6 +270,15 @@ export function TimelineSection() {
             />
           </div>
 
+          {/* Traveling dot riding the leading edge of the fill (Desktop) */}
+          {!prefersReducedMotion && (
+            <motion.div
+              className="hidden md:block absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-baseline-lime shadow-[0_0_14px_rgba(223,255,0,0.9)] z-10 pointer-events-none"
+              style={{ top: lineFill }}
+              aria-hidden="true"
+            />
+          )}
+
           {/* Left Line Track (Mobile) */}
           <div className="md:hidden absolute top-0 bottom-0 left-[24px] -translate-x-1/2 w-1.5 bg-surface-gray rounded-full overflow-hidden">
             <motion.div
@@ -236,6 +286,15 @@ export function TimelineSection() {
               style={{ height: lineFill }}
             />
           </div>
+
+          {/* Traveling dot (Mobile) */}
+          {!prefersReducedMotion && (
+            <motion.div
+              className="md:hidden absolute left-[24px] -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-baseline-lime shadow-[0_0_10px_rgba(223,255,0,0.9)] z-10 pointer-events-none"
+              style={{ top: lineFill }}
+              aria-hidden="true"
+            />
+          )}
 
           {/* Events */}
           {events.map((event, idx) => (

@@ -2,8 +2,9 @@
 
 /**
  * LiveStatusCell — Displays the live tournament status for a player.
- * Shows a colored dot (primary with live-pulse for active, gray for out)
- * + tournament name + round badge (Baseline Lime for active, gray for out).
+ * Active: pulsing lime dot + semibold text + filled lime round badge.
+ * Out: solid neutral dot + muted (but fully legible) text + outlined badge.
+ * De-emphasis is structural (color/weight), never transparency.
  */
 
 import { cn } from "@/lib/utils";
@@ -22,46 +23,49 @@ export function LiveStatusCell({
 }: LiveStatusCellProps) {
   const { t } = useTranslation();
 
+  // No tournament: quiet "not playing" label. The cell must stay in the
+  // DOM — parent rows are CSS grids with auto-placement, returning null
+  // would shift every following column.
   if (!tournament && !stage) {
     return (
-      <div className="flex items-center gap-2 opacity-30">
-        <span className="text-body-sm text-on-surface-variant font-medium">—</span>
+      <div className="flex items-center">
+        <span className="text-body-sm text-foreground/40 font-medium">
+          {t.rankings.liveStatus.notPlaying}
+        </span>
       </div>
     );
   }
 
   return (
-    <div className={cn("flex items-center gap-2", !isActive && "opacity-50 grayscale-[50%]")}>
-      {/* Status dot — active uses tennis ball yellow (baseline-lime) with live-pulse, out uses gray */}
+    <div className="flex items-center gap-2">
+      {/* Status dot — active uses tennis ball yellow (baseline-lime) with live-pulse, out uses foreground (charcoal/white) */}
       <div
         className={cn(
           "w-2.5 h-2.5 rounded-full shrink-0",
           isActive
             ? "bg-baseline-lime live-pulse shadow-[0_0_8px_rgba(223,255,0,0.6)]"
-            : "bg-on-surface-variant"
+            : "bg-foreground"
         )}
       />
 
-      {/* Status text */}
+      {/* Status text — always full-contrast; active/out is signalled by dot, weight and badge */}
       <span
         className={cn(
-          "text-body-sm whitespace-nowrap",
-          isActive
-            ? "text-foreground font-semibold"
-            : "text-foreground font-medium"
+          "text-body-sm whitespace-nowrap text-foreground",
+          isActive ? "font-semibold" : "font-medium"
         )}
       >
         {isActive ? t.rankings.liveStatus.active : t.rankings.liveStatus.out} -{" "}
         {tournament}
       </span>
 
-      {/* Round badge — active uses tennis ball yellow (baseline-lime), out uses gray surface */}
+      {/* Round badge — active is filled lime, out is outlined (no fill) */}
       <span
         className={cn(
           "inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] tracking-wide uppercase shrink-0",
-          isActive 
+          isActive
             ? "bg-baseline-lime text-deep-navy font-bold"
-            : "bg-surface-container text-on-surface-variant font-medium"
+            : "border border-foreground/20 text-foreground font-semibold"
         )}
       >
         {stage}
