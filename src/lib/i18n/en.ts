@@ -5,8 +5,11 @@ export const en: Dictionary = {
   settings: {
     switchToDark: "Switch to dark theme",
     switchToLight: "Switch to light theme",
-    switchLanguage: "Passa all'italiano",
-    targetLanguage: "IT",
+    languageGroup: "Language",
+    switchToLocale: {
+      it: "Switch to Italian",
+      en: "Switch to English",
+    },
   },
   nav: {
     home: {
@@ -123,6 +126,7 @@ export const en: Dictionary = {
   },
   rankings: {
     shell: {
+      microLabel: "ATP Tour — Rankings",
       searchPlaceholder: "Search player...",
       filter: "Filter",
       filtersHeading: "Filters",
@@ -166,6 +170,7 @@ export const en: Dictionary = {
     liveStatus: {
       active: "Active",
       out: "Out",
+      notPlaying: "Not playing",
     },
     race: {
       turinCut: "Turin Cut",
@@ -312,28 +317,28 @@ export const en: Dictionary = {
             "The first two Masters 1000s of the season, in the Californian desert and in Florida.",
         },
         {
-          period: "April—May",
+          period: "April-May",
           title: "The European Clay Swing",
           highlight: "Roland Garros",
           description:
             "The great clay season with the Monte Carlo, Madrid and Rome Masters 1000s, leading up to the Paris Slam.",
         },
         {
-          period: "June—July",
+          period: "June-July",
           title: "Grass Season",
           highlight: "Wimbledon",
           description:
             "The prestigious, ultra-short swing on English lawns that culminates at the Temple of London.",
         },
         {
-          period: "August—September",
+          period: "August-September",
           title: "Summer Hardcourt Swing",
           highlight: "US Open",
           description:
             "The North American hard-court run with the Canada and Cincinnati Masters 1000s, launching the last Slam in New York.",
         },
         {
-          period: "October—November",
+          period: "October-November",
           title: "Asian Tour & Indoor Finals",
           highlight: "ATP Finals",
           description:
@@ -402,6 +407,12 @@ export const en: Dictionary = {
       prevCard: "Previous card",
       nextCard: "Next card",
       swipeHint: "← Swipe →",
+      categories: {
+        serve: "Serve",
+        shots: "Shots",
+        play: "Play",
+        court: "Court",
+      },
       terms: [
         {
           term: "ACE",

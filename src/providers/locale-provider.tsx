@@ -6,13 +6,7 @@
  * SSR always renders the default locale (accepted trade-off, see spec).
  */
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   DEFAULT_LOCALE,
   dictionaries,
@@ -25,7 +19,7 @@ const STORAGE_KEY = "baseline-locale";
 interface LocaleContextValue {
   locale: Locale;
   t: Dictionary;
-  toggleLocale: () => void;
+  setLocale: (locale: Locale) => void;
 }
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
@@ -55,14 +49,9 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     }
   }, [locale]);
 
-  const toggleLocale = useCallback(
-    () => setLocale((prev) => (prev === "it" ? "en" : "it")),
-    [],
-  );
-
   return (
     <LocaleContext.Provider
-      value={{ locale, t: dictionaries[locale], toggleLocale }}
+      value={{ locale, t: dictionaries[locale], setLocale }}
     >
       {children}
     </LocaleContext.Provider>

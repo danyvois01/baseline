@@ -7,8 +7,12 @@ export const it = {
   settings: {
     switchToDark: "Attiva il tema scuro",
     switchToLight: "Attiva il tema chiaro",
-    switchLanguage: "Switch to English",
-    targetLanguage: "EN",
+    languageGroup: "Lingua",
+    /** Keyed by target locale, phrased in the currently active language. */
+    switchToLocale: {
+      it: "Passa all'italiano",
+      en: "Passa all'inglese",
+    },
   },
   nav: {
     home: {
@@ -125,6 +129,7 @@ export const it = {
   },
   rankings: {
     shell: {
+      microLabel: "ATP Tour — Classifiche",
       searchPlaceholder: "Cerca giocatore...",
       filter: "Filtri",
       filtersHeading: "Filtri",
@@ -168,6 +173,7 @@ export const it = {
     liveStatus: {
       active: "In gara",
       out: "Eliminato",
+      notPlaying: "Non in gara",
     },
     race: {
       turinCut: "Taglio Torino",
@@ -315,28 +321,28 @@ export const it = {
             "I primi due Masters 1000 della stagione nel deserto californiano e in Florida.",
         },
         {
-          period: "Aprile—Maggio",
+          period: "Aprile-Maggio",
           title: "La Terra Rossa Europea",
           highlight: "Roland Garros",
           description:
             "La grande stagione sul rosso con i Masters 1000 di Monte Carlo, Madrid e Roma, prima dello Slam di Parigi.",
         },
         {
-          period: "Giugno—Luglio",
+          period: "Giugno-Luglio",
           title: "Stagione sull'Erba",
           highlight: "Wimbledon",
           description:
             "Il prestigioso e brevissimo swing sui prati inglesi che culmina nel Tempio di Londra.",
         },
         {
-          period: "Agosto—Settembre",
+          period: "Agosto-Settembre",
           title: "Summer Hardcourt Swing",
           highlight: "US Open",
           description:
             "La corsa sul cemento nordamericano con i Masters 1000 del Canada e Cincinnati, che lancia l'ultimo Slam a New York.",
         },
         {
-          period: "Ottobre—Novembre",
+          period: "Ottobre-Novembre",
           title: "Asian Tour & Indoor Finals",
           highlight: "ATP Finals",
           description:
@@ -405,6 +411,12 @@ export const it = {
       prevCard: "Carta precedente",
       nextCard: "Prossima carta",
       swipeHint: "← Swipe →",
+      categories: {
+        serve: "Servizio",
+        shots: "Colpi",
+        play: "Gioco",
+        court: "Campo",
+      },
       terms: [
         {
           term: "ACE",
