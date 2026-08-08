@@ -23,7 +23,9 @@ export function OfficialClient({
       lastUpdated={lastUpdated}
       entries={initialRankings}
     >
-      {(filtered) => <OfficialTable entries={filtered} initialCount={20} />}
+      {(filtered, toolbar) => (
+        <OfficialTable entries={filtered} initialCount={20} toolbar={toolbar} />
+      )}
     </RankingPageShell>
   );
 }

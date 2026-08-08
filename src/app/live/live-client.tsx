@@ -20,7 +20,9 @@ export function LiveClient({ initialRankings, lastUpdated }: LiveClientProps) {
       lastUpdated={lastUpdated}
       entries={initialRankings}
     >
-      {(filtered) => <RankingsTable entries={filtered} initialCount={20} />}
+      {(filtered, toolbar) => (
+        <RankingsTable entries={filtered} initialCount={20} toolbar={toolbar} />
+      )}
     </RankingPageShell>
   );
 }

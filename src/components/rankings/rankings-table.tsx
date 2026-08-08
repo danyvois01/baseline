@@ -5,11 +5,12 @@
  * Desktop: 7-column grid. Mobile: compact card layout.
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, type ReactNode } from "react";
 import type { LiveRankingEntry } from "@/types";
 import { MovementBadge } from "./movement-badge";
 import { LiveStatusCell } from "./live-status-cell";
 import { PlayerCell } from "./player-cell";
+import { PointsDiffBadge } from "./points-diff-badge";
 import { ExpandedCard } from "./expanded-card";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -22,11 +23,14 @@ const GRID_COLS = "grid-cols-[50px_80px_1fr_1.2fr_120px_100px_50px]";
 interface RankingsTableProps {
   entries: LiveRankingEntry[];
   initialCount?: number;
+  /** Optional controls row (search/filter/updated) rendered inside the widget, above the table. */
+  toolbar?: ReactNode;
 }
 
 export function RankingsTable({
   entries,
   initialCount = 20,
+  toolbar,
 }: RankingsTableProps) {
   const { t } = useTranslation();
   const { visibleCount, hasMore, buttonLabel, showMore } = usePagination(
@@ -51,6 +55,9 @@ export function RankingsTable({
   return (
     <div className="w-full bg-surface-white rounded-3xl shadow-ambient border border-border-subtle overflow-hidden">
 
+      {/* Embedded controls (search / filter / updated) */}
+      {toolbar}
+
       {/* ═══ DESKTOP TABLE ═══ */}
       <div className="hidden md:block">
         {/* Table Header */}
@@ -60,35 +67,35 @@ export function RankingsTable({
             GRID_COLS
           )}
         >
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-center">
             {t.rankings.table.rank}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-center">
             {t.rankings.table.move}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider">
             {t.rankings.table.player}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider">
             {t.rankings.table.liveStatus}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-right">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-right">
             {t.rankings.table.points}
           </span>
-          <span className="text-label-md text-text-muted uppercase tracking-wider text-center">
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wider text-center">
             {t.rankings.table.diff}
           </span>
           <span />
         </div>
 
         {/* Table Rows */}
-        {visibleEntries.map((entry) => {
+        {visibleEntries.map((entry, idx) => {
           const isExpanded = expandedIds.has(entry.player.id);
 
           return (
             <div
               key={entry.player.id}
-              className="border-b border-border-subtle/60 last:border-b-0"
+              className="border-b border-border-subtle/40 last:border-b-0"
             >
               <div
                 onClick={() => toggleExpand(entry.player.id)}
@@ -97,10 +104,10 @@ export function RankingsTable({
                   GRID_COLS,
                   isExpanded
                     ? "bg-baseline-lime/5"
-                    : "hover:bg-baseline-lime/5"
+                    : cn(idx % 2 === 1 && "bg-surface-gray/20", "hover:bg-baseline-lime/5")
                 )}
               >
-                <span className="text-headline-md text-foreground font-heading font-extrabold text-center">
+                <span className="text-headline-md text-foreground font-heading font-extrabold text-center tabular-nums">
                   {entry.rank}
                 </span>
 
@@ -124,24 +131,13 @@ export function RankingsTable({
                 </span>
 
                 <div className="flex justify-center">
-                  <span
-                    className={cn(
-                      "inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[11px] font-bold tabular-nums",
-                      entry.pointsDiff > 0
-                        ? "bg-success-green-bg text-success-green-text"
-                        : entry.pointsDiff < 0
-                          ? "bg-error-red-bg text-error-red-text"
-                          : "bg-surface-container text-on-surface-variant"
-                    )}
-                  >
-                    {formatDiff(entry.pointsDiff)}
-                  </span>
+                  <PointsDiffBadge diff={entry.pointsDiff} />
                 </div>
 
                 <div className="flex justify-end">
                   <ChevronDown
                     className={cn(
-                      "h-5 w-5 text-on-surface-variant group-hover:text-primary-olive transition-all duration-200",
+                      "h-5 w-5 text-foreground/50 group-hover:text-primary-olive transition-all duration-200",
                       isExpanded && "rotate-180"
                     )}
                   />
@@ -171,8 +167,8 @@ export function RankingsTable({
       </div>
 
       {/* ═══ MOBILE CARD LIST ═══ */}
-      <div className="md:hidden divide-y divide-border-subtle/60">
-        {visibleEntries.map((entry) => {
+      <div className="md:hidden divide-y divide-border-subtle/40">
+        {visibleEntries.map((entry, idx) => {
           const isExpanded = expandedIds.has(entry.player.id);
 
           return (
@@ -181,14 +177,16 @@ export function RankingsTable({
               onClick={() => toggleExpand(entry.player.id)}
               className={cn(
                 "px-4 py-3 transition-colors cursor-pointer",
-                isExpanded ? "bg-baseline-lime/5" : "active:bg-baseline-lime/5"
+                isExpanded
+                  ? "bg-baseline-lime/5"
+                  : cn(idx % 2 === 1 && "bg-surface-gray/20", "active:bg-baseline-lime/5")
               )}
             >
               {/* Main row: rank | player info | points */}
               <div className="flex items-center gap-3">
                 {/* Rank + movement */}
                 <div className="flex flex-col items-center shrink-0 w-8">
-                  <span className="text-[20px] font-heading font-extrabold text-foreground">
+                  <span className="text-[20px] font-heading font-extrabold text-foreground tabular-nums">
                     {entry.rank}
                   </span>
                   <MovementBadge
@@ -209,11 +207,11 @@ export function RankingsTable({
                       className={cn("fi rounded-sm", `fi-${entry.player.countryCode}`)}
                       style={{ fontSize: "12px" }}
                     />
-                    <span className="text-[11px] text-text-muted font-medium uppercase">
+                    <span className="text-[11px] text-foreground/60 font-medium uppercase">
                       {entry.player.nationality}
                     </span>
-                    <span className="text-[11px] text-text-muted">·</span>
-                    <span className="text-[11px] text-text-muted">
+                    <span className="text-[10px] text-foreground/30">·</span>
+                    <span className="text-[11px] text-foreground/60 font-medium tabular-nums">
                       {entry.player.age}
                     </span>
                   </div>
@@ -231,7 +229,7 @@ export function RankingsTable({
                         ? "text-success-green-text"
                         : entry.pointsDiff < 0
                           ? "text-error-red-text"
-                          : "text-text-muted"
+                          : "text-foreground/60"
                     )}
                   >
                     {formatDiff(entry.pointsDiff)}
@@ -241,7 +239,7 @@ export function RankingsTable({
                 {/* Chevron */}
                 <ChevronDown
                   className={cn(
-                    "h-4 w-4 text-text-muted shrink-0 transition-transform duration-200",
+                    "h-4 w-4 text-foreground/50 shrink-0 transition-transform duration-200",
                     isExpanded && "rotate-180"
                   )}
                 />
@@ -268,7 +266,7 @@ export function RankingsTable({
                 <div className="overflow-hidden">
                   <div className="mt-3 ml-11 grid grid-cols-2 gap-3 pt-3 border-t border-border-subtle/50">
                     <div>
-                      <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold block">
+                      <span className="text-[10px] uppercase tracking-wider text-foreground font-bold block">
                         {t.rankings.expandedCard.careerHigh}
                       </span>
                       <span className="text-sm font-heading font-extrabold text-foreground">
@@ -276,7 +274,7 @@ export function RankingsTable({
                       </span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold block">
+                      <span className="text-[10px] uppercase tracking-wider text-foreground font-bold block">
                         {t.rankings.expandedCard.officialPoints}
                       </span>
                       <span className="text-sm font-heading font-extrabold text-foreground tabular-nums">
@@ -286,7 +284,7 @@ export function RankingsTable({
                     {entry.liveStatus.isActive && (
                       <>
                         <div>
-                          <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold block">
+                          <span className="text-[10px] uppercase tracking-wider text-foreground font-bold block">
                             {t.rankings.expandedCard.projNext}
                           </span>
                           <span className="text-sm font-heading font-extrabold text-foreground tabular-nums">
@@ -294,7 +292,7 @@ export function RankingsTable({
                           </span>
                         </div>
                         <div>
-                          <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold block">
+                          <span className="text-[10px] uppercase tracking-wider text-foreground font-bold block">
                             {t.rankings.expandedCard.projMax}
                           </span>
                           <span className="text-sm font-heading font-extrabold text-foreground tabular-nums">

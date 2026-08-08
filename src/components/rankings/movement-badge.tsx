@@ -30,8 +30,9 @@ export function MovementBadge({ type, value }: MovementBadgeProps) {
   }
 
   if (type === "none") {
+    // No movement: bare dash, no pill — absence of data shouldn't draw the eye.
     return (
-      <span className="inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-surface-container text-on-surface-variant">
+      <span className="inline-flex items-center justify-center px-2.5 py-0.5 text-xs font-medium text-foreground/40">
         —
       </span>
     );
