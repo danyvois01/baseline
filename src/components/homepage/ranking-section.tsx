@@ -73,13 +73,17 @@ export function RankingSection() {
       {/* --- DESKTOP: pinned full-screen frame --- */}
       <div className="hidden md:block sticky top-0 h-screen w-full overflow-hidden">
         {/*
-          Layout — 3 rows:
+          Layout — 2 rows:
           Row 1 (auto): section title + main lead sentence, full width
           Row 2 (1fr):  two columns — progress ring with the stat value on
                         the left, label + description on the right
-          Row 3 (auto): scroll cue
+
+          The scroll cue sits outside this grid, absolutely anchored to the
+          bottom of the pinned frame: the ring has a fixed pixel size, so as a
+          third grid row the cue got pushed past the frame's overflow-hidden
+          edge and disappeared on shorter viewports.
         */}
-        <div className="h-full w-full max-w-5xl mx-auto px-6 grid grid-rows-[auto_1fr_auto] pt-24 pb-8">
+        <div className="h-full w-full max-w-5xl mx-auto px-6 grid grid-rows-[auto_1fr] pt-24 pb-20">
 
           {/* ROW 1: Header — the lead is the protagonist */}
           <div className="text-center py-4 max-w-3xl mx-auto">
@@ -175,12 +179,14 @@ export function RankingSection() {
 
           </div>
 
-          {/* ROW 3: Scroll cue */}
-          <div className="flex flex-col items-center py-4">
-            <ScrollCue targetId="pyramid" label={t.home.ranking.scrollLabel} />
-          </div>
-
         </div>
+
+        {/* Scroll cue — pinned to the bottom of the frame, always visible */}
+        <ScrollCue
+          targetId="pyramid"
+          label={t.home.ranking.scrollLabel}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2"
+        />
       </div>
 
       {/* --- MOBILE: simple vertical list --- */}
@@ -213,6 +219,11 @@ export function RankingSection() {
             <span className="text-[14px] text-text-muted max-w-[260px]">{item.desc}</span>
           </motion.div>
         ))}
+
+        {/* Next-section cue — the desktop layout carries its own in row 3 */}
+        <div className="flex justify-center pt-2">
+          <ScrollCue targetId="pyramid" label={t.home.ranking.scrollLabel} />
+        </div>
       </div>
     </section>
   );
