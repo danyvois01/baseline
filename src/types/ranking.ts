@@ -85,10 +85,16 @@ export interface RaceSummary {
   totalSlots: number;
   /** Names of qualified players */
   qualifiedNames: string[];
-  /** Number of remaining ATP 1000 tournaments */
-  remainingTournaments: number;
-  /** Name and timing of next major tournament */
-  nextTournament: string;
+  /**
+   * Number of remaining ATP 1000 tournaments.
+   * Optional: not present on the scraped source page.
+   */
+  remainingTournaments?: number;
+  /**
+   * Name and timing of next major tournament.
+   * Optional: not present on the scraped source page.
+   */
+  nextTournament?: string;
   /** Estimated points threshold for qualification */
   cutoffPoints: string;
 }

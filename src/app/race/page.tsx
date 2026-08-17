@@ -8,6 +8,13 @@ import { getRaceRankings } from "@/services/rankings-service";
  * Displays the Race to Turin standings with summary cards and qualification status.
  */
 
+/**
+ * Rendered on every request. Freshness is owned by the SWR cache in
+ * services/cache (10-minute TTL), so an ISR shell here would only add a second,
+ * longer-lived layer that pins stale standings on disk.
+ */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Race to Turin",
   description:

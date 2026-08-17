@@ -8,6 +8,14 @@
  * Route pages no longer need to know about scrapers, caching, or the
  * domain-to-view-model transformation — they call one function and receive
  * ready-to-render data.
+ *
+ * Error policy: failures are NOT swallowed here. They propagate to the route,
+ * where the per-route `error.tsx` boundary renders a real error state. This is
+ * deliberate — substituting mock or empty data made outages look like real
+ * standings, which is worse than an honest failure. The SWR layer in
+ * services/cache already absorbs transient source problems by serving the last
+ * good snapshot for up to two hours, so a propagated error means the data is
+ * genuinely unavailable.
  */
 
 import { fetchOfficialRankings } from "./scraper/rankings";
@@ -56,34 +64,29 @@ export async function getLiveRankings(): Promise<LiveRankingsResult> {
     return { rankings: MOCK_LIVE_RANKINGS, lastUpdated: "Mock Data" };
   }
 
-  try {
-    const data = await fetchLiveRankings();
+  const data = await fetchLiveRankings();
 
-    const rankings: LiveRankingEntry[] = data.entries.map((entry) => ({
-      rank: entry.rank,
-      points: entry.points,
-      player: toPlayerDisplay(entry.player),
-      liveStatus: {
-        isActive: entry.liveStatus?.isActive || false,
-        tournament: entry.liveStatus?.tournament || "",
-        stage: entry.liveStatus?.stage || "",
-      },
-      movement: toRankMovement(entry.rankChangeDirection, entry.rankChange || 0),
-      officialPoints: entry.points - (entry.pointsDiff || 0),
-      pointsDiff: entry.pointsDiff || 0,
-      nextMatchPoints: entry.nextMatchPoints || entry.points,
-      maxPoints: entry.maxPoints || entry.points,
-      bestRanking: entry.bestRanking || entry.rank,
-    }));
+  const rankings: LiveRankingEntry[] = data.entries.map((entry) => ({
+    rank: entry.rank,
+    points: entry.points,
+    player: toPlayerDisplay(entry.player),
+    liveStatus: {
+      isActive: entry.liveStatus?.isActive || false,
+      tournament: entry.liveStatus?.tournament || "",
+      stage: entry.liveStatus?.stage || "",
+    },
+    movement: toRankMovement(entry.rankChangeDirection, entry.rankChange || 0),
+    officialPoints: entry.points - (entry.pointsDiff || 0),
+    pointsDiff: entry.pointsDiff || 0,
+    nextMatchPoints: entry.nextMatchPoints || entry.points,
+    maxPoints: entry.maxPoints || entry.points,
+    bestRanking: entry.bestRanking || entry.rank,
+  }));
 
-    return {
-      rankings,
-      lastUpdated: formatLastUpdated(data.lastUpdated),
-    };
-  } catch (error) {
-    console.error("[rankings-service/live] Failed:", error);
-    return { rankings: [], lastUpdated: "Unavailable" };
-  }
+  return {
+    rankings,
+    lastUpdated: formatLastUpdated(data.lastUpdated),
+  };
 }
 
 /* ====================================================================
@@ -100,37 +103,31 @@ export async function getOfficialRankings(): Promise<OfficialRankingsResult> {
     return { rankings: MOCK_OFFICIAL_RANKINGS, lastUpdated: "Mock Data" };
   }
 
-  try {
-    const data = await fetchOfficialRankings();
+  const data = await fetchOfficialRankings();
 
-    const projectedRankings = [...data.entries].sort(
-      (a, b) => (b.nextWeekPoints || b.points) - (a.nextWeekPoints || a.points),
-    );
-    const projectedRankMap = new Map<number, number>();
-    projectedRankings.forEach((entry, index) => {
-      projectedRankMap.set(entry.rank, index + 1);
-    });
+  const projectedRankings = [...data.entries].sort(
+    (a, b) => (b.nextWeekPoints || b.points) - (a.nextWeekPoints || a.points),
+  );
+  const projectedRankMap = new Map<number, number>();
+  projectedRankings.forEach((entry, index) => {
+    projectedRankMap.set(entry.rank, index + 1);
+  });
 
-    const rankings: OfficialRankingEntry[] = data.entries.map((entry) => ({
-      rank: entry.rank,
-      movement: toRankMovement(entry.rankChangeDirection, entry.rankChange || 0),
-      player: toPlayerDisplay(entry.player),
-      points: entry.points,
-      nextWeek: {
-        points: entry.nextWeekPoints || entry.points,
-        rankChange:
-          entry.rank - (projectedRankMap.get(entry.rank) || entry.rank),
-      },
-    }));
+  const rankings: OfficialRankingEntry[] = data.entries.map((entry) => ({
+    rank: entry.rank,
+    movement: toRankMovement(entry.rankChangeDirection, entry.rankChange || 0),
+    player: toPlayerDisplay(entry.player),
+    points: entry.points,
+    nextWeek: {
+      points: entry.nextWeekPoints || entry.points,
+      rankChange: entry.rank - (projectedRankMap.get(entry.rank) || entry.rank),
+    },
+  }));
 
-    return {
-      rankings,
-      lastUpdated: formatLastUpdated(data.lastUpdated),
-    };
-  } catch (error) {
-    console.error("[rankings-service/official] Failed:", error);
-    return { rankings: MOCK_OFFICIAL_RANKINGS, lastUpdated: "Mock Data" };
-  }
+  return {
+    rankings,
+    lastUpdated: formatLastUpdated(data.lastUpdated),
+  };
 }
 
 /* ====================================================================
@@ -152,40 +149,39 @@ export async function getRaceRankings(): Promise<RaceRankingsResult> {
     };
   }
 
-  try {
-    const data = await fetchRaceRankings();
+  const data = await fetchRaceRankings();
 
-    const rankings: RaceRankingEntry[] = data.entries.map((entry) => ({
-      rank: entry.rank,
-      points: entry.points,
-      player: toPlayerDisplay(entry.player),
-      liveStatus: {
-        isActive: entry.liveStatus?.isActive ?? false,
-        tournament: entry.liveStatus?.tournament ?? "",
-        stage: entry.liveStatus?.stage ?? "",
-      },
-      movement: toRankMovement(entry.rankChangeDirection, entry.rankChange ?? 0),
-      officialPoints: entry.points - (entry.pointsDiff ?? 0),
-      pointsDiff: entry.pointsDiff ?? 0,
-      nextMatchPoints: entry.nextMatchPoints ?? entry.points,
-      maxPoints: entry.maxPoints ?? entry.points,
-      bestRanking: entry.bestRanking ?? entry.rank,
-      raceStatus: entry.isQualified ? "qualified" : "in-contention",
-    }));
+  const rankings: RaceRankingEntry[] = data.entries.map((entry) => ({
+    rank: entry.rank,
+    points: entry.points,
+    player: toPlayerDisplay(entry.player),
+    liveStatus: {
+      isActive: entry.liveStatus?.isActive ?? false,
+      tournament: entry.liveStatus?.tournament ?? "",
+      stage: entry.liveStatus?.stage ?? "",
+    },
+    movement: toRankMovement(entry.rankChangeDirection, entry.rankChange ?? 0),
+    officialPoints: entry.points - (entry.pointsDiff ?? 0),
+    pointsDiff: entry.pointsDiff ?? 0,
+    nextMatchPoints: entry.nextMatchPoints ?? entry.points,
+    maxPoints: entry.maxPoints ?? entry.points,
+    bestRanking: entry.bestRanking ?? entry.rank,
+    raceStatus: entry.isQualified ? "qualified" : "in-contention",
+  }));
 
-    const summary: RaceSummary = data.summary ?? MOCK_RACE_SUMMARY;
-
-    return {
-      rankings,
-      summary,
-      lastUpdated: formatLastUpdated(data.lastUpdated),
-    };
-  } catch (error) {
-    console.error("[rankings-service/race] Failed:", error);
-    return {
-      rankings: MOCK_RACE_RANKINGS,
-      summary: MOCK_RACE_SUMMARY,
-      lastUpdated: "Mock Data",
-    };
+  // `summary` is optional on RankingData because only the Race feed carries it.
+  // The race scraper always builds one (and throws if the cut-off is missing),
+  // so its absence here means the contract broke — surface that, don't guess.
+  if (!data.summary) {
+    throw new Error(
+      "Race ranking data arrived without a qualification summary.",
+    );
   }
+  const summary: RaceSummary = data.summary;
+
+  return {
+    rankings,
+    summary,
+    lastUpdated: formatLastUpdated(data.lastUpdated),
+  };
 }

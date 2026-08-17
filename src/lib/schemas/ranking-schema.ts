@@ -59,8 +59,8 @@ export const RaceSummarySchema = z.object({
   qualifiedCount: z.number().int().min(0),
   totalSlots: z.number().int().min(1),
   qualifiedNames: z.array(z.string()),
-  remainingTournaments: z.number().int().min(0),
-  nextTournament: z.string(),
+  remainingTournaments: z.number().int().min(0).optional(),
+  nextTournament: z.string().optional(),
   cutoffPoints: z.string(),
 });
 
