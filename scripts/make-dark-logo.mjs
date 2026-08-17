@@ -16,7 +16,6 @@ const { data, info } = await sharp(SRC)
   .toBuffer({ resolveWithObject: true });
 
 for (let i = 0; i < data.length; i += 4) {
-  const r = data[i];
   const g = data[i + 1];
   const b = data[i + 2];
   const a = data[i + 3];
