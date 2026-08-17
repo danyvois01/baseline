@@ -1,18 +1,8 @@
 #!/usr/bin/env bash
-# Starts the Next.js dev server inside a Node 20 container.
+# Kept as a convenience entry point for muscle memory (./dev.sh).
 #
-# Why a container: this machine (Amazon Linux 2) has GLIBC too old to run
-# Node 20 natively, and Next.js 16 needs Node 20. The container carries its
-# own newer OS, so it just works.
-#
-# Usage:  ./dev.sh          then open http://localhost:3000
-#         Ctrl+C to stop.
+# The real launcher is scripts/dev.sh. This file used to run the container
+# without --user and without -d, which made the dev server root-own .next and
+# die with its terminal — see docs/2026-08-08-dev-server-lifetime.md.
 set -euo pipefail
-cd "$(dirname "$0")"
-
-finch run --rm -it \
-  -p 3000:3000 \
-  -v "$(pwd)":/app \
-  -w /app \
-  node:20 \
-  npm run dev -- -H 0.0.0.0
+exec "$(dirname "$0")/scripts/dev.sh" "$@"

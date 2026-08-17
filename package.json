@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "dev:container": "./scripts/dev.sh",
+    "dev:logs": "finch logs -f baseline-dev",
+    "dev:stop": "finch rm -f baseline-dev",
+    "dev:status": "finch ps -a --filter name=baseline-dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

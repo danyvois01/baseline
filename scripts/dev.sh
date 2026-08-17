@@ -1,17 +1,33 @@
 #!/bin/sh
-# Run the Next.js dev server in a Node 20 container as the *current user*.
+# Run the Next.js dev server in a Node 20 container, detached and self-healing.
 #
-# Why this script exists: /usr/local/bin/finch is a wrapper that always calls
-# sudo, so a plain `finch run` executes as root and every file the dev server
-# writes (.next/, node_modules/.cache) ends up root-owned. Once that happens
-# HMR can no longer rewrite its own chunks, the browser is served stale or
-# half-written assets, and the app appears to stop loading. `--user` keeps
-# ownership with us, so the cache stays writable.
+# Why a container: this host's glibc is too old for Node 20, which Next.js 16
+# requires. The container carries its own newer OS.
 #
-# Usage: ./scripts/dev.sh [extra next dev args]
+# Two problems this script exists to avoid:
+#
+# 1. Ownership. /usr/local/bin/finch is a wrapper that always calls sudo, so a
+#    plain `finch run` executes as root and every file the dev server writes
+#    (.next/, node_modules/.cache) ends up root-owned. HMR can then no longer
+#    rewrite its own chunks and the app appears to stop loading. `--user` keeps
+#    ownership with us so the cache stays writable.
+#
+# 2. Lifetime. `finch run -it` (no -d) binds the server to the terminal that
+#    launched it: closing that terminal, an SSH/VSCode reconnect, or the shell
+#    going away takes the container down with it. The port dies too — it is
+#    held by a helper process under the container's containerd-shim, not by the
+#    host — so the browser is left loading forever. `-d --restart unless-stopped`
+#    detaches the server from any terminal and brings it back if it exits.
+#    Detaching also enables `finch logs`, which stays empty for -it containers,
+#    so a crash now leaves a trace instead of vanishing.
+#
+# Usage: ./scripts/dev.sh [extra next dev args]   start (or restart) the server
+#        npm run dev:logs                         follow the output
+#        npm run dev:stop                         stop it
 set -eu
 
 REPO="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+NAME="baseline-dev"
 
 # A root-owned .next from an earlier run would still be unwritable — clear it.
 if [ -d "$REPO/.next" ] && [ ! -w "$REPO/.next" ]; then
@@ -19,15 +35,21 @@ if [ -d "$REPO/.next" ] && [ ! -w "$REPO/.next" ]; then
   sudo rm -rf "$REPO/.next"
 fi
 
-# -it only works with a real terminal; without one (CI, background) it aborts
-# with "provided file is not a console".
-TTY_FLAGS=""
-[ -t 0 ] && [ -t 1 ] && TTY_FLAGS="-it"
+# --restart cannot be combined with --rm, so reclaim the name explicitly.
+if finch ps -a --format '{{.Names}}' 2>/dev/null | grep -qx "$NAME"; then
+  echo "==> Removing previous '$NAME' container"
+  finch rm -f "$NAME" >/dev/null
+fi
 
-# shellcheck disable=SC2086 # TTY_FLAGS must word-split (empty = no flag)
-exec finch run --rm $TTY_FLAGS \
+echo "==> Starting dev server (detached)"
+finch run -d \
+  --name "$NAME" \
+  --restart unless-stopped \
   --user "$(id -u):$(id -g)" \
   -p 3000:3000 \
   -v "$REPO:/app" \
   -w /app \
-  node:20 npm run dev -- -H 0.0.0.0 "$@"
+  node:20 npm run dev -- -H 0.0.0.0 "$@" >/dev/null
+
+echo "==> http://localhost:3000 — first compile takes a few seconds"
+echo "    logs: npm run dev:logs     stop: npm run dev:stop"
