@@ -94,7 +94,7 @@ export const it = {
         heading: "Cos'è Baseline",
         paragraphs: [
           "Baseline nasce per rendere il ranking ATP semplice da capire e bello da consultare. Offre tre viste complementari: il ranking ufficiale aggiornato ogni settimana, il ranking live con le proiezioni punti basate sui tornei in corso, e la Race to Turin verso le ATP Finals.",
-          "Il nome viene dalla linea di fondo campo — la baseline — il punto di partenza di ogni scambio: qui è il punto di partenza della tua conoscenza del tennis.",
+          "Il nome viene dalla baseline, la linea di fondo campo da cui parte ogni scambio: qui è da dove parte la tua conoscenza del tennis.",
         ],
       },
       {
@@ -224,12 +224,12 @@ export const it = {
         {
           value: "19",
           label: "I Migliori Risultati",
-          desc: "Vengono sommati solo i tuoi migliori piazzamenti stagionali.",
+          desc: "Vengono sommati solo i 19 migliori risultati stagionali di un giocatore.",
         },
         {
           value: "52",
           label: "Settimane",
-          desc: "La “finestra” mobile del ranking. Calcolata sull’ultimo anno.",
+          desc: "La “finestra” mobile del ranking, calcolata sulle ultime 52 settimane.",
         },
         {
           value: "Zero",
@@ -239,7 +239,7 @@ export const it = {
         {
           value: "Scadenza",
           label: "Difesa dei punti",
-          desc: "Ogni risultato “scade” dopo un anno. Devi tornare a vincere.",
+          desc: "Ogni risultato “scade” dopo un anno: per tenere i punti va riconfermato.",
         },
       ],
     },
@@ -252,6 +252,8 @@ export const it = {
       intro2AfterSlam:
         " (2000 punti al vincitore), seguiti dai Masters 1000, dagli ATP 500 e 250. La stagione culmina con le ",
       intro2AfterFinals: ", riservate ai migliori 8 dell'anno.",
+      curiosity:
+        "Curiosità: Il numero del torneo (1000, 500, 250) indica i punti che guadagna il vincitore! Negli Slam e nelle Finals, invece, le regole cambiano.",
       pointsToWinner: "Punti al vincitore:",
       exploreLabel: "Esplora la piramide",
       exploreAria: "Scorri alla piramide grafica",

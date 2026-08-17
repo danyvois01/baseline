@@ -91,7 +91,7 @@ export const en: Dictionary = {
         heading: "What is Baseline",
         paragraphs: [
           "Baseline was created to make the ATP ranking easy to understand and a pleasure to browse. It offers three complementary views: the official ranking updated every week, the live ranking with point projections based on ongoing tournaments, and the Race to Turin towards the ATP Finals.",
-          "The name comes from the baseline — the line at the back of the court where every rally starts: here, it's the starting point of your tennis knowledge.",
+          "The name comes from the baseline, the line at the back of the court where every rally starts: here, it's where your tennis knowledge starts.",
         ],
       },
       {
@@ -208,7 +208,7 @@ export const en: Dictionary = {
       ariaNext: (label: string) => `Go to the next section: ${label}`,
     },
     hero: {
-      subtitle: "The Baseline",
+      subtitle: "From The Basics",
       lead: "The baseline is where every rally begins. Here at Baseline, it's also the foundation of your knowledge of professional tennis.",
       scrollLabel: "Discover",
     },
@@ -220,12 +220,12 @@ export const en: Dictionary = {
         {
           value: "19",
           label: "Best Results",
-          desc: "Only your best results of the season are added together.",
+          desc: "Only a player's 19 best results of the season are added together.",
         },
         {
           value: "52",
           label: "Weeks",
-          desc: "The rolling ranking “window”, calculated over the past year.",
+          desc: "The rolling ranking “window”, calculated over the past 52 weeks.",
         },
         {
           value: "Zero",
@@ -235,7 +235,7 @@ export const en: Dictionary = {
         {
           value: "Expiry",
           label: "Defending points",
-          desc: "Every result “expires” after one year. You have to win again.",
+          desc: "Every result “expires” after one year: keeping the points means winning again.",
         },
       ],
     },
@@ -248,6 +248,8 @@ export const en: Dictionary = {
       intro2AfterSlam:
         " (2000 points to the winner), followed by the Masters 1000s, the ATP 500s and 250s. The season culminates with the ",
       intro2AfterFinals: ", reserved for the year's best 8 players.",
+      curiosity:
+        "Fun fact: the tournament number (1000, 500, 250) is the number of points the winner earns! At the Slams and the Finals, however, the rules change.",
       pointsToWinner: "Points to the winner:",
       exploreLabel: "Explore the pyramid",
       exploreAria: "Scroll to the pyramid graphic",

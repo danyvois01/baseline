@@ -132,22 +132,9 @@ export function PyramidSection() {
             <p className="leading-relaxed">
               {t.home.pyramid.intro2BeforeSlam}<strong className="text-foreground">Grand Slam</strong>{t.home.pyramid.intro2AfterSlam}<strong className="text-primary-olive">ATP Finals</strong>{t.home.pyramid.intro2AfterFinals}
             </p>
-            <p className="text-body-md text-text-muted max-w-3xl mx-auto mb-6">
-              I più importanti in assoluto sono i{" "}
-              <strong className="text-deep-navy">Grand Slam</strong> (2000 punti
-              al vincitore), seguiti dai{" "}
-              <strong className="text-deep-navy">Masters 1000</strong>, dagli{" "}
-              <strong className="text-deep-navy">ATP 500</strong> e{" "}
-              <strong className="text-deep-navy">250</strong>. La stagione
-              culmina con le{" "}
-              <strong className="text-deep-navy">ATP Finals</strong>, riservate
-              ai migliori 8 dell&apos;anno.
-            </p>
             <div className="rounded-xl bg-baseline-lime/10 border border-baseline-lime/20 p-4 max-w-2xl mx-auto">
               <p className="text-body-sm text-primary-olive font-medium">
-                💡 Curiosità: Il numero del torneo (1000, 500, 250) indica i
-                punti che guadagna il vincitore! Negli Slam e nelle Finals,
-                invece, le regole cambiano.
+                💡 {t.home.pyramid.curiosity}
               </p>
             </div>
           </div>
