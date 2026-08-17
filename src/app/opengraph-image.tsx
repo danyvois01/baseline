@@ -6,7 +6,7 @@ import { ImageResponse } from "next/og";
  * tennis-lime accent line, and tagline.
  */
 
-export const alt = "Baseline — Live ATP Tennis Rankings";
+export const alt = "Baseline | Live ATP Tennis Rankings";
 export const size = {
   width: 1200,
   height: 630,

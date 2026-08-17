@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Race to Turin",
   description:
-    "Track the Race to Turin — ATP Finals qualification standings, cut-off projections, and qualified players.",
+    "Track the Race to Turin: ATP Finals qualification standings, cut-off projections, and qualified players.",
   alternates: {
     canonical: "/race",
   },

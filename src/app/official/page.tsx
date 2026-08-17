@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Official ATP Rankings",
   description:
-    "The official weekly ATP Tour singles rankings — verified standings, points, and next-week projections.",
+    "The official weekly ATP Tour singles rankings: verified standings, points, and next-week projections.",
   alternates: {
     canonical: "/official",
   },

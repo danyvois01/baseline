@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Live ATP Rankings",
   description:
-    "Live ATP Tennis Rankings — Real-time point projections based on ongoing tournament results.",
+    "Live ATP Tennis Rankings: real-time point projections based on ongoing tournament results.",
   alternates: {
     canonical: "/live",
   },

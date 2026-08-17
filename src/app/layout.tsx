@@ -22,11 +22,14 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Baseline — Live ATP Tennis Rankings",
-    template: "%s — Baseline",
+    // The browser tab shows the brand alone: the descriptive title was long
+    // enough to be truncated there. Search engines and social cards still get
+    // the full wording via the description and the Open Graph title below.
+    default: "Baseline",
+    template: "%s | Baseline",
   },
   description:
-    "Live ATP Tennis Rankings — Real-time point projections, official standings & Race to Turin.",
+    "Live ATP Tennis Rankings: real-time point projections, official standings & Race to Turin.",
   applicationName: SITE_NAME,
   keywords: [
     "ATP rankings",
@@ -43,15 +46,15 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: "it_IT",
     url: SITE_URL,
-    title: "Baseline — Live ATP Tennis Rankings",
+    title: "Baseline | Live ATP Tennis Rankings",
     description:
-      "Live ATP Tennis Rankings — Real-time point projections, official standings & Race to Turin.",
+      "Live ATP Tennis Rankings: real-time point projections, official standings & Race to Turin.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Baseline — Live ATP Tennis Rankings",
+    title: "Baseline | Live ATP Tennis Rankings",
     description:
-      "Live ATP Tennis Rankings — Real-time point projections, official standings & Race to Turin.",
+      "Live ATP Tennis Rankings: real-time point projections, official standings & Race to Turin.",
   },
   robots: {
     index: true,
