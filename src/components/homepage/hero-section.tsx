@@ -26,23 +26,6 @@ const COURT_LINES: { d: string; delay: number; duration: number }[] = [
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Floating particles — fixed positions to avoid SSR hydration issues */
-/* ------------------------------------------------------------------ */
-
-const PARTICLES = [
-  { x: 12, y: 18, size: 3, opacity: 0.15, duration: 5, delay: 0 },
-  { x: 88, y: 25, size: 4, opacity: 0.1, duration: 6, delay: 1.2 },
-  { x: 35, y: 75, size: 2.5, opacity: 0.2, duration: 4.5, delay: 0.5 },
-  { x: 72, y: 55, size: 3.5, opacity: 0.12, duration: 5.5, delay: 2 },
-  { x: 55, y: 10, size: 2, opacity: 0.18, duration: 4, delay: 0.8 },
-  { x: 20, y: 50, size: 5, opacity: 0.08, duration: 7, delay: 1.5 },
-  { x: 92, y: 70, size: 2.5, opacity: 0.15, duration: 4.8, delay: 0.3 },
-  { x: 48, y: 90, size: 3, opacity: 0.1, duration: 5.2, delay: 1.8 },
-  { x: 8, y: 85, size: 2, opacity: 0.14, duration: 6.2, delay: 0.7 },
-  { x: 78, y: 8, size: 3.5, opacity: 0.09, duration: 5.8, delay: 2.5 },
-];
-
-/* ------------------------------------------------------------------ */
 /*  Ball rally trajectory (keyframes for cx, cy)                       */
 /* ------------------------------------------------------------------ */
 
