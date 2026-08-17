@@ -1,5 +1,12 @@
 import { RankingData, RankingEntry } from '../../types/ranking';
-import { fetchAndLoadHtml, parseLastUpdated, parseRankChange } from './parse-utils';
+import {
+  fetchAndLoadHtml,
+  parseLastUpdated,
+  parsePlayerColumns,
+  parseRowRankChange,
+  parseTrailingProjections,
+  toPlayerId,
+} from './parse-utils';
 import { buildScraperUrl } from './config';
 import { getCachedRankings } from '../cache/rankings-cache';
 import { validateRankingData } from '@/lib/schemas/ranking-schema';
@@ -31,43 +38,38 @@ async function scrapeOfficialRankings(): Promise<RankingData> {
     const entries: RankingEntry[] = [];
 
     rows.each((i, row) => {
-      const cols = $(row).find('td');
-
-      const rankText = cols.eq(0).text().trim();
-      const rank = parseInt(rankText, 10);
+      const rank = parseInt($(row).find('td.rk').first().text().trim(), 10);
       if (isNaN(rank)) return;
 
-      const name = cols.eq(2).text().trim();
-      if (!name) return;
+      const player = parsePlayerColumns($, row);
+      if (!player) return;
 
-      const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const ageText = cols.eq(3).text().trim();
-      const age = isNaN(parseFloat(ageText)) ? 0 : parseFloat(ageText);
-      const nationality = cols.eq(4).text().trim();
+      const { rankChange, rankChangeDirection } = parseRowRankChange($, row);
 
-      const pointsText = cols.eq(5).text().replace(/\D/g, '');
-      const points = isNaN(parseInt(pointsText, 10)) ? 0 : parseInt(pointsText, 10);
-
-      const { rankChange, rankChangeDirection } = parseRankChange(cols.eq(6).text().trim());
-
-      const nextWeekPointsText = cols.eq(-2).text().replace(/\D/g, '');
-      const nextWeekPoints = nextWeekPointsText ? parseInt(nextWeekPointsText, 10) : undefined;
+      // The official table trails with a single projection: next week's points.
+      const [nextWeekPoints] = parseTrailingProjections($, row);
 
       entries.push({
         rank,
         previousRank: rankChangeDirection === 'up' ? rank + rankChange : (rankChangeDirection === 'down' ? rank - rankChange : rank),
         rankChange,
         rankChangeDirection,
-        points,
-        nextWeekPoints: !isNaN(nextWeekPoints as number) ? nextWeekPoints : undefined,
+        points: player.points,
+        nextWeekPoints,
         player: {
-          id,
-          name,
-          nationality,
-          age
+          id: toPlayerId(player.name),
+          name: player.name,
+          nationality: player.nationality,
+          age: player.age
         }
       });
     });
+
+    if (!lastUpdated) {
+      throw new Error(
+        'Could not read the source timestamp — the page layout likely changed.',
+      );
+    }
 
     const rawData = {
       type: 'singles' as const,

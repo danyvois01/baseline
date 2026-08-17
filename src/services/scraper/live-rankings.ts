@@ -2,10 +2,13 @@ import { RankingData, RankingEntry } from '../../types/ranking';
 import {
   fetchAndLoadHtml,
   parseLastUpdated,
-  parseRankChange,
-  parsePointsDiff,
+  parsePlayerColumns,
+  parseRowRankChange,
+  parseRowPointsDiff,
   parseTournamentStatus,
   parseProsAndMax,
+  parseCareerHigh,
+  toPlayerId,
 } from './parse-utils';
 import { buildScraperUrl } from './config';
 import { getCachedRankings } from '../cache/rankings-cache';
@@ -38,56 +41,23 @@ async function scrapeLiveRankings(): Promise<RankingData> {
     const entries: RankingEntry[] = [];
 
     rows.each((i, row) => {
-      const cols = $(row).find('td');
-
-      const rankText = cols.eq(0).text().trim();
-      const rank = parseInt(rankText, 10);
+      const rank = parseInt($(row).find('td.rk').first().text().trim(), 10);
       if (isNaN(rank)) return;
 
-      const mrText = cols.eq(1).text().trim();
-      let bestRanking = rank;
-      const mrMatch = mrText.match(/\d+/);
-      if (mrText !== 'MR' && !mrText.includes('NMR') && mrMatch) {
-         bestRanking = parseInt(mrMatch[0], 10);
-      }
+      const player = parsePlayerColumns($, row);
+      if (!player) return;
 
-      const name = cols.eq(3).text().trim();
-      if (!name) return;
-
-      const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const ageText = cols.eq(4).text().trim();
-      const age = isNaN(parseFloat(ageText)) ? 0 : parseFloat(ageText);
-      const nationality = cols.eq(5).text().trim();
-
-      const pointsText = cols.eq(6).text().replace(/\D/g, '');
-      const points = isNaN(parseInt(pointsText, 10)) ? 0 : parseInt(pointsText, 10);
-
-      const { rankChange, rankChangeDirection } = parseRankChange(
-        cols.eq(7).text().trim(),
-        cols.eq(7).hasClass('sgr'),
-        cols.eq(7).hasClass('srd'),
-      );
-
-      const pointsDiff = parsePointsDiff(cols.eq(8).text().trim());
-
-      const { isActive, tournament, stage } = parseTournamentStatus(
-        $(row).find('td.rst').html() || '',
-      );
-
-      const lastCol = cols.last();
-      const { nextMatchPoints, maxPoints } = parseProsAndMax(
-        lastCol.text(),
-        cols.eq(-2).text(),
-        !!lastCol.attr('colspan'),
-      );
+      const { rankChange, rankChangeDirection } = parseRowRankChange($, row);
+      const { isActive, tournament, stage } = parseTournamentStatus($, row);
+      const { nextMatchPoints, maxPoints } = parseProsAndMax($, row);
 
       entries.push({
         rank,
         rankChange,
         rankChangeDirection,
-        points,
-        pointsDiff,
-        bestRanking,
+        points: player.points,
+        pointsDiff: parseRowPointsDiff($, row),
+        bestRanking: parseCareerHigh($, row, rank),
         liveStatus: {
           isActive,
           tournament,
@@ -96,13 +66,19 @@ async function scrapeLiveRankings(): Promise<RankingData> {
         nextMatchPoints,
         maxPoints,
         player: {
-          id,
-          name,
-          nationality,
-          age
+          id: toPlayerId(player.name),
+          name: player.name,
+          nationality: player.nationality,
+          age: player.age
         }
       });
     });
+
+    if (!lastUpdated) {
+      throw new Error(
+        'Could not read the source timestamp — the page layout likely changed.',
+      );
+    }
 
     const rawData = {
       type: 'live-singles' as const,

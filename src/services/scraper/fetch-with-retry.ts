@@ -25,6 +25,21 @@ const DEFAULT_TIMEOUT_MS = 30_000;
 const DEFAULT_BASE_DELAY_MS = 1_000;
 
 /**
+ * An HTTP status that retrying cannot fix (4xx other than 429) — typically an
+ * invalid or exhausted ScraperAPI key. Modelled as a class so callers can test
+ * it with `instanceof` instead of matching on message text.
+ */
+export class NonRetryableHttpError extends Error {
+  constructor(
+    readonly status: number,
+    statusText: string,
+  ) {
+    super(`HTTP ${status}: ${statusText} (non-retryable)`);
+    this.name = "NonRetryableHttpError";
+  }
+}
+
+/**
  * Fetches a URL with automatic retry on failure.
  * Throws after exhausting all attempts with the last encountered error.
  */
@@ -42,16 +57,15 @@ export async function fetchWithRetry(
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    const controller = new AbortController();
+    // Cleared in `finally` so a throwing fetch cannot leave the timer pending.
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
+    try {
       const response = await fetch(url, {
         ...fetchOptions,
         signal: controller.signal,
       });
-
-      clearTimeout(timeoutId);
 
       if (response.ok) {
         return response;
@@ -62,19 +76,18 @@ export async function fetchWithRetry(
           `HTTP ${response.status}: ${response.statusText}`,
         );
       } else {
-        throw new Error(
-          `HTTP ${response.status}: ${response.statusText} (non-retryable)`,
-        );
+        throw new NonRetryableHttpError(response.status, response.statusText);
       }
     } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message.includes("non-retryable")
-      ) {
+      // Client errors (bad/expired API key, exhausted quota) will not succeed
+      // on retry — surface them immediately instead of burning the backoff.
+      if (error instanceof NonRetryableHttpError) {
         throw error;
       }
       lastError =
         error instanceof Error ? error : new Error(String(error));
+    } finally {
+      clearTimeout(timeoutId);
     }
 
     if (attempt < maxAttempts - 1) {

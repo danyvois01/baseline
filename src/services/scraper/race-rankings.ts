@@ -2,10 +2,12 @@ import { RankingData, RankingEntry } from '../../types/ranking';
 import {
   fetchAndLoadHtml,
   parseLastUpdated,
-  parseRankChange,
-  parsePointsDiff,
+  parsePlayerColumns,
+  parseRowRankChange,
+  parseRowPointsDiff,
   parseTournamentStatus,
   parseProsAndMax,
+  toPlayerId,
 } from './parse-utils';
 import { buildScraperUrl } from './config';
 import { getCachedRankings } from '../cache/rankings-cache';
@@ -33,7 +35,10 @@ async function scrapeRaceRankings(): Promise<RankingData> {
     const { $, html } = await fetchAndLoadHtml(url);
     const lastUpdated = parseLastUpdated($, html);
 
-    let cutoffPoints = 6695;
+    // The qualification cut-off drives `isQualified` for every player, so a
+    // hardcoded default would silently mislabel the whole table once it drifts.
+    // Better to fail and keep serving the last good data from the cache.
+    let cutoffPoints: number | undefined;
     const thresholdRow = $('td').filter((i, el) => $(el).text().includes("Punti per la qualif")).last().parent('tr');
     if (thresholdRow.length) {
       const tds = thresholdRow.find('td');
@@ -45,6 +50,13 @@ async function scrapeRaceRankings(): Promise<RankingData> {
         }
       });
     }
+    if (cutoffPoints === undefined) {
+      throw new Error(
+        'Could not read the ATP Finals qualification cut-off from the page.',
+      );
+    }
+    // Bound to a const so the narrowing survives inside the row callback.
+    const cutoff = cutoffPoints;
 
     const rows = $('td.rk').parent('tr');
 
@@ -52,58 +64,28 @@ async function scrapeRaceRankings(): Promise<RankingData> {
     const qualifiedNames: string[] = [];
 
     rows.each((i, row) => {
-      const cols = $(row).find('td');
-
-      const rankText = cols.eq(0).text().trim();
-      const rank = parseInt(rankText, 10);
+      const rank = parseInt($(row).find('td.rk').first().text().trim(), 10);
       if (isNaN(rank)) return;
 
-      const bestRanking = rank;
+      const player = parsePlayerColumns($, row);
+      if (!player) return;
 
-      let name = cols.eq(2).text().trim();
-      if (!name) return;
+      const { rankChange, rankChangeDirection } = parseRowRankChange($, row);
+      const { isActive, tournament, stage } = parseTournamentStatus($, row);
+      const { nextMatchPoints, maxPoints } = parseProsAndMax($, row);
 
-      name = name.replace(/^✓\s*/, '').trim();
-
-      const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const ageText = cols.eq(3).text().trim();
-      const age = isNaN(parseFloat(ageText)) ? 0 : parseFloat(ageText);
-      const nationality = cols.eq(4).text().trim();
-
-      const pointsText = cols.eq(5).text().replace(/\D/g, '');
-      const points = isNaN(parseInt(pointsText, 10)) ? 0 : parseInt(pointsText, 10);
-
-      const { rankChange, rankChangeDirection } = parseRankChange(
-        cols.eq(6).text().trim(),
-        cols.eq(6).hasClass('sgr'),
-        cols.eq(6).hasClass('srd'),
-      );
-
-      const pointsDiff = parsePointsDiff(cols.eq(7).text().trim());
-
-      const { isActive, tournament, stage } = parseTournamentStatus(
-        $(row).find('td.rst').html() || '',
-      );
-
-      const lastCol = cols.last();
-      const { nextMatchPoints, maxPoints } = parseProsAndMax(
-        lastCol.text(),
-        cols.eq(-2).text(),
-        !!lastCol.attr('colspan'),
-      );
-
-      const isQualified = points >= cutoffPoints;
+      const isQualified = player.points >= cutoff;
       if (isQualified && rank <= 8) {
-        qualifiedNames.push(name);
+        qualifiedNames.push(player.name);
       }
 
       entries.push({
         rank,
         rankChange,
         rankChangeDirection,
-        points,
-        pointsDiff,
-        bestRanking,
+        points: player.points,
+        pointsDiff: parseRowPointsDiff($, row),
+        bestRanking: rank,
         isQualified,
         liveStatus: {
           isActive,
@@ -113,13 +95,19 @@ async function scrapeRaceRankings(): Promise<RankingData> {
         nextMatchPoints,
         maxPoints,
         player: {
-          id,
-          name,
-          nationality,
-          age
+          id: toPlayerId(player.name),
+          name: player.name,
+          nationality: player.nationality,
+          age: player.age
         }
       });
     });
+
+    if (!lastUpdated) {
+      throw new Error(
+        'Could not read the source timestamp — the page layout likely changed.',
+      );
+    }
 
     const rawData: RankingData = {
       type: 'race-to-turin',
@@ -127,11 +115,13 @@ async function scrapeRaceRankings(): Promise<RankingData> {
       entries,
       summary: {
         qualifiedCount: qualifiedNames.length,
+        // Eight singles slots at the ATP Finals is a tour rule, not page data.
         totalSlots: 8,
         qualifiedNames,
-        remainingTournaments: 4,
-        nextTournament: "Montreal Masters",
-        cutoffPoints: cutoffPoints.toString()
+        cutoffPoints: cutoff.toString()
+        // `remainingTournaments` and `nextTournament` are intentionally absent:
+        // the source page does not carry them, and the previous hardcoded
+        // values ("Montreal Masters", 4) were served to the UI as if scraped.
       }
     };
 
