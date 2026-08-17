@@ -16,6 +16,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPoints, formatDiff } from "@/lib/format";
 import { usePagination } from "./primitives/use-pagination";
+import { ROW_MIN_H, HEADER_MIN_H } from "./primitives/table-metrics";
 import { useTranslation } from "@/providers/locale-provider";
 
 const GRID_COLS = "grid-cols-[50px_80px_1fr_1.2fr_120px_100px_50px]";
@@ -64,6 +65,7 @@ export function RankingsTable({
         <div
           className={cn(
             "grid items-center px-6 py-4 border-b border-border-subtle bg-surface-gray/30",
+            HEADER_MIN_H,
             GRID_COLS
           )}
         >
@@ -101,6 +103,7 @@ export function RankingsTable({
                 onClick={() => toggleExpand(entry.player.id)}
                 className={cn(
                   "group grid items-center px-6 py-4 transition-all duration-300 cursor-pointer",
+                  ROW_MIN_H,
                   GRID_COLS,
                   isExpanded
                     ? "bg-baseline-lime/5"

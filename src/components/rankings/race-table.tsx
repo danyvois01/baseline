@@ -15,6 +15,7 @@ import { PointsDiffBadge } from "./points-diff-badge";
 import { cn } from "@/lib/utils";
 import { formatPoints, formatDiff } from "@/lib/format";
 import { usePagination } from "./primitives/use-pagination";
+import { ROW_MIN_H, HEADER_MIN_H } from "./primitives/table-metrics";
 import { CircleCheckBig, Trophy } from "lucide-react";
 import type { RaceRankingEntry } from "@/types";
 import { useTranslation } from "@/providers/locale-provider";
@@ -56,6 +57,7 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
         <div
           className={cn(
             "grid items-center px-6 py-4 border-b border-border-subtle bg-surface-gray/30",
+            HEADER_MIN_H,
             GRID_COLS
           )}
         >
@@ -110,6 +112,7 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
               <div
                 className={cn(
                   "group grid items-center px-6 py-4 transition-all duration-300",
+                  ROW_MIN_H,
                   GRID_COLS,
                   index % 2 === 1 && "bg-surface-gray/20",
                   "hover:bg-baseline-lime/5"

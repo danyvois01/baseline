@@ -14,6 +14,7 @@ import { PlayerCell } from "./player-cell";
 import { cn } from "@/lib/utils";
 import { formatPoints } from "@/lib/format";
 import { usePagination } from "./primitives/use-pagination";
+import { ROW_MIN_H, HEADER_MIN_H } from "./primitives/table-metrics";
 import { useTranslation } from "@/providers/locale-provider";
 
 /**
@@ -57,6 +58,7 @@ export function OfficialTable({
         <div
           className={cn(
             "grid items-center px-6 py-4 border-b border-border-subtle bg-surface-gray/30",
+            HEADER_MIN_H,
             GRID_COLS
           )}
         >
@@ -79,56 +81,63 @@ export function OfficialTable({
 
         {/* Table Rows */}
         {visibleEntries.map((entry, idx) => (
+          /* Border lives on this outer wrapper, not on the grid itself: with
+             border-box sizing a border on the ROW_MIN_H element would eat into
+             the 76px and desync this table from Live/Race by 1px per row. */
           <div
             key={entry.player.id}
-            className={cn(
-              "group grid items-center px-6 py-4 transition-all duration-300",
-              GRID_COLS,
-              "border-b border-border-subtle/40 last:border-b-0",
-              idx % 2 === 1 && "bg-surface-gray/20",
-              "hover:bg-baseline-lime/5"
-            )}
+            className="border-b border-border-subtle/40 last:border-b-0"
           >
-            <span className="text-headline-md text-foreground font-heading font-extrabold text-center tabular-nums">
-              {entry.rank}
-            </span>
-
-            <div className="flex justify-center">
-              <MovementBadge
-                type={entry.movement.type}
-                value={entry.movement.value}
-              />
-            </div>
-
-            <PlayerCell player={entry.player} />
-
-            <span className="text-[20px] font-heading text-foreground font-extrabold text-right tabular-nums">
-              {formatPoints(entry.points)}
-            </span>
-
-            <div className="flex flex-col items-end gap-0.5 pr-2">
-              <span className="text-body-md font-semibold text-foreground tabular-nums">
-                {formatPoints(entry.nextWeek.points)}
-              </span>
-              {entry.nextWeek.rankChange !== 0 ? (
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums",
-                    entry.nextWeek.rankChange > 0
-                      ? "bg-success-green-bg text-success-green-text"
-                      : "bg-error-red-bg text-error-red-text"
-                  )}
-                >
-                  <span className="text-[9px]">
-                    {entry.nextWeek.rankChange > 0 ? "▲" : "▼"}
-                  </span>
-                  {Math.abs(entry.nextWeek.rankChange)}
-                </span>
-              ) : (
-                <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-medium text-foreground/40">
-                  —
-                </span>
+            <div
+              className={cn(
+                "group grid items-center px-6 py-4 transition-all duration-300",
+                ROW_MIN_H,
+                GRID_COLS,
+                idx % 2 === 1 && "bg-surface-gray/20",
+                "hover:bg-baseline-lime/5"
               )}
+            >
+              <span className="text-headline-md text-foreground font-heading font-extrabold text-center tabular-nums">
+                {entry.rank}
+              </span>
+
+              <div className="flex justify-center">
+                <MovementBadge
+                  type={entry.movement.type}
+                  value={entry.movement.value}
+                />
+              </div>
+
+              <PlayerCell player={entry.player} />
+
+              <span className="text-[20px] font-heading text-foreground font-extrabold text-right tabular-nums">
+                {formatPoints(entry.points)}
+              </span>
+
+              <div className="flex flex-col items-end gap-0.5 pr-2">
+                <span className="text-body-md font-semibold text-foreground tabular-nums">
+                  {formatPoints(entry.nextWeek.points)}
+                </span>
+                {entry.nextWeek.rankChange !== 0 ? (
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums",
+                      entry.nextWeek.rankChange > 0
+                        ? "bg-success-green-bg text-success-green-text"
+                        : "bg-error-red-bg text-error-red-text"
+                    )}
+                  >
+                    <span className="text-[9px]">
+                      {entry.nextWeek.rankChange > 0 ? "▲" : "▼"}
+                    </span>
+                    {Math.abs(entry.nextWeek.rankChange)}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-medium text-foreground/40">
+                    —
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         ))}
