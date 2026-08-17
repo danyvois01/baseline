@@ -48,7 +48,7 @@ export const it = {
       {
         heading: "Titolare del trattamento",
         paragraphs: [
-          "Il titolare del trattamento è il gestore di questo sito. Per qualsiasi domanda relativa a questa informativa o ai tuoi dati puoi scrivere a [EMAIL].",
+          "Il titolare del trattamento è il gestore di questo sito. Per qualsiasi domanda relativa a questa informativa o ai tuoi dati puoi scrivere a baselinetennis.info@gmail.com.",
         ],
       },
       {

@@ -45,7 +45,7 @@ export const en: Dictionary = {
       {
         heading: "Data controller",
         paragraphs: [
-          "The data controller is the operator of this website. For any questions about this policy or your data, you can write to [EMAIL].",
+          "The data controller is the operator of this website. For any questions about this policy or your data, you can write to baselinetennis.info@gmail.com.",
         ],
       },
       {
