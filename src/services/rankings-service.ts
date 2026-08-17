@@ -78,8 +78,12 @@ export async function getLiveRankings(): Promise<LiveRankingsResult> {
     movement: toRankMovement(entry.rankChangeDirection, entry.rankChange || 0),
     officialPoints: entry.points - (entry.pointsDiff || 0),
     pointsDiff: entry.pointsDiff || 0,
-    nextMatchPoints: entry.nextMatchPoints || entry.points,
-    maxPoints: entry.maxPoints || entry.points,
+    // Passed through as-is: the source publishes projections only for part of
+    // the field, and `undefined` is the honest answer for the rest. Falling back
+    // to `entry.points` used to show, say, "Proj. Max 119 pts" for a player the
+    // source makes no projection for at all.
+    nextMatchPoints: entry.nextMatchPoints,
+    maxPoints: entry.maxPoints,
     bestRanking: entry.bestRanking || entry.rank,
   }));
 
@@ -163,8 +167,9 @@ export async function getRaceRankings(): Promise<RaceRankingsResult> {
     movement: toRankMovement(entry.rankChangeDirection, entry.rankChange ?? 0),
     officialPoints: entry.points - (entry.pointsDiff ?? 0),
     pointsDiff: entry.pointsDiff ?? 0,
-    nextMatchPoints: entry.nextMatchPoints ?? entry.points,
-    maxPoints: entry.maxPoints ?? entry.points,
+    // See the live mapping above: absent projections stay absent.
+    nextMatchPoints: entry.nextMatchPoints,
+    maxPoints: entry.maxPoints,
     bestRanking: entry.bestRanking ?? entry.rank,
     raceStatus: entry.isQualified ? "qualified" : "in-contention",
   }));

@@ -284,26 +284,30 @@ export function RankingsTable({
                         {formatPoints(entry.officialPoints)}
                       </span>
                     </div>
-                    {entry.liveStatus.isActive && (
-                      <>
-                        <div>
-                          <span className="text-[10px] uppercase tracking-wider text-foreground font-bold block">
-                            {t.rankings.expandedCard.projNext}
-                          </span>
-                          <span className="text-sm font-heading font-extrabold text-foreground tabular-nums">
-                            {formatPoints(entry.nextMatchPoints)}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] uppercase tracking-wider text-foreground font-bold block">
-                            {t.rankings.expandedCard.projMax}
-                          </span>
-                          <span className="text-sm font-heading font-extrabold text-foreground tabular-nums">
-                            {formatPoints(entry.maxPoints)}
-                          </span>
-                        </div>
-                      </>
-                    )}
+                    {/* Projections are omitted entirely when the source has none —
+                        see the note in expanded-card.tsx. */}
+                    {entry.liveStatus.isActive &&
+                      entry.nextMatchPoints !== undefined &&
+                      entry.maxPoints !== undefined && (
+                        <>
+                          <div>
+                            <span className="text-[10px] uppercase tracking-wider text-foreground font-bold block">
+                              {t.rankings.expandedCard.projNext}
+                            </span>
+                            <span className="text-sm font-heading font-extrabold text-foreground tabular-nums">
+                              {formatPoints(entry.nextMatchPoints)}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] uppercase tracking-wider text-foreground font-bold block">
+                              {t.rankings.expandedCard.projMax}
+                            </span>
+                            <span className="text-sm font-heading font-extrabold text-foreground tabular-nums">
+                              {formatPoints(entry.maxPoints)}
+                            </span>
+                          </div>
+                        </>
+                      )}
                   </div>
                 </div>
               </div>

@@ -72,10 +72,17 @@ export interface LiveRankingEntry {
   officialPoints: number;
   /** Difference: livePoints - officialPoints */
   pointsDiff: number;
-  /** Points if player wins their next match */
-  nextMatchPoints: number;
-  /** Points if player wins the tournament */
-  maxPoints: number;
+  /**
+   * Points if the player wins their next match.
+   *
+   * Optional: the source only publishes projections for part of the field, so
+   * plenty of active players legitimately have none. Absent means "unknown" and
+   * must render as such — defaulting to the current points would present an
+   * invented projection as real data.
+   */
+  nextMatchPoints?: number;
+  /** Points if the player wins the tournament. Optional for the same reason. */
+  maxPoints?: number;
   /** Player's career-best rank position */
   bestRanking: number;
 }

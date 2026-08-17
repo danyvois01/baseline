@@ -22,10 +22,10 @@ import { useTranslation } from "@/providers/locale-provider";
 const GRID_COLS = "grid-cols-[50px_80px_1fr_1.2fr_120px_100px_50px]";
 
 interface ExpandedCardProps {
-  /** Points if player wins their next match */
-  nextMatchPoints: number;
-  /** Points if player wins the tournament */
-  maxPoints: number;
+  /** Points if player wins their next match. Absent when the source has none. */
+  nextMatchPoints?: number;
+  /** Points if player wins the tournament. Absent when the source has none. */
+  maxPoints?: number;
   /** Current official ranking points */
   officialPoints: number;
   /** Player's career-best rank position */
@@ -42,6 +42,10 @@ export function ExpandedCard({
   isActive = true,
 }: ExpandedCardProps) {
   const { t } = useTranslation();
+
+  // The two projections always arrive together or not at all.
+  const hasProjections =
+    nextMatchPoints !== undefined && maxPoints !== undefined;
 
   return (
     <div className="bg-surface-gray/30 shadow-inner border-t border-border-subtle/40 px-6 py-4">
@@ -61,10 +65,12 @@ export function ExpandedCard({
         </div>
 
         {/* Col 4 (Live Status): Proj. Next & Proj. Max — the reason the row is expanded.
-            When the player is out, projections don't exist: render nothing (the exit
-            round is already shown in the main row). */}
+            Rendered only when the source actually provides them: they're absent for
+            players who are out (the exit round is already shown in the main row) and
+            also for active players the source publishes no projection for, which is
+            common further down the ranking. */}
         <div className="flex gap-8 items-start">
-          {isActive && (
+          {isActive && hasProjections && (
             <>
               {/* Next */}
               <div className="flex flex-col gap-1">
