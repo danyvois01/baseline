@@ -92,7 +92,7 @@ export function TopNavBar() {
           equally, so the middle one is optically centred while still being part
           of the flow — the nav can no longer overlap the logo or the actions
           the way an absolutely positioned one did. Columns are assigned
-          explicitly because the nav is display:none below xl. */}
+          explicitly because the nav is display:none below lg. */}
       <motion.div
         style={{ paddingLeft: navPadding, paddingRight: navPadding }}
         className="relative grid grid-cols-[1fr_auto_1fr] h-16 sm:h-20 items-center gap-2"
@@ -124,7 +124,7 @@ export function TopNavBar() {
         </Link>
 
         {/* Center: Navigation Links */}
-        <nav className="col-start-2 hidden xl:flex items-center gap-0.5">
+        <nav className="col-start-2 hidden lg:flex items-center gap-0.5">
           {currentNavItems.map((item) => {
             const isActive = !isHome && pathname === item.href;
 
@@ -134,7 +134,7 @@ export function TopNavBar() {
                 href={item.href}
                 onClick={(e) => handleScroll(e, item.href)}
                 className={cn(
-                  "relative whitespace-nowrap rounded-full px-3.5 py-2.5 text-sm font-semibold transition-all duration-300",
+                  "relative whitespace-nowrap rounded-full px-2.5 xl:px-3.5 py-1.5 xl:py-2.5 text-xs xl:text-sm font-semibold transition-all duration-300",
                   isActive
                     ? "text-deep-navy"
                     : "text-foreground/70 hover:text-foreground hover:bg-surface-gray/50"
@@ -159,7 +159,7 @@ export function TopNavBar() {
           {isHome ? (
             <Link
               href="/official"
-              className="rounded-full bg-primary px-4 md:px-6 py-2 md:py-2.5 text-xs md:text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer whitespace-nowrap"
+              className="rounded-full bg-primary px-3 sm:px-4 xl:px-6 py-2 xl:py-2.5 text-xs xl:text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer whitespace-nowrap"
             >
               <StableLabel text={(d) => d.nav.goToRankingsShort} className="sm:hidden" />
               <StableLabel text={(d) => d.nav.goToRankings} className="hidden sm:inline-grid" />
@@ -167,7 +167,7 @@ export function TopNavBar() {
           ) : (
             <Link
               href="/"
-              className="rounded-full bg-primary px-4 md:px-6 py-2 md:py-2.5 text-xs md:text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer whitespace-nowrap"
+              className="rounded-full bg-primary px-3 sm:px-4 xl:px-6 py-2 xl:py-2.5 text-xs xl:text-sm font-semibold text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 hover:shadow-ambient cursor-pointer whitespace-nowrap"
             >
               <StableLabel text={(d) => d.nav.backToHomeShort} className="sm:hidden" />
               <StableLabel text={(d) => d.nav.backToHome} className="hidden sm:inline-grid" />
@@ -178,7 +178,7 @@ export function TopNavBar() {
 
       {/* Mobile tab bar for ranking pages */}
       {!isHome && (
-        <nav className="xl:hidden flex items-center justify-center gap-1 px-3 pb-2 pt-1 border-t border-border-subtle/50">
+        <nav className="lg:hidden flex items-center justify-center gap-1 px-3 pb-2 pt-1 border-t border-border-subtle/50">
           {APP_NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (
