@@ -64,13 +64,19 @@ export function parsePlayerColumns(
 }
 
 /**
- * Reads the career-high ("MR") cell of a live row, anchored on `td.chtd`.
+ * Reads the career-high cell of a live row, anchored on `td.chtd`.
  *
- * The cell holds either the player's best-ever rank as a number, or a marker
- * meaning they are at their career high (`MR`) or have never been ranked
- * (`NMR`, followed by a provisional rank in parentheses). For both markers the
- * player's current rank is the best available answer, so callers pass it as the
- * fallback.
+ * The cell comes in three shapes:
+ *   - a plain number — the player's best-ever rank;
+ *   - `MR` on its own — the player is at their career best right now;
+ *   - `NMR (9)` — the player is setting a *new* best, and the number in
+ *     parentheses is the one they are beating, i.e. the previous best.
+ *
+ * For both markers the career high is the player's current rank, so the
+ * parenthesised value is deliberately ignored: it describes the past, not the
+ * value to display. That reading is what the data supports — across the source
+ * page the parenthesised number is never better than the current rank (60 rows
+ * worse, 5 equal, 0 better), which only holds if it is the superseded best.
  */
 export function parseCareerHigh(
   $: CheerioAPI,
