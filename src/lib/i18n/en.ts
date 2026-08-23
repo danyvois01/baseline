@@ -173,7 +173,7 @@ export const en: Dictionary = {
       notPlaying: "Not playing",
     },
     race: {
-      turinCut: "Turin Cut",
+      qualificationLine: "Qualification Line",
       qualified: "Qualified",
       inContention: "In Contention",
       qualifiedPlayers: "Qualified Players",
@@ -189,7 +189,7 @@ export const en: Dictionary = {
         "Real-time point projections based on ongoing tournament results.",
       raceTitle: "Race to Turin",
       raceSubtitle:
-        "The top 8 singles players of the calendar year qualify for the prestigious season finale in Turin, Italy.",
+        "The top 8 singles players of the calendar year qualify for the prestigious Finals in Turin.",
     },
   },
   home: {

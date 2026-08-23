@@ -176,7 +176,7 @@ export const it = {
       notPlaying: "Non in gara",
     },
     race: {
-      turinCut: "Taglio Torino",
+      qualificationLine: "Linea di qualificazione",
       qualified: "Qualificato",
       inContention: "In corsa",
       qualifiedPlayers: "Giocatori qualificati",

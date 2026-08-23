@@ -100,9 +100,12 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                 <div className={cn("grid items-center px-6 py-3 bg-surface-gray/10 border-y border-border-subtle/50 my-1", GRID_COLS)}>
                   <div className="col-span-3 border-t border-border-subtle" />
                   <div className="flex justify-center">
-                    <span className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground font-bold text-[10px] tracking-wider px-3.5 py-1.5 rounded-full uppercase shadow-sm border border-white/10 whitespace-nowrap">
-                      <Trophy className="h-3.5 w-3.5 shrink-0 text-baseline-lime" />
-                      {t.rankings.race.turinCut}
+                    {/* Lime fill with navy content, like the active round badge
+                        in LiveStatusCell: both tokens are theme-independent, so
+                        the contrast holds in light and dark alike. */}
+                    <span className="inline-flex items-center gap-1.5 bg-baseline-lime text-deep-navy font-bold text-[10px] tracking-wider px-3.5 py-1.5 rounded-full uppercase shadow-sm whitespace-nowrap">
+                      <Trophy className="h-3.5 w-3.5 shrink-0" />
+                      {t.rankings.race.qualificationLine}
                     </span>
                   </div>
                   <div className="col-span-3 border-t border-border-subtle" />
@@ -175,9 +178,9 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
             <div key={entry.player.id}>
               {showCut && (
                 <div className="flex justify-center py-2 bg-surface-gray/10 border-y border-border-subtle/50">
-                  <span className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground font-bold text-[10px] tracking-wider px-3.5 py-1.5 rounded-full uppercase shadow-sm border border-white/10">
-                    <Trophy className="h-3.5 w-3.5 shrink-0 text-baseline-lime" />
-                    {t.rankings.race.turinCut}
+                  <span className="inline-flex items-center gap-1.5 bg-baseline-lime text-deep-navy font-bold text-[10px] tracking-wider px-3.5 py-1.5 rounded-full uppercase shadow-sm">
+                    <Trophy className="h-3.5 w-3.5 shrink-0" />
+                    {t.rankings.race.qualificationLine}
                   </span>
                 </div>
               )}
