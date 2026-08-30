@@ -26,6 +26,10 @@ export const it = {
       official: "Official Ranking",
       live: "Live Ranking",
       race: "Race to Turin",
+      // Short forms for the mobile tab bar, where three full labels do not fit.
+      officialShort: "Official",
+      liveShort: "Live",
+      raceShort: "Race",
     },
     goToRankings: "Vai alle Classifiche",
     goToRankingsShort: "Classifiche",
@@ -255,8 +259,6 @@ export const it = {
       curiosity:
         "Curiosità: Il numero del torneo (1000, 500, 250) indica i punti che guadagna il vincitore! Negli Slam e nelle Finals, invece, le regole cambiano.",
       pointsToWinner: "Punti al vincitore:",
-      exploreLabel: "Esplora la piramide",
-      exploreAria: "Scorri alla piramide grafica",
       scrollNext: "La Stagione",
       tiers: [
         {

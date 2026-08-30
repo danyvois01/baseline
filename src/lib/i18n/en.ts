@@ -23,6 +23,10 @@ export const en: Dictionary = {
       official: "Official Ranking",
       live: "Live Ranking",
       race: "Race to Turin",
+      // Short forms for the mobile tab bar, where three full labels do not fit.
+      officialShort: "Official",
+      liveShort: "Live",
+      raceShort: "Race",
     },
     goToRankings: "Go to Rankings",
     goToRankingsShort: "Rankings",
@@ -251,8 +255,6 @@ export const en: Dictionary = {
       curiosity:
         "Fun fact: the tournament number (1000, 500, 250) is the number of points the winner earns! At the Slams and the Finals, however, the rules change.",
       pointsToWinner: "Points to the winner:",
-      exploreLabel: "Explore the pyramid",
-      exploreAria: "Scroll to the pyramid graphic",
       scrollNext: "The Season",
       tiers: [
         {

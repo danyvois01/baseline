@@ -14,6 +14,7 @@ import { motion, useMotionTemplate, useScroll, useTransform } from "framer-motio
 import { cn } from "@/lib/utils";
 import type { Dictionary } from "@/lib/i18n";
 import { StableLabel } from "@/components/ui/stable-label";
+import { useTranslation } from "@/providers/locale-provider";
 import { SettingsPill } from "./settings-pill";
 
 /**
@@ -29,14 +30,31 @@ const HOME_NAV_ITEMS = [
   { text: (d: Dictionary) => d.nav.home.glossary, href: "#glossary" },
 ] as const;
 
+/**
+ * `shortText` is used by the mobile tab bar only: three full labels do not fit
+ * side by side on a narrow phone once they sit on their own inset track.
+ */
 const APP_NAV_ITEMS = [
-  { text: (d: Dictionary) => d.nav.app.official, href: "/official" },
-  { text: (d: Dictionary) => d.nav.app.live, href: "/live" },
-  { text: (d: Dictionary) => d.nav.app.race, href: "/race" },
+  {
+    text: (d: Dictionary) => d.nav.app.official,
+    shortText: (d: Dictionary) => d.nav.app.officialShort,
+    href: "/official",
+  },
+  {
+    text: (d: Dictionary) => d.nav.app.live,
+    shortText: (d: Dictionary) => d.nav.app.liveShort,
+    href: "/live",
+  },
+  {
+    text: (d: Dictionary) => d.nav.app.race,
+    shortText: (d: Dictionary) => d.nav.app.raceShort,
+    href: "/race",
+  },
 ] as const;
 
 export function TopNavBar() {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const { scrollY } = useScroll();
 
   const isHome = pathname === "/";
@@ -45,7 +63,20 @@ export function TopNavBar() {
   // Animation values based on scroll
   const navWidth = useTransform(scrollY, [0, 100], ["100%", "90%"]);
   const navY = useTransform(scrollY, [0, 100], [0, 16]);
-  const navRadius = useTransform(scrollY, [0, 100], ["0px", "9999px"]);
+  /*
+   * A full 9999px radius only makes sense while the header is a single row: the
+   * browser clamps it to half the height, which on the homepage's h-20 bar is a
+   * proper pill. The ranking pages add a second row of tabs below xl, taking the
+   * header to ~104px — there the clamped 52px corners curve away from the bottom
+   * edge, so anything sitting on that edge ends up outside the shape (the header
+   * cannot clip: the radius is animated, and overflow-hidden would cut the tabs
+   * instead of containing them).
+   */
+  const navRadius = useTransform(
+    scrollY,
+    [0, 100],
+    ["0px", isHome ? "9999px" : "28px"]
+  );
   const shadowOpacity = useTransform(scrollY, [0, 100], [0, 0.08]);
   const navPadding = useTransform(scrollY, [0, 100], ["1.5rem", "0.75rem"]); // px-6 to px-3 ish
 
@@ -176,27 +207,44 @@ export function TopNavBar() {
         </div>
       </motion.div>
 
-      {/* Mobile tab bar for ranking pages */}
+      {/*
+        Mobile tab bar for ranking pages — a segmented control on its own track,
+        inset from the header on three sides. The inset is what keeps the active
+        pill inside the header's shape: sitting flush against the bottom edge it
+        crossed the rounded corner on narrow phones. The track also gives the
+        pill a matching shape to nest in, so the radii read as a progression
+        (header → track → pill) instead of two unrelated curves. No top border:
+        the track's fill separates the two rows, and a full-bleed line ran past
+        the header's corners for the same reason.
+      */}
       {!isHome && (
-        <nav className="xl:hidden flex items-center justify-center gap-1 px-3 pb-2 pt-1 border-t border-border-subtle/50">
-          {APP_NAV_ITEMS.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "relative flex-1 text-center rounded-full px-2 py-1.5 text-xs font-semibold transition-all duration-200",
-                  isActive
-                    ? "bg-baseline-lime text-deep-navy"
-                    : "text-foreground/60 active:bg-surface-gray/50"
-                )}
-              >
-                <StableLabel text={item.text} className="relative z-10" />
-              </Link>
-            );
-          })}
-        </nav>
+        <div className="xl:hidden px-3 pb-3">
+          <nav className="flex items-center gap-0.5 rounded-full bg-surface-gray/60 p-1">
+            {APP_NAV_ITEMS.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                /* aria-label carries the full wording: the shortening is
+                   visual only, assistive tech still gets "Official Ranking". */
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-label={item.text(t)}
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    // min-w-0 lets flex-1 share the space evenly instead of
+                    // bottoming out at each label's min-content width.
+                    "relative flex-1 min-w-0 flex justify-center rounded-full px-2 py-1.5 text-xs font-semibold transition-all duration-200",
+                    isActive
+                      ? "bg-baseline-lime text-deep-navy shadow-sm"
+                      : "text-foreground/60 active:bg-surface-white/70"
+                  )}
+                >
+                  <StableLabel text={item.shortText} className="relative z-10" />
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
       )}
     </motion.header>
   );
