@@ -9,7 +9,7 @@ import {
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/providers/locale-provider";
 import type { Dictionary } from "@/lib/i18n";
-import { ScrollCue } from "./scroll-cue";
+import { SectionEndCue } from "./scroll-cue";
 
 type CategoryId = keyof Dictionary["home"]["glossary"]["categories"];
 
@@ -88,7 +88,8 @@ export function GlossarySection() {
   });
 
   return (
-    <section id="glossary" className="relative w-full bg-surface-white pt-28 pb-16 sm:pt-32 sm:pb-24 overflow-hidden">
+    /* No bottom padding: the cue band that closes the section supplies it. */
+    <section id="glossary" className="relative w-full bg-surface-white pt-28 sm:pt-32 overflow-hidden">
       <div className="max-w-7xl w-full mx-auto px-6 flex flex-col items-center">
 
           {/* Header - Centrato */}
@@ -142,8 +143,14 @@ export function GlossarySection() {
               <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
             </button>
 
-            {/* Card Stack Container */}
-            <div className="relative w-full max-w-[340px] sm:max-w-[440px] h-[280px] sm:h-[300px] z-10">
+            {/* Card Stack Container.
+                mb-9 reserves the 36px the deck sticks out below its own box:
+                the stacked cards are absolute and offset by `y: index * 18`,
+                so the third one overflows this fixed-height container. It has
+                to be a margin, not padding — the height is fixed and
+                border-box, so padding would be absorbed instead of adding to
+                the footprint. Card size is therefore untouched. */}
+            <div className="relative w-full max-w-[340px] sm:max-w-[440px] h-[280px] sm:h-[300px] mb-9 z-10">
               <AnimatePresence custom={leaveX}>
                 {visibleCards.map((item, index) => {
                   const isTopCard = index === 0;
@@ -218,15 +225,14 @@ export function GlossarySection() {
           </div>
 
           {/* Deck position counter */}
-          <div className="flex items-baseline gap-1.5 mt-8 sm:mt-10 font-heading font-bold select-none">
+          <div className="flex items-baseline gap-1.5 mt-10 sm:mt-12 font-heading font-bold select-none">
             <span className="text-[15px] text-foreground">{String(activeIndex + 1).padStart(2, "0")}</span>
             <span className="text-[12px] text-text-muted/60">/ {String(terms.length).padStart(2, "0")}</span>
           </div>
 
-          {/* Next-section cue — only on mobile */}
-          <div className="mt-6 sm:hidden">
-            <ScrollCue targetId="cta" label={t.home.glossary.scrollNext} />
-          </div>
+          {/* Next-section cue — at every breakpoint, so the chapter chain
+              reaches the CTA on desktop too. */}
+          <SectionEndCue targetId="cta" label={t.home.glossary.scrollNext} />
         </div>
 
       {/* Stili personalizzati per marquee */}
