@@ -185,26 +185,29 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
                 </div>
               )}
 
-              <div className={cn("px-4 py-3", index % 2 === 1 && "bg-surface-gray/20")}>
-                <div className="flex items-center gap-3">
-                  {/* Rank + movement */}
-                  <div className="flex flex-col items-center shrink-0 w-8">
-                    <span className="text-[20px] font-heading font-extrabold text-foreground tabular-nums">
-                      {entry.rank}
-                    </span>
-                    <MovementBadge
-                      type={entry.movement.type}
-                      value={entry.movement.value}
-                    />
-                  </div>
+              {/* Fixed-width rank gutter (fits a 3-digit rank): every name and
+                  status line starts at the same offset. */}
+              <div className="grid grid-cols-[36px_minmax(0,1fr)] gap-x-2 px-4 py-3">
+                {/* Rank + movement stacked — the inline variant is narrow enough
+                    to live inside the rank gutter */}
+                <div className="flex flex-col items-start">
+                  <span className="text-[20px] font-heading font-extrabold text-foreground tabular-nums">
+                    {entry.rank}
+                  </span>
+                  <MovementBadge
+                    type={entry.movement.type}
+                    value={entry.movement.value}
+                    variant="inline"
+                  />
+                </div>
 
+                {/* Player | points */}
+                <div className="flex items-start gap-3">
                   {/* Player */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[15px] font-semibold text-foreground truncate">
-                        {entry.player.name}
-                      </span>
-                    </div>
+                    <span className="block text-[15px] font-semibold text-foreground truncate">
+                      {entry.player.name}
+                    </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span
                         className={cn("fi rounded-sm", `fi-${entry.player.countryCode}`)}
@@ -248,11 +251,12 @@ export function RaceTable({ entries, initialCount = 20 }: RaceTableProps) {
 
                 {/* Live status */}
                 {entry.liveStatus.tournament && (
-                  <div className="mt-2 ml-11">
+                  <div className="col-start-2 mt-2 min-w-0">
                     <LiveStatusCell
                       isActive={entry.liveStatus.isActive}
                       tournament={entry.liveStatus.tournament}
                       stage={entry.liveStatus.stage}
+                      compact
                     />
                   </div>
                 )}

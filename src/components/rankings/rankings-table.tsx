@@ -171,7 +171,7 @@ export function RankingsTable({
 
       {/* ═══ MOBILE CARD LIST ═══ */}
       <div className="md:hidden divide-y divide-border-subtle/40">
-        {visibleEntries.map((entry, idx) => {
+        {visibleEntries.map((entry) => {
           const isExpanded = expandedIds.has(entry.player.id);
 
           return (
@@ -179,32 +179,32 @@ export function RankingsTable({
               key={entry.player.id}
               onClick={() => toggleExpand(entry.player.id)}
               className={cn(
-                "px-4 py-3 transition-colors cursor-pointer",
-                isExpanded
-                  ? "bg-baseline-lime/5"
-                  : cn(idx % 2 === 1 && "bg-surface-gray/20", "active:bg-baseline-lime/5")
+                // Fixed-width rank gutter (fits a 3-digit rank): every name,
+                // status line and expanded panel starts at the same offset.
+                "grid grid-cols-[36px_minmax(0,1fr)] gap-x-2 px-4 py-3 transition-colors cursor-pointer",
+                isExpanded ? "bg-baseline-lime/5" : "active:bg-baseline-lime/5"
               )}
             >
-              {/* Main row: rank | player info | points */}
-              <div className="flex items-center gap-3">
-                {/* Rank + movement */}
-                <div className="flex flex-col items-center shrink-0 w-8">
-                  <span className="text-[20px] font-heading font-extrabold text-foreground tabular-nums">
-                    {entry.rank}
-                  </span>
-                  <MovementBadge
-                    type={entry.movement.type}
-                    value={entry.movement.value}
-                  />
-                </div>
+              {/* Rank + movement stacked — the inline variant is narrow enough
+                  to live inside the rank gutter */}
+              <div className="flex flex-col items-start">
+                <span className="text-[20px] font-heading font-extrabold text-foreground tabular-nums">
+                  {entry.rank}
+                </span>
+                <MovementBadge
+                  type={entry.movement.type}
+                  value={entry.movement.value}
+                  variant="inline"
+                />
+              </div>
 
+              {/* Player | points | chevron */}
+              <div className="flex items-start gap-3">
                 {/* Player */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[15px] font-semibold text-foreground truncate">
-                      {entry.player.name}
-                    </span>
-                  </div>
+                  <span className="block text-[15px] font-semibold text-foreground truncate">
+                    {entry.player.name}
+                  </span>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span
                       className={cn("fi rounded-sm", `fi-${entry.player.countryCode}`)}
@@ -220,7 +220,7 @@ export function RankingsTable({
                   </div>
                 </div>
 
-                {/* Points + diff */}
+                {/* Points + diff — the row's only colour accent */}
                 <div className="flex flex-col items-end shrink-0">
                   <span className="text-[18px] font-heading font-extrabold text-foreground tabular-nums">
                     {formatPoints(entry.points)}
@@ -242,7 +242,7 @@ export function RankingsTable({
                 {/* Chevron */}
                 <ChevronDown
                   className={cn(
-                    "h-4 w-4 text-foreground/50 shrink-0 transition-transform duration-200",
+                    "h-4 w-4 mt-1 text-text-muted shrink-0 transition-transform duration-200",
                     isExpanded && "rotate-180"
                   )}
                 />
@@ -250,24 +250,25 @@ export function RankingsTable({
 
               {/* Live status (secondary line) */}
               {entry.liveStatus.tournament && (
-                <div className="mt-2 ml-11">
+                <div className="col-start-2 mt-2 min-w-0">
                   <LiveStatusCell
                     isActive={entry.liveStatus.isActive}
                     tournament={entry.liveStatus.tournament}
                     stage={entry.liveStatus.stage}
+                    compact
                   />
                 </div>
               )}
 
               {/* Expanded details */}
               <div
-                className="grid transition-[grid-template-rows] duration-200 ease-out"
+                className="col-start-2 grid transition-[grid-template-rows] duration-200 ease-out"
                 style={{
                   gridTemplateRows: isExpanded ? "1fr" : "0fr",
                 }}
               >
                 <div className="overflow-hidden">
-                  <div className="mt-3 ml-11 grid grid-cols-2 gap-3 pt-3 border-t border-border-subtle/50">
+                  <div className="mt-3 grid grid-cols-2 gap-3 pt-3 border-t border-border-subtle/50">
                     <div>
                       <span className="text-[10px] uppercase tracking-wider text-foreground font-bold block">
                         {t.rankings.expandedCard.careerHigh}
