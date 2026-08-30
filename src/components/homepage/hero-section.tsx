@@ -54,10 +54,12 @@ export function HeroSection() {
   const courtScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
   return (
+    /* Extra bottom padding on mobile keeps the stacked court clear of the
+       scroll cue. */
     <section
       id="hero"
       ref={containerRef}
-      className="relative w-full min-h-[100dvh] flex flex-col justify-center overflow-hidden bg-surface-white pt-20"
+      className="relative w-full min-h-[100dvh] flex flex-col justify-center overflow-hidden bg-surface-white pt-20 pb-16 md:pb-0"
     >
       {/* Background ambient light */}
       <div className="absolute inset-0 pointer-events-none">
@@ -114,18 +116,21 @@ export function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="mt-8 max-w-xl"
+            className="mt-6 md:mt-8 max-w-xl"
           >
-            <p className="text-[20px] md:text-[22px] text-text-muted font-medium leading-relaxed">
+            {/* Tighter on mobile: the court band takes the lower ~56vw, so the
+                text has to fit above it even on short viewports. */}
+            <p className="text-[17px] md:text-[22px] text-text-muted font-medium leading-snug md:leading-relaxed">
               {t.home.hero.lead}
             </p>
           </motion.div>
         </motion.div>
 
-        {/* Right Column: Animated Court */}
-        <motion.div 
+        {/* Animated Court — right column on desktop, stacked under the text on
+            mobile (the container is flex-col below md). */}
+        <motion.div
           style={{ y: courtY, scale: courtScale, opacity }}
-          className="flex-1 w-full max-w-[500px] relative hidden md:block"
+          className="flex-1 w-full max-w-[500px] relative"
         >
           {/* Straight isometric container */}
           <div className="relative w-full">
@@ -235,11 +240,15 @@ export function HeroSection() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator. The one place that keeps a bare absolute cue instead
+          of `SectionEndCue`: this section is exactly one viewport tall, so the
+          bottom of the frame *is* the end of the chapter. On mobile it sits in
+          the clear strip below the court's near baseline, hence the lower
+          offset. */}
       <ScrollCue
         targetId="ranking"
         label={t.home.hero.scrollLabel}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2"
+        className="absolute bottom-3 md:bottom-6 left-1/2 -translate-x-1/2"
       />
     </section>
   );
