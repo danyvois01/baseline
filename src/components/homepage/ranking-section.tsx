@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
-import { ScrollCue } from "./scroll-cue";
+import { ScrollCue, SectionEndCue } from "./scroll-cue";
 import { useTranslation } from "@/providers/locale-provider";
 
 /**
@@ -42,6 +42,23 @@ export function RankingSection() {
 
   // Progress ring fill (0 → 1 across the pinned scroll)
   const ringProgress = useTransform(scrollYProgress, [0, 0.95], [0, 1]);
+
+  /*
+   * Desktop scroll cue reveal. The cue is anchored to the bottom of the pinned
+   * frame, which stays on screen for the section's full 300vh — left always
+   * visible it reads as permanent furniture rather than "this chapter is
+   * ending". Revealing it only over the last stretch gives it the same meaning
+   * as the in-flow cues in the other sections.
+   *
+   * 0.86 is the tail of the last stat's band (BANDS[3]), which holds full
+   * opacity until 0.92: the cue arrives while the last number is still
+   * readable, not competing with it.
+   */
+  const cueOpacity = useTransform(scrollYProgress, [0.86, 0.95], [0, 1]);
+  // Keeps the invisible button from being clickable during the rest of the pin.
+  const cuePointerEvents = useTransform(scrollYProgress, (v) =>
+    v > 0.86 ? "auto" : "none"
+  );
 
   const op0 = useStatOpacity(scrollYProgress, 0);
   const op1 = useStatOpacity(scrollYProgress, 1);
@@ -181,16 +198,20 @@ export function RankingSection() {
 
         </div>
 
-        {/* Scroll cue — pinned to the bottom of the frame, always visible */}
-        <ScrollCue
-          targetId="pyramid"
-          label={t.home.ranking.scrollLabel}
+        {/* Scroll cue — anchored to the bottom of the pinned frame (there is no
+            visible "after the last element" in 300vh of pin), revealed over the
+            last stretch of the scroll. */}
+        <motion.div
+          style={{ opacity: cueOpacity, pointerEvents: cuePointerEvents }}
           className="absolute bottom-6 left-1/2 -translate-x-1/2"
-        />
+        >
+          <ScrollCue targetId="pyramid" label={t.home.ranking.scrollLabel} />
+        </motion.div>
       </div>
 
-      {/* --- MOBILE: simple vertical list --- */}
-      <div className="md:hidden flex flex-col w-full py-20 px-6 gap-14">
+      {/* --- MOBILE: simple vertical list ---
+          No bottom padding: the cue band below supplies it. */}
+      <div className="md:hidden flex flex-col w-full pt-20 px-6 gap-14">
         <div className="text-center">
           <h2 className="text-[11px] text-text-muted uppercase tracking-[0.3em] font-bold mb-3">
             {t.home.ranking.title}
@@ -220,10 +241,13 @@ export function RankingSection() {
           </motion.div>
         ))}
 
-        {/* Next-section cue — the desktop layout carries its own in row 3 */}
-        <div className="flex justify-center pt-2">
-          <ScrollCue targetId="pyramid" label={t.home.ranking.scrollLabel} />
-        </div>
+      </div>
+
+      {/* Next-section cue for the mobile layout — outside the list on purpose:
+          inside, the list's `gap-14` would stack on top of the band's own top
+          padding. The desktop layout carries its own cue in the pinned frame. */}
+      <div className="md:hidden">
+        <SectionEndCue targetId="pyramid" label={t.home.ranking.scrollLabel} />
       </div>
     </section>
   );

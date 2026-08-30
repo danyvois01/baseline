@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useSpring, useInView, useReducedMotion
 import { Sun, Sparkles, Trophy, Crown, Zap, Building2, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/providers/locale-provider";
-import { ScrollCue } from "./scroll-cue";
+import { SectionEndCue } from "./scroll-cue";
 
 /** Surface colour tokens */
 const SURFACE_COLORS = {
@@ -223,10 +223,11 @@ export function TimelineSection() {
   const lineFill = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
 
   return (
+    /* No bottom padding: the cue band that closes the section supplies it. */
     <section
       id="timeline"
       ref={containerRef}
-      className="relative w-full py-20 md:py-24 bg-surface-white"
+      className="relative w-full pt-20 md:pt-24 bg-surface-white"
     >
       <div className="mx-auto max-w-[1400px] px-6">
 
@@ -304,9 +305,7 @@ export function TimelineSection() {
         </div>
 
         {/* Next-section cue */}
-        <div className="flex justify-center pt-12 md:pt-16">
-          <ScrollCue targetId="scoring" label={t.home.timeline.scrollNext} />
-        </div>
+        <SectionEndCue targetId="scoring" label={t.home.timeline.scrollNext} />
       </div>
     </section>
   );
