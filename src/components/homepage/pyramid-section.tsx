@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/providers/locale-provider";
 import type { Dictionary } from "@/lib/i18n";
-import { ScrollCue } from "./scroll-cue";
+import { SectionEndCue } from "./scroll-cue";
 import { CelebrationBurst } from "./celebration-burst";
 
 /**
@@ -54,13 +54,23 @@ function TierTextBlock({
   }, [isInView, tier.id, setActiveTier]);
 
   return (
-    <div ref={ref} className="min-h-[100dvh] flex flex-col justify-center py-16 md:py-20">
+    /* The full-viewport height only makes sense from lg up, where the sticky
+       pyramid graphic exists and each block has to hold a screen to keep the
+       active tier in sync. Below lg the graphic is hidden, so it would just be
+       a screenful of empty space between cards. */
+    <div
+      ref={ref}
+      className="py-4 flex flex-col justify-center lg:min-h-[100dvh] lg:py-20"
+    >
       <motion.div
         className={cn(
           "bg-surface-white/85 backdrop-blur-md border border-border-subtle border-l-4 rounded-3xl p-6 md:p-12 shadow-xl transition-all duration-700",
+          // Dimming out-of-view cards only reads as meaningful next to the
+          // pyramid graphic, so it is lg-only; the left border keeps marking
+          // the current card at every breakpoint.
           isInView
             ? "opacity-100 scale-100 border-l-baseline-lime"
-            : "opacity-30 scale-95 border-l-deep-navy/20"
+            : "lg:opacity-30 lg:scale-95 border-l-deep-navy/20"
         )}
       >
         <div className="flex items-center gap-6 mb-6">
@@ -138,13 +148,6 @@ export function PyramidSection() {
               </p>
             </div>
           </div>
-
-          {/* Scroll indicator (like Hero) */}
-          <ScrollCue
-            targetId="pyramid-content"
-            label={t.home.pyramid.exploreLabel}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2"
-          />
         </div>
       </div>
 
@@ -240,7 +243,11 @@ export function PyramidSection() {
 
         {/* Destra: Testi a scorrimento (Grand Slam per primo, ATP Finals come finale) */}
         <div className="w-full lg:w-1/2 relative z-10">
-          <div className="pb-[35vh]">
+          {/* The tall bottom padding lets the last card reach the centre of the
+              screen and trigger the ATP Finals crown — again only needed where
+              the graphic is visible. Below lg the cue band supplies the spacing
+              that closes the section. */}
+          <div className="lg:pb-[35vh]">
             {textTiers.map((tier) => (
               <TierTextBlock
                 key={tier.id}
@@ -254,17 +261,8 @@ export function PyramidSection() {
 
       </div>
 
-      {/*
-        Next-section cue: sticks to the bottom of the viewport for the whole
-        scroll of the pyramid content, then settles at the section's end.
-      */}
-      <div className="sticky bottom-6 z-20 flex justify-center pb-2 pointer-events-none">
-        <ScrollCue
-          targetId="timeline"
-          label={t.home.pyramid.scrollNext}
-          className="pointer-events-auto"
-        />
-      </div>
+      {/* Next-section cue */}
+      <SectionEndCue targetId="timeline" label={t.home.pyramid.scrollNext} />
       </div>
     </section>
   );
