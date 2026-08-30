@@ -6,7 +6,7 @@ import { Lightbulb } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/providers/locale-provider";
 import type { Dictionary } from "@/lib/i18n";
-import { ScrollCue } from "./scroll-cue";
+import { SectionEndCue } from "./scroll-cue";
 import { CelebrationBurst } from "./celebration-burst";
 
 /**
@@ -56,7 +56,8 @@ export function ScoringSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
   return (
-    <section id="scoring" ref={sectionRef} className="relative w-full bg-surface-white py-20 md:py-28">
+    /* No bottom padding: the cue band that closes the section supplies it. */
+    <section id="scoring" ref={sectionRef} className="relative w-full bg-surface-white pt-20 md:pt-28">
 
       <div className="max-w-[1280px] mx-auto px-6">
         {/* Section header — simple intro block like Timeline */}
@@ -80,9 +81,7 @@ export function ScoringSection() {
       </div>
 
         {/* Next-section cue */}
-        <div className="flex justify-center pt-12 md:pt-16">
-          <ScrollCue targetId="glossary" label={t.home.scoring.scrollNext} />
-        </div>
+        <SectionEndCue targetId="glossary" label={t.home.scoring.scrollNext} />
       </div>
     </section>
   );
@@ -119,10 +118,14 @@ function ChapterCard({ chapter }: { chapter: Chapter }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-15% 0px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative overflow-hidden w-full grid md:grid-cols-2 gap-8 md:gap-10 lg:gap-14 items-center bg-surface-white border border-border-subtle rounded-3xl p-6 md:p-10 lg:p-12 shadow-xl"
+        className="relative overflow-hidden w-full grid md:grid-cols-2 gap-8 md:gap-10 lg:gap-14 items-center bg-surface-white border border-border-subtle rounded-3xl p-5 sm:p-6 md:p-10 lg:p-12 shadow-xl"
       >
-        {/* Explanation */}
-        <div>
+        {/* Explanation.
+            min-w-0 on both grid items: on mobile text and scoreboard share a
+            single auto track, which cannot shrink below its content. Without
+            it, a wide scoreboard widens the track past the card's padding box
+            and the card's overflow-hidden clips the text. */}
+        <div className="min-w-0">
           <h3 className="text-[28px] md:text-[34px] lg:text-[38px] font-heading font-extrabold mb-6 text-foreground leading-tight">
             {chapter.title}
           </h3>
@@ -145,7 +148,7 @@ function ChapterCard({ chapter }: { chapter: Chapter }) {
         </div>
 
         {/* Its scoreboard, inside the same frame */}
-        <div className="flex justify-center w-full">
+        <div className="flex justify-center w-full min-w-0">
           <ChapterVisual id={chapter.id} />
         </div>
       </motion.div>
@@ -156,7 +159,7 @@ function ChapterCard({ chapter }: { chapter: Chapter }) {
 /** Status badge above the scoreboard: one consistent lime style. */
 function StatusBadge({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-6 py-2 rounded-full font-bold uppercase tracking-widest text-sm text-center bg-baseline-lime text-deep-navy shadow-[0_0_15px_rgba(223,255,0,0.4)]">
+    <div className="max-w-full px-5 sm:px-6 py-2 rounded-full font-bold uppercase tracking-widest text-sm text-center bg-baseline-lime text-deep-navy shadow-[0_0_15px_rgba(223,255,0,0.4)]">
       {children}
     </div>
   );
@@ -258,22 +261,24 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
     >
       <StatusBadge>{getBadgeText()}</StatusBadge>
 
-      <div className={cn(BOARD_CARD, "inline-flex flex-col items-center p-6 md:p-8 lg:p-10 w-full")}>
-        <div className="flex gap-4 md:gap-8">
+      <div className={cn(BOARD_CARD, "inline-flex flex-col items-center p-4 sm:p-6 md:p-8 lg:p-10 w-full")}>
+        <div className="flex gap-3 sm:gap-4 md:gap-8">
           <div className="flex flex-col items-center">
             <span className="text-white/50 font-bold uppercase tracking-widest mb-3 md:mb-4 text-sm md:text-base">{t.home.scoring.you}</span>
             <button
               onClick={handlePlayerScore}
               disabled={gameOver}
               className={cn(
-                "relative w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
+                "relative w-16 h-24 sm:w-20 sm:h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
                 "bg-baseline-lime/10 border-baseline-lime/60 hover:bg-baseline-lime/20",
                 gameOver && "opacity-50 pointer-events-none"
               )}
             >
               <span className={cn(
                 "font-heading font-extrabold leading-none text-baseline-lime drop-shadow-[0_0_20px_rgba(223,255,0,0.6)]",
-                playerScore === 4 ? "text-[28px] md:text-[42px]" : "text-[50px] md:text-[80px]"
+                playerScore === 4
+                  ? "text-[24px] sm:text-[28px] md:text-[42px]"
+                  : "text-[42px] sm:text-[50px] md:text-[80px]"
               )}>
                 {getDisplayScore(playerScore, advantage, true)}
               </span>
@@ -290,14 +295,16 @@ function InteractiveScoreboard({ mode = "game" }: { mode?: "game" | "deuce" }) {
               onClick={handleOpponentScore}
               disabled={gameOver}
               className={cn(
-                "relative w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
+                "relative w-16 h-24 sm:w-20 sm:h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
                 "bg-white/5 border-white/20 hover:bg-white/10",
                 gameOver && "opacity-50 pointer-events-none"
               )}
             >
               <span className={cn(
                 "font-heading font-extrabold leading-none text-white",
-                opponentScore === 4 ? "text-[28px] md:text-[42px]" : "text-[50px] md:text-[80px]"
+                opponentScore === 4
+                  ? "text-[24px] sm:text-[28px] md:text-[42px]"
+                  : "text-[42px] sm:text-[50px] md:text-[80px]"
               )}>
                 {getDisplayScore(opponentScore, advantage, false)}
               </span>
@@ -484,24 +491,24 @@ function TieBreakVisual() {
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9, y: -20 }}
       transition={{ duration: 0.4 }}
-      className="flex flex-col items-center gap-6"
+      className="flex flex-col items-center gap-6 w-full max-w-[600px] mx-auto"
     >
       <StatusBadge>{getBadgeText()}</StatusBadge>
 
-      <div className={cn(BOARD_CARD, "inline-flex flex-col items-center p-6 md:p-8 lg:p-10")}>
-        <div className="flex gap-4 md:gap-8">
+      <div className={cn(BOARD_CARD, "inline-flex flex-col items-center p-4 sm:p-6 md:p-8 lg:p-10")}>
+        <div className="flex gap-3 sm:gap-4 md:gap-8">
           <div className="flex flex-col items-center gap-4">
             <span className="text-white/50 font-bold uppercase tracking-widest text-sm md:text-base">{t.home.scoring.you}</span>
             <button
               onClick={handlePlayerScore}
               disabled={over}
               className={cn(
-                "relative w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
+                "relative w-16 h-24 sm:w-20 sm:h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
                 "bg-baseline-lime/10 border-baseline-lime/60 hover:bg-baseline-lime/20",
                 over && "opacity-50 pointer-events-none"
               )}
             >
-              <span className="text-[50px] md:text-[80px] font-heading font-extrabold text-baseline-lime drop-shadow-[0_0_20px_rgba(223,255,0,0.6)]">
+              <span className="text-[42px] sm:text-[50px] md:text-[80px] font-heading font-extrabold text-baseline-lime drop-shadow-[0_0_20px_rgba(223,255,0,0.6)]">
                 {playerScore}
               </span>
               <PressFlash flashKey={playerFlash} />
@@ -524,12 +531,12 @@ function TieBreakVisual() {
               onClick={handleOpponentScore}
               disabled={over}
               className={cn(
-                "relative w-20 h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
+                "relative w-16 h-24 sm:w-20 sm:h-28 md:w-32 md:h-40 rounded-3xl flex items-center justify-center border-2 transition-all active:scale-95 cursor-pointer",
                 "bg-white/5 border-white/20 hover:bg-white/10",
                 over && "opacity-50 pointer-events-none"
               )}
             >
-              <span className="text-[50px] md:text-[80px] font-heading font-extrabold text-white">
+              <span className="text-[42px] sm:text-[50px] md:text-[80px] font-heading font-extrabold text-white">
                 {opponentScore}
               </span>
               <PressFlash flashKey={opponentFlash} />
